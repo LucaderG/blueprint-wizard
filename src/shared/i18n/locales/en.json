@@ -1,0 +1,663 @@
+{
+  "app": {
+    "name": "Blueprint-Wizard"
+  },
+  "nav": {
+    "label": "Main navigation",
+    "settings": "Settings"
+  },
+  "usage": {
+    "summaryLabel": "AI cost this session: {{cost}}",
+    "lastTitle": "Last AI request",
+    "sessionTitle": "This session",
+    "tokens": "Tokens",
+    "tokensInOut": "{{input}} in / {{output}} out",
+    "cost": "Cost",
+    "calls": "Requests",
+    "costUnknown": "unknown",
+    "incomplete": "OpenRouter reported no cost for some requests; the total is a lower bound.",
+    "source": "Cost as reported by OpenRouter",
+    "reset": "Reset",
+    "tasks": {
+      "idea_classification": "Classify idea",
+      "blueprint_analysis": "Analyze blueprint",
+      "answer_integration": "Work in answers",
+      "core_decisions": "Find decisions",
+      "blueprint_additions": "Get suggestions",
+      "project_ideas": "Find ideas",
+      "other": "Other request"
+    }
+  },
+  "home": {
+    "title": "From idea to blueprint",
+    "subtitle": "Wherever you are, we'll work out a project scope together that you can start with right away.",
+    "entryPointsLabel": "Entry points",
+    "entry": {
+      "noIdea": {
+        "title": "I have no idea",
+        "description": "Together we'll find an idea that suits you."
+      },
+      "partialIdea": {
+        "title": "I have a partial idea",
+        "description": "Describe what you have. We'll find out what's still missing."
+      },
+      "almostDone": {
+        "title": "I have almost everything",
+        "description": "Paste your concept. We'll check for gaps and sharpen the details."
+      }
+    },
+    "apiKeyNotice": {
+      "text": "The AI features require an OpenRouter API key.",
+      "link": "Go to settings"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "saved": "Saved",
+    "appearance": {
+      "title": "Appearance",
+      "intro": "Language of the interface and of exported files, plus the color scheme. The language of AI answers is set further below.",
+      "languageLabel": "Interface language",
+      "themeLabel": "Color scheme",
+      "themes": {
+        "system": "Match system",
+        "light": "Light",
+        "dark": "Dark"
+      }
+    },
+    "apiKey": {
+      "title": "OpenRouter API key",
+      "intro": "Blueprint-Wizard uses OpenRouter for its AI features. You need your own API key from OpenRouter for this.",
+      "createLink": "Create an API key at OpenRouter",
+      "label": "API key",
+      "placeholder": "sk-or-…",
+      "show": "Show key",
+      "hide": "Hide key",
+      "statusSaved": "Key saved",
+      "statusNone": "No key saved",
+      "privacy": "Your key is stored only in this browser and is sent exclusively to OpenRouter.",
+      "save": "Save",
+      "test": "Test connection",
+      "testing": "Checking connection …",
+      "testSuccess": "Connection successful",
+      "usage": "Used so far: {{usage}}",
+      "remaining": "Remaining limit: {{remaining}}",
+      "freeTier": "Free account",
+      "delete": "Delete key",
+      "deleteDialog": {
+        "title": "Delete key?",
+        "description": "The saved API key will be removed from this browser. The AI features will only be usable again once you save a new key.",
+        "confirm": "Delete",
+        "cancel": "Cancel"
+      }
+    },
+    "model": {
+      "title": "Model",
+      "intro": "The model determines which AI responds and what each request costs.",
+      "current": "Current model",
+      "restore": "Restore default",
+      "filterLabel": "Filter models",
+      "filterPlaceholder": "Name or ID, e.g. claude",
+      "structuredOnly": "Only models with structured responses",
+      "listLabel": "Available models",
+      "loading": "Loading models …",
+      "loadError": "The model list could not be loaded. You can also enter the model ID directly.",
+      "retry": "Try again",
+      "manualLabel": "Model ID",
+      "manualPlaceholder": "e.g. anthropic/claude-sonnet-5.5",
+      "manualSubmit": "Apply",
+      "noResults": "No models match your filter.",
+      "optionLabel": "{{name}} – {{prices}}",
+      "prices": "Input {{input}}, output {{output}} per million tokens",
+      "free": "free",
+      "unknownPrice": "unknown"
+    },
+    "response": {
+      "title": "Responses",
+      "temperatureLabel": "Creativity (temperature)",
+      "temperatureHint": "0 = predictable, 2 = very creative",
+      "languageLabel": "Response language",
+      "languages": {
+        "de": "German",
+        "en": "English"
+      }
+    }
+  },
+  "wizard": {
+    "defaultProjectName": "New project",
+    "entries": {
+      "noIdea": {
+        "title": "I have no idea",
+        "intro": "Answer a few short questions. The AI suggests project ideas that fit you, which you can refine, combine or reroll. The idea you choose becomes your starting blueprint."
+      },
+      "partialIdea": {
+        "title": "I have a partial idea",
+        "intro": "Describe what you already have in mind. The AI assigns your text to the blueprint sections. What's still missing stays visibly open."
+      },
+      "almostDone": {
+        "title": "I have almost everything",
+        "intro": "Paste your concept or upload a text file. The AI assigns it to the sections and shows gaps."
+      }
+    },
+    "form": {
+      "nameLabel": "Project name (optional)",
+      "nameHintAi": "Leave empty and the AI will suggest a name.",
+      "textLabel": {
+        "noIdea": "What interests you? What annoys you in everyday life?",
+        "partialIdea": "Describe your idea",
+        "almostDone": "Paste your concept"
+      },
+      "counter": "{{current}} / {{max}}",
+      "tooLong": "The text is too long. Shorten it to at most {{max}} characters.",
+      "uploadButton": "Upload file",
+      "uploadInputLabel": "Choose a text file",
+      "uploadWrongType": "Please choose a file with the extension .txt or .md.",
+      "uploadError": "The file could not be read.",
+      "submitAi": "Sort idea",
+      "submitManual": "Start without AI",
+      "cancel": "Cancel",
+      "runningAi": "The AI is sorting your text …",
+      "runningManual": "Creating project …"
+    }
+  },
+  "notFound": {
+    "title": "Page not found",
+    "back": "Back to home"
+  },
+  "routeError": {
+    "loading": "Loading page …",
+    "title": "This page could not be loaded",
+    "text": "You may be offline or the app was just updated. Your projects are safely stored.",
+    "reload": "Reload"
+  },
+  "projects": {
+    "title": "Your projects",
+    "new": "New project",
+    "import": "Import project",
+    "importInputLabel": "Choose project file",
+    "loading": "Loading projects …",
+    "loadError": "Your projects could not be loaded. Reload the page to try again.",
+    "empty": "You don't have any projects yet. Create a new one or import a project file.",
+    "listLabel": "Project list",
+    "lastChanged": "Last changed: {{date}}",
+    "completenessLabel": "Completeness of {{name}}",
+    "actions": {
+      "rename": "Rename",
+      "renameLabel": "Rename {{name}}",
+      "duplicate": "Duplicate",
+      "duplicateLabel": "Duplicate {{name}}",
+      "export": "Export",
+      "exportLabel": "Export {{name}}",
+      "delete": "Delete",
+      "deleteLabel": "Delete {{name}}"
+    },
+    "nameDialog": {
+      "createTitle": "New project",
+      "createDescription": "What should your project be called? You can change the name at any time later.",
+      "createSubmit": "Create",
+      "renameTitle": "Rename project",
+      "renameSubmit": "Save",
+      "nameLabel": "Project name",
+      "cancel": "Cancel"
+    },
+    "validation": {
+      "required": "Please enter a name.",
+      "tooLong": "The name must be at most {{max}} characters long."
+    },
+    "deleteDialog": {
+      "title": "Delete project?",
+      "description": "“{{name}}” will be deleted permanently. This cannot be undone.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    },
+    "notice": {
+      "renamed": "The project is now called “{{name}}”.",
+      "duplicated": "“{{name}}” has been created.",
+      "deleted": "“{{name}}” has been deleted.",
+      "imported": "“{{name}}” has been imported."
+    },
+    "errors": {
+      "import": {
+        "invalidJson": "The file could not be read: it does not contain valid JSON.",
+        "invalidFormat": "The file is not a valid Blueprint-Wizard project file.",
+        "unsupportedVersion": "The project file comes from a newer version of Blueprint-Wizard. Please update the app and try again."
+      },
+      "notFound": "This project no longer exists. The list has been updated.",
+      "generic": "That didn't work. Please try again."
+    },
+    "page": {
+      "back": "All projects",
+      "loading": "Loading project …",
+      "loadError": "The project could not be loaded. Reload the page to try again.",
+      "completenessLabel": "Completeness",
+      "sectionsTitle": "Sections",
+      "notFoundTitle": "Project not found",
+      "notFoundText": "This project no longer exists. It may have been deleted.",
+      "home": "Go to home"
+    }
+  },
+  "sections": {
+    "problem": "Problem & vision",
+    "audience": "Target audience & users",
+    "features": "Core features (MVP)",
+    "nonGoals": "Non-goals",
+    "flows": "User flows & screens",
+    "dataModel": "Data model",
+    "techStack": "Tech stack & platform",
+    "integrations": "Integrations & external services",
+    "risks": "Risks & open points",
+    "roadmap": "Implementation roadmap"
+  },
+  "maturity": {
+    "empty": "empty",
+    "vague": "vague",
+    "decided": "decided"
+  },
+  "blueprint": {
+    "toolbar": {
+      "undo": "Undo",
+      "redo": "Redo",
+      "askQuestions": "Answer questions",
+      "decisions": "Decisions & suggestions",
+      "contradictions_one": "{{count}} contradiction",
+      "contradictions_other": "{{count}} contradictions"
+    },
+    "saveStatus": {
+      "saved": "Saved",
+      "pending": "Saving changes …",
+      "error": "Saving failed",
+      "retry": "Try again"
+    },
+    "summary": {
+      "label": "Maturity at a glance",
+      "empty": "{{n}} empty",
+      "vague": "{{n}} vague",
+      "decided": "{{n}} decided"
+    },
+    "section": {
+      "maturityLabel": "Maturity",
+      "needsContent": "You can set the maturity once the section has content.",
+      "placeholder": "Still empty",
+      "edit": "Edit",
+      "done": "Done",
+      "cancel": "Cancel",
+      "suggestion": "AI suggestion",
+      "accept": "Accept",
+      "accepted": "From AI, accepted"
+    }
+  },
+  "interview": {
+    "page": {
+      "back": "Back to project",
+      "lead": "Answer what you already know and accept everything with one click. The AI works your answers directly into the matching sections."
+    },
+    "analysis": {
+      "title": "Analysis",
+      "intro": "The AI checks the blueprint for gaps and contradictions and suggests questions. This happens automatically the first time you open it.",
+      "run": "Analyze blueprint",
+      "rerun": "Analyze again",
+      "running": "Analyzing blueprint …",
+      "cancel": "Cancel",
+      "analyzedAt": "Last analyzed on {{date}}",
+      "contradictions": "Contradictions",
+      "none": "No gaps or contradictions found.",
+      "gapsWithCount": "Gaps ({{count}})"
+    },
+    "round": {
+      "title": "Questions",
+      "lead": "Answer what you already know – leave the rest empty or choose “Later”. Ctrl + Enter applies your answers.",
+      "later": "Later",
+      "empty": "No open questions right now. Use “Analyze again” to get new ones.",
+      "blocked": "{{count}} more questions are waiting for answers on other topics.",
+      "titleWithCount": "Open questions ({{count}})",
+      "submit": "Apply answers",
+      "progress": "{{answered}} of {{total}} answered, {{later}} later",
+      "searching": "Searching for new questions …"
+    },
+    "question": {
+      "leverage": {
+        "foundation": "Fundamental question",
+        "important": "Important",
+        "detail": "Detail"
+      },
+      "optionsLegend": "Choose an answer",
+      "noteLabel": "Addition",
+      "textLabel": "Your answer",
+      "notePlaceholder": "Addition or your own answer (optional)",
+      "textPlaceholder": "Your answer"
+    },
+    "integration": {
+      "running": "Working your answers in …",
+      "cancel": "Cancel",
+      "accept": "Accept",
+      "reject": "Discard",
+      "before": "Before",
+      "after": "After",
+      "emptyBefore": "(empty)",
+      "shrinkWarning": "This change significantly shortens the section. Only accept it if nothing important is lost.",
+      "errorIntro": "Your answers are saved, but they could not be worked in.",
+      "appendWithoutAi": "Append answers verbatim",
+      "dismiss": "Close",
+      "applied_one": "Worked into {{count}} section: {{sections}}.",
+      "applied_other": "Worked into {{count}} sections: {{sections}}.",
+      "revert": "Undo",
+      "showChanges": "View changes",
+      "retry": "Try again",
+      "reviewTitle": "Please review"
+    },
+    "history": {
+      "summary": "History ({{count}})",
+      "empty": "The questions you have answered or postponed appear here.",
+      "later": "Later"
+    }
+  },
+  "decisions": {
+    "page": {
+      "back": "Back to project",
+      "lead": "Make the decisions that shape your blueprint the most and fill in missing points. The AI suggests, but you make the decisions."
+    },
+    "contradictions": {
+      "title": "Contradictions in the blueprint",
+      "intro": "These passages don't fit well together. Check which statement applies and adjust the affected section.",
+      "fromAnalysis": "From the last analysis",
+      "quote": "“{{text}}”",
+      "rules": {
+        "offlineVsRealtime": "Offline-first and real-time collaboration don't go well together – real-time needs a connection.",
+        "localOnlyVsAccounts": "The data should stay local, yet accounts, sign-in or synchronization are mentioned.",
+        "freeVsPaid": "The app should be free, yet subscriptions, payment or fees are mentioned.",
+        "webOnlyVsNative": "The app should run only on the web, yet native apps or app stores are mentioned.",
+        "noAiVsAi": "It should work without AI, yet AI is mentioned.",
+        "privacyVsTracking": "The app should be data-minimal, yet tracking, analytics or advertising are mentioned.",
+        "featureIsNonGoal": "One point appears both among the core features and among the non-goals.",
+        "unknown": "Two statements in the blueprint contradict each other."
+      }
+    },
+    "leverage": {
+      "foundation": "Principle",
+      "important": "Important",
+      "detail": "Detail"
+    },
+    "list": {
+      "title": "Most important decisions",
+      "intro": "These decisions shape your project the most. The order results from leverage and the maturity of the sections.",
+      "find": "Find decisions",
+      "rerun": "Determine again",
+      "running": "Determining decisions …",
+      "cancel": "Cancel",
+      "empty": "No decisions determined yet. The AI finds the points that shape your blueprint the most.",
+      "emptyDone": "All decisions have been made or dismissed. Determine new ones if your blueprint has changed.",
+      "more_one": "One more decision (1)",
+      "more_other": "More decisions ({{count}})"
+    },
+    "card": {
+      "recommended": "Recommended",
+      "pros": "Pros",
+      "cons": "Cons",
+      "consequence": "Consequence: {{text}}",
+      "optionsLegend": "Choose an option",
+      "rationaleLabel": "Rationale (optional)",
+      "decide": "Decide",
+      "dismiss": "Dismiss"
+    },
+    "additions": {
+      "title": "Suggestions",
+      "intro": "The AI suggests core features, non-goals and risks. Accept individually what fits and reject the rest.",
+      "fetch": "Get suggestions",
+      "running": "Creating suggestions …",
+      "cancel": "Cancel",
+      "empty": "No open suggestions right now. Get new ones if your blueprint has changed.",
+      "accept": "Accept",
+      "reject": "Reject",
+      "summary": "Accepted: {{accepted}} · Rejected: {{rejected}}"
+    },
+    "log": {
+      "title": "Decision log",
+      "empty": "The decisions you have made appear here.",
+      "noRationale": "No rationale",
+      "reopen": "Reopen"
+    }
+  },
+  "ai": {
+    "errors": {
+      "missingKey": "No API key has been saved yet. Enter one in the settings.",
+      "invalidKey": "The API key is invalid or has been revoked.",
+      "insufficientCredits": "Your OpenRouter balance is not sufficient. Top up your balance and try again.",
+      "forbidden": "Your API key is not allowed to use this model.",
+      "rateLimited": "Too many requests were sent just now. Wait a moment and try again.",
+      "timeout": "The AI took too long. Please try again.",
+      "network": "No connection to OpenRouter. Check your internet connection.",
+      "modelUnavailable": "The selected model is currently unavailable. Choose a different model in the settings.",
+      "badRequest": "OpenRouter rejected the request. Check the selected model in the settings.",
+      "invalidResponse": "The AI's response had an unexpected format.",
+      "aborted": "The request was cancelled.",
+      "unknown": "That didn't work. Please try again."
+    },
+    "errorDetails": "Technical details: {{detail}}",
+    "errorDetailsWithStatus": "Technical details (HTTP {{status}}): {{detail}}"
+  },
+  "ideation": {
+    "questionnaire": {
+      "title": "Tell us a bit about yourself",
+      "lead": "Everything is optional. The more you share, the better the ideas will fit. To get started, interests, an everyday annoyance or a learning goal are enough.",
+      "progress": "{{answered}} of {{total}} questions answered",
+      "needMore": "Enter an interest, an everyday annoyance or a learning goal, and we'll get started.",
+      "submit": "Find ideas",
+      "backToIdeas": "Back to ideas",
+      "withoutAi": "Start without AI",
+      "withoutAiHint": "Without a key you create an empty project; your answers about annoyances and interests land in it as a note.",
+      "fields": {
+        "interests": {
+          "label": "What interests you?",
+          "hint": "Tap suggestions or type your own, separated by Enter or a comma."
+        },
+        "frustrations": {
+          "label": "What annoys you in everyday life?",
+          "placeholder": "e.g. I constantly forget who I lent what to."
+        },
+        "skills": {
+          "label": "What can you already do?",
+          "hint": "Programming is not a prerequisite."
+        },
+        "learningGoal": {
+          "label": "What would you like to learn?",
+          "placeholder": "e.g. Publish my first app or work with AI APIs."
+        },
+        "availableTime": {
+          "label": "How much time do you have?"
+        },
+        "platform": {
+          "label": "Where should the project run?"
+        }
+      },
+      "tagInputLabel": "Add {{field}}",
+      "tagAdd": "Add",
+      "tagRemove": "Remove {{tag}}",
+      "suggestionsLabel": "Suggestions",
+      "times": {
+        "fewHours": "A few hours",
+        "fewEvenings": "A few evenings",
+        "fewWeekends": "A few weekends",
+        "fewWeeks": "A few weeks",
+        "longTerm": "Long-term"
+      },
+      "platforms": {
+        "any": "Any",
+        "web": "Web",
+        "mobile": "Smartphone",
+        "desktop": "Desktop",
+        "cli": "Command line"
+      },
+      "suggestions": {
+        "interests": {
+          "games": "Games",
+          "music": "Music",
+          "sport": "Sports",
+          "cooking": "Cooking",
+          "travel": "Travel",
+          "money": "Finance",
+          "learning": "Learning",
+          "productivity": "Productivity",
+          "health": "Health",
+          "pets": "Pets",
+          "photography": "Photography",
+          "plants": "Plants"
+        },
+        "skills": {
+          "none": "No prior experience yet",
+          "html": "HTML & CSS",
+          "javascript": "JavaScript",
+          "python": "Python",
+          "design": "Design",
+          "spreadsheets": "Spreadsheets"
+        }
+      }
+    },
+    "ideas": {
+      "title": "Ideas for you",
+      "lead": "Take an idea, adapt it or ask for new ones. To combine ideas, select two of them.",
+      "reroll": "Reroll",
+      "editProfile": "Change answers",
+      "combine": "Combine selected",
+      "combineHint_one": "Select one more idea to combine.",
+      "combineHint_other": "Select two ideas to combine.",
+      "empty": "No ideas yet.",
+      "effortLabel": "Effort",
+      "effort": {
+        "small": "Effort: small",
+        "medium": "Effort: medium",
+        "large": "Effort: large"
+      },
+      "novelty": "Novelty {{value}}/5",
+      "learning": "Learning value {{value}}/5",
+      "features": "Core features",
+      "choose": "Take this idea",
+      "moreLike": "More like this",
+      "simpler": "Simpler",
+      "bolder": "More ambitious",
+      "select": "Select to combine",
+      "customLabel": "Your own wish for this idea",
+      "customPlaceholder": "e.g. be able to share with friends",
+      "customSubmit": "Adapt",
+      "running": {
+        "generate": "The AI is looking for ideas that fit you …",
+        "moreLike": "The AI is looking for similar ideas …",
+        "refine": "The AI is adapting the idea …",
+        "combine": "The AI is combining the two ideas …",
+        "choose": "Creating project …"
+      },
+      "cancel": "Cancel",
+      "retry": "Try again",
+      "dismiss": "Close",
+      "errorIntro": "That didn't work.",
+      "nothingNew": "The AI didn't come up with a new idea. Try again or change your answers."
+    }
+  },
+  "export": {
+    "document": {
+      "maturityLabel": "Maturity",
+      "missing": "Still open.",
+      "updatedAt": "Project status",
+      "formatVersion": "Export format",
+      "unaccepted": "AI suggestion – not yet accepted",
+      "openPoints": "Open points",
+      "noOpenPoints": "No open points in the maturity check.",
+      "emptySections": "Empty sections",
+      "vagueSections": "Sections not yet decided",
+      "unacceptedSections": "AI content not yet accepted",
+      "questions": "Open and postponed questions",
+      "decisions": "Open decisions",
+      "additions": "Open suggested additions",
+      "contradictions": "Possible contradictions",
+      "analysisContradictions": "Contradictions from the last AI analysis (check current status)",
+      "decisionLog": "Decision log",
+      "chosen": "Chosen",
+      "recommended": "Recommendation, no decision yet",
+      "rationale": "Rationale",
+      "context": "Context",
+      "pros": "Pros",
+      "cons": "Cons",
+      "consequence": "Consequence",
+      "questionWhy": "Why it matters",
+      "deferred": "Postponed",
+      "suggestedAddition": "Suggestion, not yet accepted",
+      "analysis": "Last AI analysis (may be outdated by now)",
+      "gaps": "Reported gaps",
+      "interviewLog": "Question history",
+      "answer": "Answer",
+      "agentTitle": "Context & working rules",
+      "agentIntro": "This repository implements the following project. BLUEPRINT.md contains the full requirements, TASKS.md the tasks. CLAUDE.md and AGENTS.md contain the same rules.",
+      "rulesTitle": "Working rules",
+      "rules": [
+        "Read BLUEPRINT.md and TASKS.md first. Keep the agreed MVP scope and the non-goals.",
+        "Treat empty or vague sections, open decisions and AI suggestions that have not been accepted as unresolved. Ask targeted questions before affected implementation steps. Recommendations are not decisions.",
+        "Check the project roadmap against the proposed sequence in TASKS.md. The project roadmap takes precedence; agree on missing phases and acceptance criteria.",
+        "Use the defined tech stack and review existing code and working rules before making changes. Do not invent libraries, services or credentials that have not been decided.",
+        "Work in small, verifiable steps. Check the acceptance criteria of the current phase and report what was implemented and tested and what is still open.",
+        "Preserve existing user changes. Keep secrets and credentials out of source code, export files and commits.",
+        "Document new decisions and update tasks and the blueprint when changes have been agreed."
+      ],
+      "tasksTitle": "Implementation steps & acceptance",
+      "roadmapMissing": "No project roadmap has been set yet. Clarify the order before implementing.",
+      "planNote": "The following sequence is a template, not an agreed project plan. Reconcile it with the project roadmap. Derive concrete tasks and acceptance criteria from BLUEPRINT.md and clarify any missing details.",
+      "acceptance": "Acceptance",
+      "phases": [
+        {
+          "title": "Phase 0 – Clarify scope and open points",
+          "tasks": [
+            "Clarify open points in BLUEPRINT.md with the user; record the necessary decisions.",
+            "Agree together on the MVP, non-goals, roadmap and acceptance criteria."
+          ],
+          "acceptance": "The requirements needed for the next step are clarified; remaining assumptions are visible."
+        },
+        {
+          "title": "Phase 1 – Foundation and data model",
+          "tasks": [
+            "Set up the project with the agreed tech stack; document how to start it and how to run the checks.",
+            "Prepare the agreed data model and the necessary integrations."
+          ],
+          "acceptance": "The project starts using the documented steps; the data model and integrations match BLUEPRINT.md."
+        },
+        {
+          "title": "Phase 2 – MVP and user flows",
+          "tasks": [
+            "Implement the core features within the agreed MVP scope.",
+            "Implement the user flows, including error cases, and verify them with suitable tests."
+          ],
+          "acceptance": "The core features and user flows described in BLUEPRINT.md work; non-goals have been respected."
+        },
+        {
+          "title": "Phase 3 – Quality and handover",
+          "tasks": [
+            "Review risks and open points; secure important error cases and data storage.",
+            "Document installation, use and operation; prepare the agreed release."
+          ],
+          "acceptance": "The agreed checks pass; usage and remaining limitations are documented."
+        }
+      ],
+      "startTitle": "Start prompt",
+      "startIntro": "Implement the project “{{name}}” in this repository.",
+      "startBody": "First read BLUEPRINT.md, CLAUDE.md or AGENTS.md, and TASKS.md in full. Briefly summarize the goal, MVP, non-goals and tech stack. Check the existing code and the open points. Clarify only the questions that block the next implementation step; do not treat vague content or AI suggestions as confirmed requirements. Reconcile the proposed sequence with the project roadmap. Then begin with the first clarified phase that is not yet completed, check its acceptance criteria and report the result. Do not invent missing requirements or credentials.",
+      "analysisGaps": "Gaps from the last AI analysis (check current status)"
+    },
+    "open": "Finish blueprint",
+    "title": "Finish blueprint",
+    "lead": "Check the status, look through the files and download your package to start with an AI coding tool.",
+    "back": "Back to project",
+    "checkTitle": "Maturity check",
+    "ready": "Your blueprint is ready.",
+    "warning": "There are still open points. You can export anyway; the notes stay in the blueprint.",
+    "percentage": "Completeness",
+    "preview": "File preview",
+    "files": "Choose file",
+    "downloadZip": "Download everything as ZIP",
+    "downloadFile": "Download file",
+    "copy": "Copy start prompt",
+    "copied": "Start prompt copied.",
+    "copyError": "Copying didn't work. Select the start prompt in the preview and copy it yourself.",
+    "downloadError": "The download didn't work. Please try again.",
+    "downloaded": "Download started.",
+    "howToTitle": "How to get started",
+    "howTo": "Unzip the ZIP into an empty project folder. Open the folder with your AI coding tool and paste the start prompt. The tool reads BLUEPRINT.md, CLAUDE.md or AGENTS.md, and TASKS.md.",
+    "localHint": "The export is generated locally from your project. You don't need an API key for it."
+  }
+}

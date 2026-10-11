@@ -6,6 +6,28 @@
     "label": "Hauptnavigation",
     "settings": "Einstellungen"
   },
+  "usage": {
+    "summaryLabel": "KI-Kosten dieser Sitzung: {{cost}}",
+    "lastTitle": "Letzte KI-Anfrage",
+    "sessionTitle": "Diese Sitzung",
+    "tokens": "Tokens",
+    "tokensInOut": "{{input}} ein / {{output}} aus",
+    "cost": "Kosten",
+    "calls": "Anfragen",
+    "costUnknown": "unbekannt",
+    "incomplete": "Für manche Anfragen hat OpenRouter keine Kosten gemeldet; die Summe ist eine Untergrenze.",
+    "source": "Kosten laut OpenRouter",
+    "reset": "Zurücksetzen",
+    "tasks": {
+      "idea_classification": "Idee einordnen",
+      "blueprint_analysis": "Blueprint analysieren",
+      "answer_integration": "Antworten einarbeiten",
+      "core_decisions": "Entscheidungen finden",
+      "blueprint_additions": "Vorschläge holen",
+      "project_ideas": "Ideen finden",
+      "other": "Sonstige Anfrage"
+    }
+  },
   "home": {
     "title": "Von der Idee zum Blueprint",
     "subtitle": "Egal wo du stehst: Wir arbeiten gemeinsam einen Projekt-Scope aus, mit dem du direkt loslegen kannst.",
@@ -32,6 +54,17 @@
   "settings": {
     "title": "Einstellungen",
     "saved": "Gespeichert",
+    "appearance": {
+      "title": "Darstellung",
+      "intro": "Sprache der Oberfläche und der exportierten Dateien sowie das Farbschema. Die Sprache der KI-Antworten stellst du weiter unten ein.",
+      "languageLabel": "Sprache der Oberfläche",
+      "themeLabel": "Farbschema",
+      "themes": {
+        "system": "Wie das System",
+        "light": "Hell",
+        "dark": "Dunkel"
+      }
+    },
     "apiKey": {
       "title": "OpenRouter-API-Key",
       "intro": "Der Blueprint-Wizard nutzt OpenRouter für seine KI-Funktionen. Dafür brauchst du einen eigenen API-Key von OpenRouter.",
@@ -130,6 +163,12 @@
   "notFound": {
     "title": "Seite nicht gefunden",
     "back": "Zur Startseite"
+  },
+  "routeError": {
+    "loading": "Seite wird geladen …",
+    "title": "Diese Seite konnte nicht geladen werden",
+    "text": "Vielleicht bist du gerade offline oder die App wurde aktualisiert. Deine Projekte sind sicher gespeichert.",
+    "reload": "Neu laden"
   },
   "projects": {
     "title": "Deine Projekte",

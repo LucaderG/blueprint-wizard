@@ -4,7 +4,24 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Blueprint-Wizard führt dich von der ersten Idee zu einem fertigen Projekt-Blueprint fürs Vibe-Coding. Lokal im Browser, mit deinem eigenen OpenRouter-Key."
+    />
+    <meta name="theme-color" content="#4f46e5" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>Blueprint-Wizard</title>
+    <script>
+      // Farbschema und Sprache vor dem ersten Bild setzen, damit nichts aufblitzt.
+      try {
+        var s = JSON.parse(localStorage.getItem('blueprint-wizard:settings') || '{}')
+        var dark =
+          s.theme === 'dark' ||
+          (s.theme !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)
+        if (dark) document.documentElement.classList.add('dark')
+        if (s.uiLanguage === 'en') document.documentElement.lang = 'en'
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -1,6 +1,6 @@
 # CLAUDE.md – Arbeitsregeln für KI-Coding-Tools
 
-Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Projekt-Blueprint führt. Ziele, Architektur und Phasen stehen im [Implementierungsplan](docs/implementierungsplan.md). Aktueller Stand: **Phase 7 umgesetzt** (v0.7.0), nächste Phase: 8 – Qualität & Politur, nach Lucas Freigabe.
+Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Projekt-Blueprint führt. Ziele, Architektur und Phasen stehen im [Implementierungsplan](docs/implementierungsplan.md). Aktueller Stand: **Phase 8 umgesetzt** (v0.8.0), nächste Phase: 9 – Release & Wartung, nach Lucas Freigabe.
 
 ## Stack
 
@@ -77,6 +77,15 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 - Strukturierte Antworten immer über `generateStructured()` mit Zod-Schema. Im Schema `.nullable()` statt `.optional()` (Strict-Modus).
 - Fehler sind `AiError`; Meldungen kommen über `aiErrorKey()` aus `src/features/settings/aiErrors.ts` (`ai.errors.*`).
 - Prompts liegen als Dateien `src/core/ai/prompts/<name>.ts`. Jede Datei exportiert eine ID- und eine VERSION-Konstante (`<NAME>_PROMPT_ID`, `<NAME>_PROMPT_VERSION`) sowie eine `build<Name>Messages(...)`-Funktion. Bei inhaltlichen Änderungen am Prompt die VERSION erhöhen.
+
+## Darstellung, Sprache, Kosten, PWA
+
+- Oberflächensprache (`uiLanguage`) und Farbschema (`theme`) liegen in den Einstellungen; `useAppearance` (`src/app/useAppearance.ts`) setzt `lang`, i18n-Sprache und die Klasse `dark`. Ein Inline-Skript in `index.html` setzt beides schon vor dem ersten Rendern.
+- **Jeder neue i18n-Key gehört in `de.json` und `en.json`**; `src/shared/i18n/locales.test.ts` prüft gleiche Keys und Platzhalter.
+- Zahlen, Daten und Beträge nur über `src/shared/lib/format.ts` formatieren (richtet sich nach der UI-Sprache), nie mit fest eingetragenem `'de-DE'`.
+- KI-Kosten: `UsageTrackingProvider` (`src/core/ai/usage.ts`) umschließt den Anbieter im `SettingsProvider`; die UI liest den Verbrauch über `useAiUsage()`. Ein neues Antwortschema bekommt den Text `usage.tasks.<schemaName>`.
+- Seiten außer Start und 404 werden per Route-`lazy` geladen. `renderRoute` löst sie vorab auf, Tests können also direkt abfragen.
+- PWA über `vite-plugin-pwa`. In E2E ist der Service Worker blockiert (`serviceWorkers: 'block'`), nur `e2e/pwa.spec.ts` erlaubt ihn. `e2e/a11y.spec.ts` prüft alle Seiten mit axe (hell und dunkel); Lighthouse läuft in der CI (`lighthouserc.json`, Mindestwert 0,9).
 
 ## Tests
 

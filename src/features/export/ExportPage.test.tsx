@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryProjectRepository } from '@/core/storage'
 import { makeExportProject } from '@/core/export/testing'
@@ -104,6 +104,34 @@ describe('Export im Browser', () => {
     const preview = screen.getByRole('textbox', { name: 'Dateivorschau' }) as HTMLTextAreaElement
     expect(preview.value).toContain('# Start-Prompt')
     expect(preview).toHaveFocus()
+    expect(preview.selectionStart).toBe(0)
+    expect(preview.selectionEnd).toBe(preview.value.length)
+  })
+
+  it.each([
+    [
+      'die Clipboard-API fehlt',
+      () => vi.spyOn(navigator, 'clipboard', 'get').mockReturnValue(undefined as never),
+    ],
+    [
+      'writeText synchron wirft',
+      () =>
+        vi.spyOn(navigator.clipboard, 'writeText').mockImplementationOnce(() => {
+          throw new Error('Nicht erlaubt')
+        }),
+    ],
+  ])('markiert den vollständigen Start-Prompt auch, wenn %s', async (_name, breakClipboard) => {
+    const user = userEvent.setup()
+    await openExport()
+    await screen.findByRole('heading', { name: 'Blueprint fertigstellen' })
+    breakClipboard()
+    // Vorher eine andere Datei in der Vorschau, damit eine zu frühe Markierung auffiele.
+    const preview = screen.getByRole('textbox', { name: 'Dateivorschau' }) as HTMLTextAreaElement
+    expect(preview.value).not.toContain('# Start-Prompt')
+    await user.click(screen.getByRole('button', { name: 'Start-Prompt kopieren' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('Kopieren hat nicht geklappt.')
+    await waitFor(() => expect(preview).toHaveFocus())
+    expect(preview.value).toContain('# Start-Prompt')
     expect(preview.selectionStart).toBe(0)
     expect(preview.selectionEnd).toBe(preview.value.length)
   })

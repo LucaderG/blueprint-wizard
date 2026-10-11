@@ -3,8 +3,7 @@ import { useTranslation } from 'react-i18next'
 import type { Decision } from '@/core/blueprint'
 import { chosenOption } from '@/core/engine'
 import { Button } from '@/shared/ui/button'
-
-const dateFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'short' })
+import { formatDate } from '@/shared/lib/format'
 
 interface DecisionLogProps {
   /** Getroffene Entscheidungen in zeitlicher Reihenfolge. */
@@ -38,9 +37,7 @@ export function DecisionLog({ decisions, readOnly = false, onReopen }: DecisionL
                   {decision.decidedAt && (
                     <>
                       {' · '}
-                      <time dateTime={decision.decidedAt}>
-                        {dateFormat.format(new Date(decision.decidedAt))}
-                      </time>
+                      <time dateTime={decision.decidedAt}>{formatDate(decision.decidedAt)}</time>
                     </>
                   )}
                 </p>

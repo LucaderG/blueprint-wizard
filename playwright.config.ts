@@ -11,6 +11,9 @@ export default defineConfig({
   use: {
     baseURL: `http://localhost:${PORT}`,
     trace: 'on-first-retry',
+    // Der Service Worker der PWA würde Anfragen an page.route vorbei abwickeln. Nur e2e/pwa.spec.ts
+    // erlaubt ihn ausdrücklich.
+    serviceWorkers: 'block',
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: {

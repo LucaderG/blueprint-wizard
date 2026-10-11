@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ArrowLeft, ClipboardCopy, Download, FileCheck2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Link, useParams } from 'react-router'
@@ -50,6 +50,13 @@ function ExportView({ project }: { project: Project }) {
   const [selected, setSelected] = useState<ExportFilename>('BLUEPRINT.md')
   const [notice, setNotice] = useState<Notice | null>(null)
   const preview = useRef<HTMLTextAreaElement>(null)
+  // Zähler statt sofortigem select(): markiert wird erst, wenn der Start-Prompt gerendert ist.
+  const [selectRequest, setSelectRequest] = useState(0)
+  useEffect(() => {
+    if (selectRequest === 0) return
+    preview.current?.focus()
+    preview.current?.select()
+  }, [selectRequest])
   const labels = {
     ...t('export.document', { returnObjects: true }),
     sectionTitles: t('sections', { returnObjects: true }),
@@ -64,14 +71,14 @@ function ExportView({ project }: { project: Project }) {
     setSelected('START-PROMPT.md')
     setNotice(null)
     try {
+      // Fehlt die Clipboard-API, wirft der Aufruf synchron; auch das landet im catch.
       await navigator.clipboard.writeText(
         files.find((candidate) => candidate.name === 'START-PROMPT.md')!.content,
       )
       setNotice('copied')
     } catch {
       setNotice('copyError')
-      preview.current?.focus()
-      preview.current?.select()
+      setSelectRequest((n) => n + 1)
     }
   }
 

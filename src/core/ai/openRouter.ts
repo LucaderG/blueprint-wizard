@@ -222,6 +222,8 @@ export class OpenRouterProvider implements AiProvider {
       model: this.options.model,
       messages: request.messages,
       stream,
+      // Kosten in der Antwort mitliefern lassen (für die Kostenanzeige).
+      usage: { include: true },
       ...(request.temperature !== undefined && { temperature: request.temperature }),
       ...(request.maxTokens !== undefined && { max_tokens: request.maxTokens }),
       ...(request.jsonSchema && {

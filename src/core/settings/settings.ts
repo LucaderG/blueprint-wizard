@@ -9,6 +9,10 @@ export const settingsSchema = z.object({
   temperature: z.number().min(0).max(2),
   /** Sprache, in der die KI antwortet. */
   outputLanguage: z.enum(['de', 'en']),
+  /** Sprache der Oberfläche und der exportierten Dateien. */
+  uiLanguage: z.enum(['de', 'en']),
+  /** Farbschema: dem System folgen oder fest hell/dunkel. */
+  theme: z.enum(['system', 'light', 'dark']),
 })
 export type Settings = z.infer<typeof settingsSchema>
 
@@ -17,6 +21,8 @@ export const DEFAULT_SETTINGS: Settings = {
   model: DEFAULT_MODEL,
   temperature: 0.7,
   outputLanguage: 'de',
+  uiLanguage: 'de',
+  theme: 'system',
 }
 
 export const SETTINGS_STORAGE_KEY = 'blueprint-wizard:settings'
@@ -74,4 +80,12 @@ export class SettingsStore {
 
 export function hasApiKey(settings: Settings): boolean {
   return settings.apiKey !== null && settings.apiKey.trim().length > 0
+}
+
+export type ThemePreference = Settings['theme']
+
+/** Das tatsächlich anzuzeigende Farbschema. */
+export function resolveTheme(theme: ThemePreference, systemPrefersDark: boolean): 'light' | 'dark' {
+  if (theme === 'system') return systemPrefersDark ? 'dark' : 'light'
+  return theme
 }

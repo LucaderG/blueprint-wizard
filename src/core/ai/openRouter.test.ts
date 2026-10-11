@@ -133,6 +133,7 @@ describe('OpenRouterProvider', () => {
         model: MODEL,
         messages,
         stream: false,
+        usage: { include: true },
         temperature: 0.3,
         max_tokens: 500,
       })

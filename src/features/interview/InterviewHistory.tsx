@@ -1,10 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import type { InterviewLogEntry } from '@/core/blueprint'
-
-const dateTimeFormat = new Intl.DateTimeFormat('de-DE', {
-  dateStyle: 'short',
-  timeStyle: 'short',
-})
+import { formatShortDateTime } from '@/shared/lib/format'
 
 interface InterviewHistoryProps {
   log: readonly InterviewLogEntry[]
@@ -32,7 +28,7 @@ export function InterviewHistory({ log }: InterviewHistoryProps) {
                 className="space-y-1 border-t pt-3 first:border-t-0 first:pt-0"
               >
                 <p className="text-xs text-muted-foreground">
-                  <time dateTime={entry.at}>{dateTimeFormat.format(new Date(entry.at))}</time>
+                  <time dateTime={entry.at}>{formatShortDateTime(entry.at)}</time>
                   {' · '}
                   {t(`sections.${entry.sectionId}`)}
                 </p>

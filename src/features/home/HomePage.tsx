@@ -27,13 +27,14 @@ export function HomePage() {
             <Link
               to={entryPointPath(key)}
               aria-labelledby={`entry-${key}-title`}
+              aria-describedby={`entry-${key}-description`}
               className="block h-full rounded-lg border border-border bg-card p-5 text-card-foreground transition-colors hover:border-primary/60 hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
             >
               <Icon className="mb-3 size-6 text-primary" aria-hidden />
               <h2 id={`entry-${key}-title`} className="font-semibold">
                 {t(`home.entry.${key}.title`)}
               </h2>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p id={`entry-${key}-description`} className="mt-1 text-sm text-muted-foreground">
                 {t(`home.entry.${key}.description`)}
               </p>
             </Link>

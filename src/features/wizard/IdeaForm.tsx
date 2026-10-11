@@ -6,8 +6,8 @@ import { MAX_IDEA_TEXT_LENGTH } from '@/core/engine'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
 import { useIdeaClassification } from './useIdeaClassification'
+import { formatNumber } from '@/shared/lib/format'
 
-const numberFormat = new Intl.NumberFormat('de-DE')
 const TEXT_FILE_PATTERN = /\.(txt|md)$/i
 
 interface IdeaFormProps {
@@ -118,13 +118,12 @@ export function IdeaForm({ entryPoint }: IdeaFormProps) {
 
         <div className="flex flex-wrap justify-between gap-2 text-xs">
           <p id={tooLongId} className="text-destructive">
-            {tooLong &&
-              t('wizard.form.tooLong', { max: numberFormat.format(MAX_IDEA_TEXT_LENGTH) })}
+            {tooLong && t('wizard.form.tooLong', { max: formatNumber(MAX_IDEA_TEXT_LENGTH) })}
           </p>
           <p id={counterId} className={tooLong ? 'text-destructive' : 'text-muted-foreground'}>
             {t('wizard.form.counter', {
-              current: numberFormat.format(text.length),
-              max: numberFormat.format(MAX_IDEA_TEXT_LENGTH),
+              current: formatNumber(text.length),
+              max: formatNumber(MAX_IDEA_TEXT_LENGTH),
             })}
           </p>
         </div>

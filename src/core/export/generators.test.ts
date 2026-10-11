@@ -1,6 +1,6 @@
 import { makeProject } from '@/core/blueprint/testing'
 import { exportLabels } from './testing'
-import { generateBlueprint } from './generators'
+import { generateBlueprint, interviewEntries } from './generators'
 
 describe('Blueprint-Generator', () => {
   it('bewahrt den Projektinhalt und kennzeichnet leere Abschnitte als offen', () => {
@@ -140,4 +140,32 @@ it('kennzeichnet eine noch nicht übernommene Roadmap auch in der Aufgabenliste'
   expect(tasks).toContain(
     '## Umsetzungs-Roadmap\n\n_Reifegrad: vage_\n\n**KI-Vorschlag – noch nicht übernommen**',
   )
+})
+
+describe('Antworten aus v1-Projekten', () => {
+  it('exportiert beantwortete Fragen, auch wenn der Verlauf leer ist (Migration v1)', async () => {
+    const { migrateProject } = await import('@/core/blueprint/migrations')
+    const { default: legacy } = await import('@/core/blueprint/__fixtures__/project-v1.json')
+    const project = migrateProject(legacy)
+    expect(project.interview.log).toEqual([])
+
+    const result = generateBlueprint(project, exportLabels)
+    expect(result).toContain('Ich verliere den Überblick über meine Rezepte.')
+  })
+
+  it('doppelt keine Antwort, die schon im Verlauf steht', async () => {
+    const { migrateProject } = await import('@/core/blueprint/migrations')
+    const { default: legacy } = await import('@/core/blueprint/__fixtures__/project-v2.json')
+    const project = migrateProject(legacy)
+    const ids = interviewEntries(project).map((e) => `${e.questionId}:${e.action}`)
+    expect(new Set(ids).size).toBe(ids.length)
+    expect(interviewEntries(project)).toHaveLength(
+      project.interview.log.length +
+        project.interview.questions.filter(
+          (q) =>
+            q.status === 'answered' &&
+            !project.interview.log.some((e) => e.questionId === q.id && e.action === 'answered'),
+        ).length,
+    )
+  })
 })

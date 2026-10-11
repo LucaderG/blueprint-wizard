@@ -1,4 +1,5 @@
-import type { Maturity, Project } from '@/core/blueprint/schema'
+import type { InterviewLogEntry, Maturity, Project } from '@/core/blueprint/schema'
+import { formatAnswer } from '@/core/engine/interview'
 import { SECTION_IDS, type SectionId } from '@/core/blueprint/sections'
 import { checkReadiness, type Readiness } from './readiness'
 
@@ -106,6 +107,7 @@ function renderSection(project: Project, id: SectionId, labels: ExportLabels): s
 
 /** Vollständiger Blueprint einschließlich Entscheidungsprotokoll und ungeklärtem Kontext. */
 export function generateBlueprint(project: Project, labels: ExportLabels): string {
+  const answerLog = interviewEntries(project)
   const readiness = checkReadiness(project)
   const warnings = describeReadiness(readiness, labels)
   const decided = project.decisions.filter((d) => d.status === 'decided')
@@ -171,8 +173,8 @@ export function generateBlueprint(project: Project, labels: ExportLabels): strin
             : '',
         ]).trimEnd()
       : '',
-    project.interview.log.length ? `## ${labels.interviewLog}` : '',
-    ...project.interview.log.map((entry) =>
+    answerLog.length ? `## ${labels.interviewLog}` : '',
+    ...answerLog.map((entry) =>
       document([
         `### ${heading(entry.questionText)}`,
         `${labels.sectionTitles[entry.sectionId]} · ${entry.at}`,
@@ -180,6 +182,26 @@ export function generateBlueprint(project: Project, labels: ExportLabels): strin
       ]).trimEnd(),
     ),
   ])
+}
+
+/**
+ * Verlauf plus beantwortete Fragen ohne Verlaufseintrag. Aus v1 migrierte Projekte haben gespeicherte
+ * Antworten, aber einen leeren Verlauf; ohne diese Ergänzung fehlten sie im Export.
+ */
+export function interviewEntries(project: Project): InterviewLogEntry[] {
+  const { log, questions } = project.interview
+  const logged = new Set(log.filter((e) => e.action === 'answered').map((e) => e.questionId))
+  const missing = questions
+    .filter((q) => q.status === 'answered' && q.answer !== null && !logged.has(q.id))
+    .map((q): InterviewLogEntry => ({
+      questionId: q.id,
+      questionText: q.text,
+      sectionId: q.sectionId,
+      action: 'answered',
+      answerText: q.answer ? formatAnswer(q, q.answer) : '',
+      at: q.answeredAt ?? q.createdAt,
+    }))
+  return [...log, ...missing]
 }
 
 /** Beide Tools bekommen denselben Kontext und dieselben Regeln. */

@@ -40,24 +40,24 @@
   --maturity-decided: oklch(0.68 0.16 150);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: oklch(0.17 0.02 265);
-    --foreground: oklch(0.95 0.01 265);
-    --muted: oklch(0.24 0.02 265);
-    --muted-foreground: oklch(0.7 0.02 265);
-    --card: oklch(0.21 0.02 265);
-    --card-foreground: oklch(0.95 0.01 265);
-    --border: oklch(0.3 0.02 265);
-    --primary: oklch(0.68 0.17 275);
-    --primary-foreground: oklch(0.15 0.02 265);
-    --ring: oklch(0.68 0.17 275);
-    --destructive: oklch(0.68 0.19 25);
-    --destructive-foreground: oklch(0.15 0.02 265);
-    --maturity-empty: oklch(0.6 0.02 265);
-    --maturity-vague: oklch(0.84 0.15 85);
-    --maturity-decided: oklch(0.74 0.17 150);
-  }
+/* Dunkles Schema: die Klasse setzt `applyAppearance` (bzw. das Skript in index.html vor dem ersten Bild). */
+:root.dark {
+  color-scheme: dark;
+  --background: oklch(0.17 0.02 265);
+  --foreground: oklch(0.95 0.01 265);
+  --muted: oklch(0.24 0.02 265);
+  --muted-foreground: oklch(0.7 0.02 265);
+  --card: oklch(0.21 0.02 265);
+  --card-foreground: oklch(0.95 0.01 265);
+  --border: oklch(0.3 0.02 265);
+  --primary: oklch(0.68 0.17 275);
+  --primary-foreground: oklch(0.15 0.02 265);
+  --ring: oklch(0.68 0.17 275);
+  --destructive: oklch(0.68 0.19 25);
+  --destructive-foreground: oklch(0.15 0.02 265);
+  --maturity-empty: oklch(0.6 0.02 265);
+  --maturity-vague: oklch(0.84 0.15 85);
+  --maturity-decided: oklch(0.74 0.17 150);
 }
 
 body {

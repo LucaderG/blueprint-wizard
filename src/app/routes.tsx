@@ -1,25 +1,50 @@
 import type { RouteObject } from 'react-router'
-import { ExportPage } from '@/features/export/ExportPage'
 import { Layout } from '@/app/Layout'
 import { NotFoundPage } from '@/app/NotFoundPage'
+import { RouteError, RouteLoading } from '@/app/RouteStates'
 import { HomePage } from '@/features/home/HomePage'
-import { ProjectPage } from '@/features/projects/ProjectPage'
-import { SettingsPage } from '@/features/settings/SettingsPage'
-import { DecisionsPage } from '@/features/decisions/DecisionsPage'
-import { InterviewPage } from '@/features/interview/InterviewPage'
-import { EntryPage } from '@/features/wizard/EntryPage'
 
+// Startseite und Rahmen laden sofort, alle anderen Seiten erst bei Bedarf (kleineres Start-Bundle).
 export const routes: RouteObject[] = [
   {
     element: <Layout />,
+    errorElement: <RouteError />,
+    hydrateFallbackElement: <RouteLoading />,
     children: [
       { index: true, element: <HomePage /> },
-      { path: 'neu/:entryPoint', element: <EntryPage /> },
-      { path: 'projekte/:projectId', element: <ProjectPage /> },
-      { path: 'projekte/:projectId/export', element: <ExportPage /> },
-      { path: 'projekte/:projectId/fragen', element: <InterviewPage /> },
-      { path: 'projekte/:projectId/entscheidungen', element: <DecisionsPage /> },
-      { path: 'einstellungen', element: <SettingsPage /> },
+      {
+        path: 'neu/:entryPoint',
+        lazy: () => import('@/features/wizard/EntryPage').then((m) => ({ Component: m.EntryPage })),
+      },
+      {
+        path: 'projekte/:projectId',
+        lazy: () =>
+          import('@/features/projects/ProjectPage').then((m) => ({ Component: m.ProjectPage })),
+      },
+      {
+        path: 'projekte/:projectId/fragen',
+        lazy: () =>
+          import('@/features/interview/InterviewPage').then((m) => ({
+            Component: m.InterviewPage,
+          })),
+      },
+      {
+        path: 'projekte/:projectId/entscheidungen',
+        lazy: () =>
+          import('@/features/decisions/DecisionsPage').then((m) => ({
+            Component: m.DecisionsPage,
+          })),
+      },
+      {
+        path: 'projekte/:projectId/export',
+        lazy: () =>
+          import('@/features/export/ExportPage').then((m) => ({ Component: m.ExportPage })),
+      },
+      {
+        path: 'einstellungen',
+        lazy: () =>
+          import('@/features/settings/SettingsPage').then((m) => ({ Component: m.SettingsPage })),
+      },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

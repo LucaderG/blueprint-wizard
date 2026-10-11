@@ -6,6 +6,27 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 
 ## [Unreleased]
 
+## [0.8.0] – 2026-10-11 – Phase 8: Qualität & Politur
+
+### Hinzugefügt
+
+- Englische Oberfläche und Dunkelmodus, wählbar unter Einstellungen → Darstellung (Hell, Dunkel oder wie das System). Zahlen, Daten und Beträge folgen der gewählten Sprache. Die Einstellung greift schon vor dem ersten Rendern, ohne Aufflackern.
+- Kostenanzeige: Oben rechts stehen die KI-Kosten der aktuellen Sitzung. Ein Klick zeigt die letzte Anfrage (Aufgabe, Tokens, Kosten, Modell) und die Summe; zurücksetzbar. Grundlage sind die Verbrauchsangaben von OpenRouter.
+- Installierbar als App (PWA) mit eigenem Symbol; nach dem ersten Laden läuft die App auch offline. KI-Funktionen brauchen weiterhin Internet.
+- Ladeanzeige und verständliche Fehlerseite, falls eine Seite nicht geladen werden kann.
+- Automatische Barrierefreiheitsprüfung (axe) aller Seiten in hell und dunkel, Lighthouse-Prüfung in der CI (Mindestwert 90 in allen Kategorien), Test auf vollständige englische Übersetzung. ADR 0009.
+
+### Geändert
+
+- Seiten werden erst bei Bedarf geladen; der Start lädt deutlich weniger Code.
+- Neues App-Symbol statt des Vite-Logos.
+
+### Behoben
+
+- Export: Antworten aus alten v1-Projekten (ohne Verlauf) fehlten in `BLUEPRINT.md`. Sie erscheinen jetzt, ohne Doppelungen.
+- Export: Klappt das Kopieren des Start-Prompts nicht (auch ohne Zwischenablage-Zugriff), ist der Start-Prompt jetzt zuverlässig markiert.
+- Startseite: Die Beschreibungen der Einstiegskacheln werden Screenreadern vorgelesen.
+
 ## [0.7.0] – 2026-10-11 – Phase 7: Blueprint-Generierung & Export
 
 ### Hinzugefügt

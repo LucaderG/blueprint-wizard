@@ -4,7 +4,7 @@ Eine KI-gestützte Web-App, die dich von jedem Ausgangspunkt – keine Idee, hal
 
 Die App läuft komplett im Browser: kein eigener Server, kein Konto. Projekte bleiben lokal auf deinem Gerät, die KI wird über deinen eigenen OpenRouter-Key angesprochen (ab Phase 2).
 
-**Projektstatus:** Phase 7 – Blueprint-Generierung & Export (v0.7.0). Die drei Einstiegspunkte, Ideenfindung, Fragenmotor, Entscheidungen und Vorschläge führen zum bearbeitbaren Blueprint. „Blueprint fertigstellen“ zeigt den Reife-Check und eine Vorschau von `BLUEPRINT.md`, `CLAUDE.md`, `AGENTS.md`, `TASKS.md` und `START-PROMPT.md`. Dateien lassen sich einzeln oder als ZIP herunterladen, der Start-Prompt lässt sich kopieren. Der Export braucht keinen API-Key; offene Punkte bleiben sichtbar und verhindern den Export nicht. Details: [Implementierungsplan](docs/implementierungsplan.md).
+**Projektstatus:** Phase 8 – Qualität & Politur (v0.8.0). Die App gibt es jetzt auch auf Englisch und im Dunkelmodus (Einstellungen → Darstellung), sie lässt sich als App installieren und läuft danach offline. Oben rechts zeigt sie die KI-Kosten der aktuellen Sitzung. Die drei Einstiegspunkte, Ideenfindung, Fragenmotor, Entscheidungen und Vorschläge führen zum bearbeitbaren Blueprint. „Blueprint fertigstellen“ zeigt den Reife-Check und eine Vorschau von `BLUEPRINT.md`, `CLAUDE.md`, `AGENTS.md`, `TASKS.md` und `START-PROMPT.md`. Dateien lassen sich einzeln oder als ZIP herunterladen, der Start-Prompt lässt sich kopieren. Der Export braucht keinen API-Key; offene Punkte bleiben sichtbar und verhindern den Export nicht. Details: [Implementierungsplan](docs/implementierungsplan.md).
 
 ## Blueprint fürs Coding exportieren
 
