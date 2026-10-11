@@ -6,8 +6,25 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 
 ## [Unreleased]
 
+## [0.3.0] – Phase 3: Wizard-Gerüst & Einstiegspunkte
+
+### Hinzugefügt
+
+- Einstiegspunkte `/neu/keine-idee`, `/neu/teil-idee` und `/neu/fast-fertig` mit Erklärung, Hinweis zum API-Key, Projektnamen und Freitextfeld.
+- Freitext als `.txt`- oder `.md`-Datei hochladen (beim Einstieg „fast fertig“).
+- „Idee einordnen“: Die KI verteilt den Text auf die zehn Blueprint-Abschnitte und schlägt Reifegrad, Projektnamen und Kurzfassung vor. Der Prompt `classify-idea` (Version 1) liegt versioniert in `src/core/ai/prompts/`, die Antwort ist ein Zod-Schema (`classificationSchema`) über `generateStructured`. Maximal 20.000 Zeichen.
+- Ohne KI starten: Legt ein leeres Projekt an. Ein eingegebener Text bleibt als eigener Inhalt im Abschnitt „Problem & Vision“ erhalten.
+- Ein Projekt entsteht erst nach einer erfolgreichen KI-Antwort, Abbrechen ist möglich. Bei Fehlern entstehen keine leeren Projekte.
+- Blueprint-Übersicht auf der Projektseite mit bearbeitbaren Abschnitten, Reifegrad und Herkunft des Inhalts (eigener Inhalt, KI-Vorschlag, bestätigt).
+- KI-Vorschläge lassen sich pro Abschnitt übernehmen; eigener Inhalt wird von der KI nie überschrieben.
+- Rückgängig und Wiederholen über Schaltflächen sowie Strg/Cmd+Z, Strg/Cmd+Umschalt+Z und Strg+Y (bis zu 50 Schritte pro Seitenbesuch).
+- Automatisches Speichern 600 ms nach der letzten Änderung, mit Speicherstatus. Ausstehende Änderungen werden beim Verlassen der Seite und beim direkten Wechsel zwischen zwei Projekten gespeichert.
+- Änderungen an Abschnitten als reine Funktionen (`src/core/blueprint/editing.ts`) und Verlauf (`history.ts`), jeweils mit Tests.
+- ADR 0004 zu Einordnung und Bearbeitung.
+
 ### Geändert
 
+- Die Startseite zeigt die drei Einstiegspunkte als aktive Auswahl.
 - Standardmodell ist jetzt `anthropic/claude-haiku-5.5` (vorher `anthropic/claude-sonnet-5.5`). Bereits gespeicherte Einstellungen bleiben unverändert.
 
 ## [0.2.0] – Phase 2: Einstellungen & OpenRouter-Anbindung

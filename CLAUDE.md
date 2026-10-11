@@ -1,6 +1,6 @@
 # CLAUDE.md – Arbeitsregeln für KI-Coding-Tools
 
-Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Projekt-Blueprint führt. Ziele, Architektur und Phasen stehen im [Implementierungsplan](docs/implementierungsplan.md). Aktueller Stand: **Phase 2 abgeschlossen**, nächste Phase: 3 – Wizard-Gerüst & Einstiegspunkte.
+Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Projekt-Blueprint führt. Ziele, Architektur und Phasen stehen im [Implementierungsplan](docs/implementierungsplan.md). Aktueller Stand: **Phase 3 abgeschlossen** (v0.3.0), nächste Phase: 4 – Intelligenter Fragenmotor.
 
 ## Stack
 
@@ -30,12 +30,18 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 - Komponenten greifen nur über `useProjectRepository()` auf Projekte zu, nie direkt auf Dexie.
 - Neue Repository-Logik gehört in `projectOperations.ts`, damit IndexedDB- und Memory-Variante gleich bleiben; die Vertrags-Testsuite `projectRepository.contract.ts` prüft beide.
 
+## Bearbeiten von Projekten
+
+- Seiten bearbeiten Projekte nur über `useProjectEditor` (`src/features/projects/useProjectEditor.ts`): Bearbeiten, Rückgängig/Wiederholen und automatisches Speichern.
+- Die Änderungen selbst sind reine Funktionen in `src/core/blueprint/editing.ts` (z. B. `updateSection`, `acceptSuggestion`), die ein neues Projekt zurückgeben.
+- KI-Inhalte landen über `applyClassification` (`src/core/engine/classification.ts`) als `source: 'aiSuggestion'`. Eigener Inhalt des Nutzers (`source: 'user'`) wird nie überschrieben.
+
 ## KI-Aufrufe
 
 - Features holen den Anbieter über `useAiProvider()` (`null` ohne Key → `ApiKeyNotice` bzw. Link zu den Einstellungen zeigen). Nie direkt `fetch` auf OpenRouter.
 - Strukturierte Antworten immer über `generateStructured()` mit Zod-Schema. Im Schema `.nullable()` statt `.optional()` (Strict-Modus).
 - Fehler sind `AiError`; Meldungen kommen über `aiErrorKey()` aus `src/features/settings/aiErrors.ts` (`ai.errors.*`).
-- Prompts kommen ab Phase 3 als versionierte Dateien nach `src/core/ai/prompts/`.
+- Prompts liegen als Dateien `src/core/ai/prompts/<name>.ts`. Jede Datei exportiert eine ID- und eine VERSION-Konstante (`<NAME>_PROMPT_ID`, `<NAME>_PROMPT_VERSION`) sowie eine `build<Name>Messages(...)`-Funktion. Bei inhaltlichen Änderungen am Prompt die VERSION erhöhen.
 
 ## Tests
 

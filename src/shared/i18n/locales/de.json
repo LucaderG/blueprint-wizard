@@ -24,7 +24,6 @@
         "description": "Füge dein Konzept ein. Wir prüfen Lücken und schärfen Details."
       }
     },
-    "comingSoon": "Der Wizard ist in Arbeit und wird in den nächsten Phasen freigeschaltet.",
     "apiKeyNotice": {
       "text": "Für die KI-Funktionen brauchst du einen OpenRouter-API-Key.",
       "link": "Zu den Einstellungen"
@@ -91,6 +90,43 @@
       }
     }
   },
+  "wizard": {
+    "defaultProjectName": "Neues Projekt",
+    "entries": {
+      "noIdea": {
+        "title": "Ich habe keine Idee",
+        "intro": "Eine geführte Ideensuche folgt in einer späteren Version. Bis dahin sag uns, was dich interessiert, oder starte direkt ohne Vorlage."
+      },
+      "partialIdea": {
+        "title": "Ich habe eine Teil-Idee",
+        "intro": "Beschreib, was du schon im Kopf hast. Die KI ordnet deinen Text den Abschnitten des Blueprints zu. Was noch fehlt, bleibt sichtbar offen."
+      },
+      "almostDone": {
+        "title": "Ich habe fast alles",
+        "intro": "Füge dein Konzept ein oder lade eine Textdatei hoch. Die KI ordnet es den Abschnitten zu und zeigt Lücken auf."
+      }
+    },
+    "form": {
+      "nameLabel": "Projektname (optional)",
+      "nameHintAi": "Leer lassen, dann schlägt die KI einen Namen vor.",
+      "textLabel": {
+        "noIdea": "Was interessiert dich? Was nervt dich im Alltag?",
+        "partialIdea": "Beschreib deine Idee",
+        "almostDone": "Füge dein Konzept ein"
+      },
+      "counter": "{{current}} / {{max}}",
+      "tooLong": "Der Text ist zu lang. Kürze ihn auf höchstens {{max}} Zeichen.",
+      "uploadButton": "Datei laden",
+      "uploadInputLabel": "Textdatei auswählen",
+      "uploadWrongType": "Bitte wähle eine Datei mit der Endung .txt oder .md.",
+      "uploadError": "Die Datei konnte nicht gelesen werden.",
+      "submitAi": "Idee einordnen",
+      "submitManual": "Ohne KI starten",
+      "cancel": "Abbrechen",
+      "runningAi": "Die KI ordnet deinen Text ein …",
+      "runningManual": "Projekt wird angelegt …"
+    }
+  },
   "notFound": {
     "title": "Seite nicht gefunden",
     "back": "Zur Startseite"
@@ -155,10 +191,7 @@
       "loading": "Projekt wird geladen …",
       "loadError": "Das Projekt konnte nicht geladen werden. Lade die Seite neu, um es noch einmal zu versuchen.",
       "completenessLabel": "Vollständigkeit",
-      "completenessValue": "{{value}} vollständig",
       "sectionsTitle": "Abschnitte",
-      "maturityLabel": "Reifegrad: {{maturity}}",
-      "editingHint": "Die Abschnitte bearbeitest du in einer der nächsten Ausbaustufen. Bis dahin siehst du hier den aktuellen Stand.",
       "notFoundTitle": "Projekt nicht gefunden",
       "notFoundText": "Dieses Projekt gibt es nicht (mehr). Vielleicht wurde es gelöscht.",
       "home": "Zur Startseite"
@@ -180,6 +213,35 @@
     "empty": "leer",
     "vague": "vage",
     "decided": "entschieden"
+  },
+  "blueprint": {
+    "toolbar": {
+      "undo": "Rückgängig",
+      "redo": "Wiederholen"
+    },
+    "saveStatus": {
+      "saved": "Gespeichert",
+      "pending": "Änderungen werden gespeichert …",
+      "error": "Speichern fehlgeschlagen",
+      "retry": "Erneut versuchen"
+    },
+    "summary": {
+      "label": "Reifegrade im Überblick",
+      "empty": "{{n}} leer",
+      "vague": "{{n}} vage",
+      "decided": "{{n}} entschieden"
+    },
+    "section": {
+      "maturityLabel": "Reifegrad",
+      "needsContent": "Den Reifegrad kannst du setzen, sobald der Abschnitt Inhalt hat.",
+      "placeholder": "Noch leer",
+      "edit": "Bearbeiten",
+      "done": "Fertig",
+      "cancel": "Abbrechen",
+      "suggestion": "KI-Vorschlag",
+      "accept": "Übernehmen",
+      "accepted": "Von KI, übernommen"
+    }
   },
   "ai": {
     "errors": {

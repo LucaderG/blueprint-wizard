@@ -4,7 +4,7 @@ Eine KI-gestützte Web-App, die dich von jedem Ausgangspunkt – keine Idee, hal
 
 Die App läuft komplett im Browser: kein eigener Server, kein Konto. Projekte bleiben lokal auf deinem Gerät, die KI wird über deinen eigenen OpenRouter-Key angesprochen (ab Phase 2).
 
-**Projektstatus:** Phase 2 – Einstellungen & OpenRouter-Anbindung abgeschlossen (v0.2.0). Projekte lassen sich verwalten und lokal speichern; in den Einstellungen hinterlegst du deinen OpenRouter-API-Key, testest die Verbindung und wählst das Modell. Der Wizard selbst folgt ab Phase 3. Details: [Implementierungsplan](docs/implementierungsplan.md).
+**Projektstatus:** Phase 3 – Wizard-Gerüst & Einstiegspunkte abgeschlossen (v0.3.0). Auf der Startseite wählst du deinen Einstieg (keine Idee, Teil-Idee oder fast fertig), gibst Projektnamen und Freitext ein (beim Einstieg „fast fertig“ auch als `.txt`- oder `.md`-Datei) und lässt die KI deinen Text den Blueprint-Abschnitten zuordnen. Alternativ startest du ohne KI. Im Blueprint bearbeitest du Abschnitte und Reifegrad, übernimmst KI-Vorschläge und machst Änderungen rückgängig; gespeichert wird automatisch. Der geführte Fragenmotor folgt ab Phase 4. Details: [Implementierungsplan](docs/implementierungsplan.md).
 
 ## Quickstart
 
@@ -48,7 +48,7 @@ Beim Commit führt ein Husky-Hook `lint-staged` aus: ESLint und Prettier auf den
 ```
 src/
   app/          Routing, Layout, 404-Seite
-  features/     Ein Ordner pro Feature (aktuell: home, settings)
+  features/     Ein Ordner pro Feature (aktuell: home, settings, wizard, projects, blueprint)
   core/         Reine TypeScript-Logik ohne React (ab Phase 1: Datenmodell, Engine, KI, Speicherung)
   shared/
     ui/         UI-Komponenten im shadcn/ui-Stil
