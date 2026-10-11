@@ -4,7 +4,7 @@ Eine KI-gestützte Web-App, die dich von jedem Ausgangspunkt – keine Idee, hal
 
 Die App läuft komplett im Browser: kein eigener Server, kein Konto. Projekte bleiben lokal auf deinem Gerät, die KI wird über deinen eigenen OpenRouter-Key angesprochen (ab Phase 2).
 
-**Projektstatus:** Phase 3 – Wizard-Gerüst & Einstiegspunkte abgeschlossen (v0.3.0). Auf der Startseite wählst du deinen Einstieg (keine Idee, Teil-Idee oder fast fertig), gibst Projektnamen und Freitext ein (beim Einstieg „fast fertig“ auch als `.txt`- oder `.md`-Datei) und lässt die KI deinen Text den Blueprint-Abschnitten zuordnen. Alternativ startest du ohne KI. Im Blueprint bearbeitest du Abschnitte und Reifegrad, übernimmst KI-Vorschläge und machst Änderungen rückgängig; gespeichert wird automatisch. Der geführte Fragenmotor folgt ab Phase 4. Details: [Implementierungsplan](docs/implementierungsplan.md).
+**Projektstatus:** Phase 4 – Intelligenter Fragenmotor abgeschlossen (v0.4.0). Auf der Startseite wählst du deinen Einstieg (keine Idee, Teil-Idee oder fast fertig), gibst Projektnamen und Freitext ein (beim Einstieg „fast fertig“ auch als `.txt`- oder `.md`-Datei) und lässt die KI deinen Text den Blueprint-Abschnitten zuordnen. Alternativ startest du ohne KI. Im Blueprint bearbeitest du Abschnitte und Reifegrad, übernimmst KI-Vorschläge und machst Änderungen rückgängig; gespeichert wird automatisch. Über „Fragen beantworten“ analysiert die KI den Blueprint und zeigt Zusammenfassung, Lücken und Widersprüche. Die Fragen kommen in Runden zu 1–3 Fragen, Grundsatzfragen zuerst. Du antwortest per Option, Freitext oder „Später“. Die Antworten fließen erst nach deiner Bestätigung in die Abschnitte ein, und der Verlauf zeigt, was wann beantwortet wurde. Details: [Implementierungsplan](docs/implementierungsplan.md).
 
 ## Quickstart
 
@@ -48,7 +48,7 @@ Beim Commit führt ein Husky-Hook `lint-staged` aus: ESLint und Prettier auf den
 ```
 src/
   app/          Routing, Layout, 404-Seite
-  features/     Ein Ordner pro Feature (aktuell: home, settings, wizard, projects, blueprint)
+  features/     Ein Ordner pro Feature (aktuell: home, settings, wizard, projects, blueprint, interview)
   core/         Reine TypeScript-Logik ohne React (ab Phase 1: Datenmodell, Engine, KI, Speicherung)
   shared/
     ui/         UI-Komponenten im shadcn/ui-Stil

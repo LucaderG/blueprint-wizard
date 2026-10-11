@@ -3,6 +3,7 @@ import { useProjectRepository } from '@/app/useProjectRepository'
 import type { Project } from '@/core/blueprint'
 import type { ProjectSummary } from '@/core/storage'
 import { downloadTextFile } from '@/shared/lib/download'
+import { waitForPendingSaves } from './pendingSaves'
 import { exportFileName } from './projectName'
 
 export type ProjectsStatus = 'loading' | 'ready' | 'error'
@@ -31,14 +32,16 @@ export function useProjects() {
 
   useEffect(() => {
     let active = true
-    repository.list().then(
-      (projects) => {
-        if (active) setState({ status: 'ready', projects })
-      },
-      () => {
-        if (active) setState((current) => ({ ...current, status: 'error' }))
-      },
-    )
+    waitForPendingSaves(repository)
+      .then(() => repository.list())
+      .then(
+        (projects) => {
+          if (active) setState({ status: 'ready', projects })
+        },
+        () => {
+          if (active) setState((current) => ({ ...current, status: 'error' }))
+        },
+      )
     return () => {
       active = false
     }

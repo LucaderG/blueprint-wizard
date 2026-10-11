@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import {
   computeCompleteness,
   createEmptyBlueprint,
+  createEmptyInterview,
   CURRENT_SCHEMA_VERSION,
   EXPORT_FORMAT,
   PROJECT_NAME_MAX_LENGTH,
@@ -70,6 +71,7 @@ export function describeProjectRepositoryContract(
           createdAt: at(0),
           updatedAt: at(0),
           blueprint: createEmptyBlueprint(),
+          interview: createEmptyInterview(),
         })
         expect(await repo.get('id-1')).toEqual(project)
       })

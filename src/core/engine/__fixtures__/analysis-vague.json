@@ -1,0 +1,74 @@
+{
+  "summary": "Die Idee eines Wochenplaners ist angedeutet: Das Problem ist benannt, Zielgruppe, Funktionen und Plattform fehlen.",
+  "gaps": [
+    { "sectionIds": ["audience"], "text": "Es ist nicht klar, für wen die App gedacht ist." },
+    { "sectionIds": ["features"], "text": "Der Umfang der ersten Version fehlt." },
+    { "sectionIds": ["techStack"], "text": "Plattform und Technik sind offen." }
+  ],
+  "contradictions": [],
+  "questions": [
+    {
+      "key": "q1",
+      "sectionId": "dataModel",
+      "text": "Welche Datenbank soll die Rezepte speichern?",
+      "why": "Legt fest, wie die Daten abgelegt werden.",
+      "leverage": 3,
+      "options": ["PostgreSQL", "SQLite"],
+      "dependsOn": []
+    },
+    {
+      "key": "q2",
+      "sectionId": "flows",
+      "text": "Welches Farbschema soll die Oberfläche haben?",
+      "why": "Ein Gestaltungsdetail ohne Einfluss auf die Architektur.",
+      "leverage": 1,
+      "options": ["Hell", "Dunkel", "Automatisch"],
+      "dependsOn": []
+    },
+    {
+      "key": "q3",
+      "sectionId": "integrations",
+      "text": "Wie sollen sich Nutzer anmelden?",
+      "why": "Bestimmt, welcher Login-Dienst eingebunden wird.",
+      "leverage": 2,
+      "options": ["E-Mail und Passwort", "Google-Konto"],
+      "dependsOn": []
+    },
+    {
+      "key": "q4",
+      "sectionId": "roadmap",
+      "text": "Welche Meilensteine planen wir zuerst?",
+      "why": "Gibt die Reihenfolge der Umsetzung vor.",
+      "leverage": 2,
+      "options": [],
+      "dependsOn": []
+    },
+    {
+      "key": "q5",
+      "sectionId": "features",
+      "text": "Was gehört zum MVP, also zur ersten Version?",
+      "why": "Ohne diese Entscheidung ist der Umfang unklar.",
+      "leverage": 5,
+      "options": ["Nur der Wochenplan", "Wochenplan mit Einkaufsliste"],
+      "dependsOn": ["q6"]
+    },
+    {
+      "key": "q6",
+      "sectionId": "audience",
+      "text": "Für wen ist die App gedacht?",
+      "why": "Die Zielgruppe bestimmt Funktionen und Oberfläche.",
+      "leverage": 5,
+      "options": ["Einzelpersonen", "Familien", "Teams"],
+      "dependsOn": []
+    },
+    {
+      "key": "q7",
+      "sectionId": "techStack",
+      "text": "Auf welcher Plattform soll die App laufen?",
+      "why": "Die Plattform legt die technische Basis fest.",
+      "leverage": 5,
+      "options": ["Web", "Mobile", "Desktop"],
+      "dependsOn": []
+    }
+  ]
+}

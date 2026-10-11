@@ -20,7 +20,7 @@ describe('projectSchema', () => {
   it.each([
     ['leerer Name', { name: '   ' }],
     ['zu langer Name', { name: 'x'.repeat(PROJECT_NAME_MAX_LENGTH + 1) }],
-    ['falsche Schemaversion', { schemaVersion: 2 }],
+    ['falsche Schemaversion', { schemaVersion: 99 }],
     ['ungültiger Zeitstempel', { updatedAt: 'gestern' }],
     ['unbekannter Einstieg', { entryPoint: 'irgendwas' }],
   ])('lehnt ab: %s', (_label, overrides) => {

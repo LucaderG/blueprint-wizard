@@ -1,13 +1,23 @@
-import { CURRENT_SCHEMA_VERSION, type Blueprint, type Project, type Section } from './schema'
+import {
+  CURRENT_SCHEMA_VERSION,
+  type Blueprint,
+  type Interview,
+  type Project,
+  type Section,
+} from './schema'
 import { SECTION_IDS, type SectionId } from './sections'
 
 export function createEmptySection(id: SectionId): Section {
-  return { id, content: '', maturity: 'empty', source: 'user', decisions: [], questions: [] }
+  return { id, content: '', maturity: 'empty', source: 'user', decisions: [] }
 }
 
 export function createEmptyBlueprint(): Blueprint {
   const sections = Object.fromEntries(SECTION_IDS.map((id) => [id, createEmptySection(id)]))
   return { sections: sections as Blueprint['sections'] }
+}
+
+export function createEmptyInterview(): Interview {
+  return { questions: [], log: [], analysis: null }
 }
 
 export interface CreateProjectOptions {
@@ -26,5 +36,6 @@ export function createEmptyProject({ id, name, now }: CreateProjectOptions): Pro
     createdAt: timestamp,
     updatedAt: timestamp,
     blueprint: createEmptyBlueprint(),
+    interview: createEmptyInterview(),
   }
 }

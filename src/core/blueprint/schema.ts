@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { SECTION_IDS, type SectionId } from './sections'
 
 /** Aktuelle Version des gespeicherten Projektformats. Bei jeder Schemaänderung erhöhen und eine Migration ergänzen. */
-export const CURRENT_SCHEMA_VERSION = 1
+export const CURRENT_SCHEMA_VERSION = 2
 
 export const sectionIdSchema = z.enum(SECTION_IDS)
 
@@ -39,22 +39,12 @@ export const decisionSchema = z
   })
 export type Decision = z.infer<typeof decisionSchema>
 
-export const questionSchema = z.object({
-  id: z.string().min(1),
-  text: z.string().min(1),
-  leverage: leverageSchema,
-  status: z.enum(['open', 'answered', 'deferred']),
-  answer: z.string().nullable(),
-})
-export type Question = z.infer<typeof questionSchema>
-
 export const sectionSchema = z.object({
   id: sectionIdSchema,
   content: z.string(),
   maturity: maturitySchema,
   source: sectionSourceSchema,
   decisions: z.array(decisionSchema),
-  questions: z.array(questionSchema),
 })
 export type Section = z.infer<typeof sectionSchema>
 
@@ -78,6 +68,94 @@ export const PROJECT_NAME_MAX_LENGTH = 120
 
 export const projectNameSchema = z.string().trim().min(1).max(PROJECT_NAME_MAX_LENGTH)
 
+/** Status einer Frage im Fragenmotor. `dismissed` = durch eine neue Analyse überholt. */
+export const questionStatusSchema = z.enum(['open', 'answered', 'deferred', 'dismissed'])
+export type QuestionStatus = z.infer<typeof questionStatusSchema>
+
+export const questionOptionSchema = z.object({
+  id: z.string().min(1),
+  label: z.string().min(1),
+})
+export type QuestionOption = z.infer<typeof questionOptionSchema>
+
+/** Antwort auf eine Frage: gewählte Option (optional mit Ergänzung) oder Freitext. */
+export const questionAnswerSchema = z.discriminatedUnion('kind', [
+  z.object({ kind: z.literal('option'), optionId: z.string().min(1), note: z.string() }),
+  z.object({ kind: z.literal('text'), text: z.string().trim().min(1) }),
+])
+export type QuestionAnswer = z.infer<typeof questionAnswerSchema>
+
+export const questionSchema = z
+  .object({
+    id: z.string().min(1),
+    /** Abschnitt, den die Antwort vor allem betrifft. */
+    sectionId: sectionIdSchema,
+    text: z.string().min(1),
+    /** Warum die Frage wichtig ist (kurz, für die Anzeige). */
+    why: z.string(),
+    leverage: leverageSchema,
+    options: z.array(questionOptionSchema),
+    /** IDs von Fragen, die vorher beantwortet sein müssen. */
+    dependsOn: z.array(z.string().min(1)),
+    status: questionStatusSchema,
+    answer: questionAnswerSchema.nullable(),
+    createdAt: z.iso.datetime(),
+    answeredAt: z.iso.datetime().nullable(),
+  })
+  .refine((q) => (q.status === 'answered') === (q.answer !== null), {
+    message: 'Nur beantwortete Fragen haben eine Antwort',
+    path: ['answer'],
+  })
+  .refine(
+    (q) => {
+      const answer = q.answer
+      return answer?.kind !== 'option' || q.options.some((o) => o.id === answer.optionId)
+    },
+    { message: 'optionId muss auf eine vorhandene Option zeigen', path: ['answer'] },
+  )
+export type Question = z.infer<typeof questionSchema>
+
+/** Ein Eintrag im Verlauf: welche Frage wann wie behandelt wurde. */
+export const interviewLogEntrySchema = z.object({
+  questionId: z.string().min(1),
+  questionText: z.string().min(1),
+  sectionId: sectionIdSchema,
+  action: z.enum(['answered', 'deferred']),
+  /** Lesbare Antwort (Optionstext und/oder Freitext); leer bei „Später“. */
+  answerText: z.string(),
+  at: z.iso.datetime(),
+})
+export type InterviewLogEntry = z.infer<typeof interviewLogEntrySchema>
+
+export const analysisFindingSchema = z.object({
+  sectionIds: z.array(sectionIdSchema),
+  text: z.string().min(1),
+})
+export type AnalysisFinding = z.infer<typeof analysisFindingSchema>
+
+/** Ergebnis der letzten Lückenanalyse. */
+export const blueprintAnalysisSchema = z.object({
+  summary: z.string(),
+  gaps: z.array(analysisFindingSchema),
+  contradictions: z.array(analysisFindingSchema),
+  analyzedAt: z.iso.datetime(),
+  promptVersion: z.number().int().min(1),
+})
+export type BlueprintAnalysis = z.infer<typeof blueprintAnalysisSchema>
+
+/** Zustand des Fragenmotors eines Projekts. */
+export const interviewSchema = z
+  .object({
+    questions: z.array(questionSchema),
+    log: z.array(interviewLogEntrySchema),
+    analysis: blueprintAnalysisSchema.nullable(),
+  })
+  .refine((i) => new Set(i.questions.map((q) => q.id)).size === i.questions.length, {
+    message: 'Fragen-IDs müssen eindeutig sein',
+    path: ['questions'],
+  })
+export type Interview = z.infer<typeof interviewSchema>
+
 export const projectSchema = z.object({
   schemaVersion: z.literal(CURRENT_SCHEMA_VERSION),
   id: z.string().min(1),
@@ -86,5 +164,6 @@ export const projectSchema = z.object({
   createdAt: z.iso.datetime(),
   updatedAt: z.iso.datetime(),
   blueprint: blueprintSchema,
+  interview: interviewSchema,
 })
 export type Project = z.infer<typeof projectSchema>

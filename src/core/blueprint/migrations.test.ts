@@ -1,7 +1,9 @@
 import { ProjectFormatError } from './errors'
 import { migrateProject, PROJECT_MIGRATIONS, runMigrations, type MigrationMap } from './migrations'
-import { CURRENT_SCHEMA_VERSION } from './schema'
+import { CURRENT_SCHEMA_VERSION, projectSchema } from './schema'
+import { SECTION_IDS, type SectionId } from './sections'
 import { makeProject } from './testing'
+import projectV1 from './__fixtures__/project-v1.json'
 
 function formatError(fn: () => unknown) {
   try {
@@ -77,5 +79,121 @@ describe('migrateProject', () => {
 
   it('lehnt Daten ab, die nach der Migration ungültig sind', () => {
     expect(formatError(() => migrateProject({ ...makeProject(), name: '' }))).toBe('invalidFormat')
+  })
+})
+
+describe('Migration v1 → v2', () => {
+  // Echte v1-Altdaten: siehe __fixtures__/project-v1.json.
+  const migrated = () => migrateProject(JSON.parse(JSON.stringify(projectV1)))
+  const questionById = (id: string) => migrated().interview.questions.find((q) => q.id === id)
+
+  it('liefert ein gültiges v2-Projekt', () => {
+    const project = migrated()
+
+    expect(project.schemaVersion).toBe(2)
+    expect(() => projectSchema.parse(project)).not.toThrow()
+  })
+
+  it('übernimmt Identität, Name, Einstieg und Zeitstempel', () => {
+    const { id, name, entryPoint, createdAt, updatedAt } = migrated()
+
+    expect({ id, name, entryPoint, createdAt, updatedAt }).toEqual({
+      id: projectV1.id,
+      name: projectV1.name,
+      entryPoint: projectV1.entryPoint,
+      createdAt: projectV1.createdAt,
+      updatedAt: projectV1.updatedAt,
+    })
+  })
+
+  it('verschiebt alle Fragen in den Fragenmotor, mit ihrem Abschnitt', () => {
+    const questions = migrated().interview.questions
+
+    expect(questions.map((q) => q.id)).toEqual(['v1-q1', 'v1-q2', 'v1-q3', 'v1-q4'])
+    expect(questions.map((q) => q.sectionId)).toEqual([
+      'problem',
+      'audience',
+      'features',
+      'techStack',
+    ])
+  })
+
+  it('macht eine beantwortete Frage mit Antworttext zur Freitext-Antwort', () => {
+    expect(questionById('v1-q1')).toEqual({
+      id: 'v1-q1',
+      sectionId: 'problem',
+      text: 'Welches Problem lösen wir?',
+      why: '',
+      leverage: 5,
+      options: [],
+      dependsOn: [],
+      status: 'answered',
+      answer: { kind: 'text', text: 'Ich verliere den Überblick über meine Rezepte.' },
+      createdAt: projectV1.updatedAt,
+      answeredAt: projectV1.updatedAt,
+    })
+  })
+
+  it('macht eine „beantwortete“ Frage ohne Antworttext wieder offen', () => {
+    expect(questionById('v1-q2')).toMatchObject({
+      status: 'open',
+      answer: null,
+      answeredAt: null,
+    })
+  })
+
+  it('behält zurückgestellte Fragen als zurückgestellt', () => {
+    expect(questionById('v1-q3')).toMatchObject({
+      status: 'deferred',
+      answer: null,
+      answeredAt: null,
+      leverage: 4,
+    })
+  })
+
+  it('lässt offene Fragen offen', () => {
+    expect(questionById('v1-q4')).toMatchObject({ status: 'open', answer: null })
+  })
+
+  it('entfernt das questions-Feld aus allen Abschnitten', () => {
+    const { sections } = migrated().blueprint
+
+    for (const id of SECTION_IDS) {
+      expect(sections[id], id).not.toHaveProperty('questions')
+    }
+  })
+
+  it('lässt Inhalt, Reife und Quelle der Abschnitte unverändert', () => {
+    const { sections } = migrated().blueprint
+
+    for (const id of SECTION_IDS) {
+      const old = projectV1.blueprint.sections[id]
+      expect(sections[id], id).toMatchObject({
+        id,
+        content: old.content,
+        maturity: old.maturity,
+        source: old.source,
+      })
+    }
+    expect(sections.dataModel.source).toBe('aiSuggestion')
+  })
+
+  it('startet mit leerem Verlauf und ohne Analyse', () => {
+    const { interview } = migrated()
+
+    expect(interview.log).toEqual([])
+    expect(interview.analysis).toBeNull()
+  })
+
+  it('lässt bereits migrierte Daten unverändert', () => {
+    const once = migrated()
+
+    expect(migrateProject(JSON.parse(JSON.stringify(once)))).toEqual(once)
+  })
+
+  it('kennt die Fixture-Abschnitte als Abschnittskatalog', () => {
+    const fixtureIds = Object.keys(projectV1.blueprint.sections) as SectionId[]
+
+    expect(fixtureIds.sort()).toEqual([...SECTION_IDS].sort())
   })
 })

@@ -6,6 +6,29 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 
 ## [Unreleased]
 
+## [0.4.0] – 2026-10-11 – Phase 4: Intelligenter Fragenmotor
+
+### Hinzugefügt
+
+- Fragen-Seite `/projekte/:projectId/fragen` mit Lückenanalyse: Zusammenfassung, Lücken und Widersprüche, jeweils mit den betroffenen Abschnitten. Die Analyse läuft über den Prompt `analyze-blueprint` (Version 1) und das Zod-Schema `blueprintAnalysisResultSchema`.
+- Fragerunden mit 1–3 Fragen. Jede Frage lässt sich per Antwortoption, Freitext oder „Später“ beantworten. Die Begründung und der Hebel jeder Frage werden angezeigt.
+- Deterministische Priorisierung in `src/core/engine/prioritization.ts`: Score aus Hebel, Unsicherheit des Abschnitts (Reifegrad) und Abhängigkeitsfaktor. Grundsatzfragen (Plattform, Zielgruppe, MVP-Umfang) kommen vor Detailfragen. Fragen mit offener Abhängigkeit oder leerer Voraussetzung werden zurückgestellt, „Später“-Fragen kommen wieder, wenn nichts anderes offen ist.
+- Einarbeiten der Antworten einer Runde: Der Prompt `integrate-answers` (Version 1) formuliert die betroffenen Abschnitte neu. Vorher und Nachher werden gegenübergestellt, übernommen wird erst nach Bestätigung. Bei deutlichem Kürzen eines Abschnitts erscheint eine Warnung.
+- Wörtliches Anhängen der Antworten als Stichpunkte, ohne KI. Das ist der Fallback, wenn die KI nicht erreichbar ist oder die Vorschläge verworfen werden.
+- Verlauf der Fragen: Welche Frage wann und mit welcher Antwort beantwortet oder zurückgestellt wurde.
+- Link „Fragen beantworten“ mit Zähler offener Fragen auf der Projektseite.
+- Tests: Tabellen-Tests für die Priorisierung, Logik für Antworten und Abhängigkeiten, Golden Files für beide Prompts sowie ein Abnahmetest mit gespeicherter KI-Antwort ohne Netzwerk. E2E-Test in `e2e/interview.spec.ts`.
+- ADR 0005 zum Fragenmotor.
+
+### Geändert
+
+- Datenformat auf Version 2: Fragen liegen projektweit unter `interview` (`questions`, `log`, `analysis`) statt pro Abschnitt. Projekte aus v0.3.x werden beim Laden automatisch migriert, alte Fragen erhalten ihren Abschnitt als `sectionId`.
+
+### Behoben
+
+- Nach schnellem Seitenwechsel zeigte die neue Seite kurz den Stand vor dem letzten Speichern; Seiten warten jetzt
+  auf laufende Speichervorgänge.
+
 ## [0.3.1] – Fehlerbehebung KI-Anfragen
 
 ### Behoben

@@ -1,4 +1,4 @@
-import { ArrowLeft, Redo2, Undo2 } from 'lucide-react'
+import { ArrowLeft, MessageCircleQuestion, Redo2, Undo2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import {
@@ -9,6 +9,7 @@ import {
   type Maturity,
   type SectionId,
 } from '@/core/blueprint'
+import { prioritizeQuestions } from '@/core/engine'
 import type { ProjectEditorState } from '@/features/projects/useProjectEditor'
 import { CompletenessBar } from '@/features/projects/CompletenessBar'
 import { Button } from '@/shared/ui/button'
@@ -36,6 +37,7 @@ export function BlueprintOverview({
   const { t } = useTranslation()
   const completeness = computeCompleteness(project.blueprint)
   const counts = countByMaturity(project.blueprint)
+  const openQuestions = prioritizeQuestions(project).ready.length
 
   useHistoryShortcuts({ canUndo, canRedo, undo, redo })
 
@@ -67,6 +69,17 @@ export function BlueprintOverview({
             <Button variant="outline" size="sm" disabled={!canRedo} onClick={redo}>
               <Redo2 className="size-4" aria-hidden />
               {t('blueprint.toolbar.redo')}
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link to={`/projekte/${project.id}/fragen`}>
+                <MessageCircleQuestion className="size-4" aria-hidden />
+                {t('blueprint.toolbar.askQuestions')}
+                {openQuestions > 0 && (
+                  <span className="rounded-full bg-primary px-1.5 text-xs text-primary-foreground">
+                    {openQuestions}
+                  </span>
+                )}
+              </Link>
             </Button>
           </div>
           <SaveStatus saveState={saveState} onRetry={() => void flush()} />

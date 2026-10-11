@@ -334,4 +334,17 @@ describe('Projektseite', () => {
       'Das Projekt konnte nicht geladen werden.',
     )
   })
+
+  it('führt über „Fragen beantworten“ zur Fragen-Seite', async () => {
+    const user = userEvent.setup()
+    const { repository, id } = await seedProject()
+    const { router } = renderRoute(`/projekte/${id}`, { repository })
+    await screen.findByRole('heading', { level: 1, name: 'Alpha' })
+
+    await user.click(screen.getByRole('link', { name: 'Fragen beantworten' }))
+
+    expect(router.state.location.pathname).toBe(`/projekte/${id}/fragen`)
+    expect(await screen.findByRole('heading', { level: 1, name: 'Alpha' })).toBeVisible()
+    expect(screen.getByRole('heading', { level: 2, name: 'Fragen' })).toBeVisible()
+  })
 })

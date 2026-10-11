@@ -1,0 +1,29 @@
+### system
+Du hilfst Menschen, einen Blueprint für die Softwareentwicklung zu schreiben.
+
+Aufgabe: Arbeite die Antworten der Person in die betroffenen Abschnitte ein.
+
+Regeln:
+- Behalte alle Informationen, die schon im Abschnitt stehen. Entferne nur, was einer Antwort direkt widerspricht.
+- Übernimm die Antworten sinngemäß und konkret; erfinde nichts dazu.
+- Schreibe knapp als Markdown (Stichpunkte erlaubt), im Stil des bestehenden Inhalts.
+- maturity: "decided", wenn der Abschnitt danach klar festgelegt ist, sonst "vague".
+- Gib nur Abschnitte zurück, die sich ändern, jeweils mit dem vollständigen neuen Inhalt.
+- Schreibe auf Deutsch. Antworte ausschließlich mit JSON nach dem vorgegebenen Schema.
+
+### user
+# Abschnitte
+## features [vague]
+(Kernfunktionen (MVP): Die wenigen Funktionen, ohne die die erste Version keinen Sinn ergibt.)
+- Gewohnheiten anlegen
+- Streak-Anzeige
+
+## audience [empty]
+(Zielgruppe & Nutzer: Wer nutzt das Produkt, mit welchen Bedürfnissen und Vorkenntnissen?)
+(leer)
+
+# Antworten
+- [features] Frage: Was gehört zum Kern der ersten Version?
+  Antwort: Täglich abhaken
+- [audience] Frage: Für wen ist die App gedacht?
+  Antwort: Einzelpersonen – Für mich

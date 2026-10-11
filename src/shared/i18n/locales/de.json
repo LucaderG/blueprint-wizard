@@ -217,7 +217,8 @@
   "blueprint": {
     "toolbar": {
       "undo": "Rückgängig",
-      "redo": "Wiederholen"
+      "redo": "Wiederholen",
+      "askQuestions": "Fragen beantworten"
     },
     "saveStatus": {
       "saved": "Gespeichert",
@@ -241,6 +242,67 @@
       "suggestion": "KI-Vorschlag",
       "accept": "Übernehmen",
       "accepted": "Von KI, übernommen"
+    }
+  },
+  "interview": {
+    "page": {
+      "back": "Zurück zum Projekt",
+      "lead": "Beantworte die Fragen, die der Blueprint gerade braucht. Deine Antworten fließen in die passenden Abschnitte ein."
+    },
+    "analysis": {
+      "title": "Analyse",
+      "intro": "Die KI prüft den Blueprint auf Lücken und Widersprüche und schlägt Fragen vor, die als Nächstes weiterhelfen. Deine Abschnitte ändert sie dabei nicht.",
+      "run": "Blueprint analysieren",
+      "rerun": "Neu analysieren",
+      "running": "Blueprint wird analysiert …",
+      "cancel": "Abbrechen",
+      "analyzedAt": "Zuletzt analysiert am {{date}}",
+      "summary": "Zusammenfassung",
+      "contradictions": "Widersprüche",
+      "gaps": "Lücken",
+      "none": "Keine Lücken oder Widersprüche gefunden.",
+      "integrationHint": "Erledige zuerst die Vorschläge zu deinen letzten Antworten."
+    },
+    "round": {
+      "title": "Fragen",
+      "lead": "Beantworte, was du schon weißt. „Später“ stellt eine Frage zurück, sie kommt wieder.",
+      "save": "Antworten speichern",
+      "later": "Später",
+      "analysisRunning": "Bitte warte, bis die Analyse fertig ist.",
+      "empty": "Gerade keine offenen Fragen. Analysiere den Blueprint, um neue zu bekommen.",
+      "blocked": "Blockierte Fragen: {{count}}",
+      "blockedHint": "Diese Fragen warten auf Antworten zu anderen Themen. Sie kommen dran, sobald diese beantwortet sind."
+    },
+    "question": {
+      "leverage": {
+        "foundation": "Grundsatzfrage",
+        "important": "Wichtig",
+        "detail": "Detail"
+      },
+      "optionsLegend": "Antwort wählen",
+      "noteLabel": "Ergänzung (optional)",
+      "textLabel": "Oder eigene Antwort"
+    },
+    "integration": {
+      "running": "Antworten werden eingearbeitet …",
+      "cancel": "Abbrechen",
+      "title": "Vorschläge zu deinen Antworten",
+      "intro": "Die KI hat deine Antworten in die betroffenen Abschnitte eingearbeitet. Übernimm nur, was stimmt.",
+      "acceptAll": "Alle übernehmen",
+      "accept": "Übernehmen",
+      "reject": "Verwerfen",
+      "before": "Vorher",
+      "after": "Nachher",
+      "emptyBefore": "(leer)",
+      "shrinkWarning": "Der neue Text ist deutlich kürzer – prüfe, ob etwas verloren geht.",
+      "errorIntro": "Deine Antworten sind gespeichert, konnten aber nicht eingearbeitet werden.",
+      "appendWithoutAi": "Antworten wörtlich anhängen",
+      "dismiss": "Schließen"
+    },
+    "history": {
+      "summary": "Verlauf ({{count}})",
+      "empty": "Hier erscheinen die Fragen, die du beantwortet oder zurückgestellt hast.",
+      "later": "Später"
     }
   },
   "ai": {

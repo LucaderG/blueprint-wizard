@@ -1,6 +1,6 @@
 # CLAUDE.md – Arbeitsregeln für KI-Coding-Tools
 
-Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Projekt-Blueprint führt. Ziele, Architektur und Phasen stehen im [Implementierungsplan](docs/implementierungsplan.md). Aktueller Stand: **Phase 3 abgeschlossen** (v0.3.0), nächste Phase: 4 – Intelligenter Fragenmotor.
+Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Projekt-Blueprint führt. Ziele, Architektur und Phasen stehen im [Implementierungsplan](docs/implementierungsplan.md). Aktueller Stand: **Phase 4 abgeschlossen** (v0.4.0), nächste Phase: 5 – Entscheidungen & Vorschläge.
 
 ## Stack
 
@@ -27,6 +27,7 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 
 - Das Zod-Schema in `src/core/blueprint/schema.ts` ist die Quelle der Wahrheit; Typen werden daraus abgeleitet.
 - **Schemaänderung = Migration:** `CURRENT_SCHEMA_VERSION` erhöhen, Eintrag in `PROJECT_MIGRATIONS` (`migrations.ts`) ergänzen, Test mit echten Altdaten schreiben.
+- Der Zustand des Fragenmotors liegt projektweit in `project.interview` (`questions`, `log`, `analysis`); Schemaversion 2 (Migration v1 → v2 in `migrations.ts`).
 - Komponenten greifen nur über `useProjectRepository()` auf Projekte zu, nie direkt auf Dexie.
 - Neue Repository-Logik gehört in `projectOperations.ts`, damit IndexedDB- und Memory-Variante gleich bleiben; die Vertrags-Testsuite `projectRepository.contract.ts` prüft beide.
 
@@ -35,6 +36,14 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 - Seiten bearbeiten Projekte nur über `useProjectEditor` (`src/features/projects/useProjectEditor.ts`): Bearbeiten, Rückgängig/Wiederholen und automatisches Speichern.
 - Die Änderungen selbst sind reine Funktionen in `src/core/blueprint/editing.ts` (z. B. `updateSection`, `acceptSuggestion`), die ein neues Projekt zurückgeben.
 - KI-Inhalte landen über `applyClassification` (`src/core/engine/classification.ts`) als `source: 'aiSuggestion'`. Eigener Inhalt des Nutzers (`source: 'user'`) wird nie überschrieben.
+
+## Fragenmotor
+
+- Die Reihenfolge der Fragen bestimmt nur `src/core/engine/prioritization.ts`, nie die KI.
+- KI-Ergebnisse der Lückenanalyse übernimmt `applyAnalysis` (`src/core/engine/interview.ts`), das Eingaben bereinigt.
+- Antworten und „Später“ laufen über `answerQuestion` / `deferQuestion`, jeweils mit Verlaufseintrag.
+- Einarbeiten der Antworten nur als Vorschlag: `integrateAnswers` → Bestätigung → `applyIntegration`.
+- Die UI nutzt den Fragenmotor ausschließlich über `useInterview(editor)` (`src/features/interview/useInterview.ts`).
 
 ## KI-Aufrufe
 
@@ -52,6 +61,8 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 - KI in Tests: `renderRoute(path, { settings: { apiKey: 'x' }, aiProvider: new MockAiProvider([...]) })`; OpenRouter-HTTP-Mocks in `src/test/msw/openrouter.ts`, in E2E per `page.route('https://openrouter.ai/api/v1/**')`.
 - Testdaten für Projekte: `makeProject()` und `withMaturity()` aus `src/core/blueprint/testing.ts`.
 - Neue Logik bekommt Tests. Abdeckung für `src/core/` ≥ 80 % Zeilen und Zweige (in `vitest.config.ts` erzwungen).
+- Prompts haben Golden Files in `src/core/ai/prompts/__golden__`. Bei einer bewussten Prompt-Änderung die VERSION erhöhen, mit `npx vitest run -u src/core/ai/prompts` neu erzeugen und die Diffs prüfen.
+- Abnahmetest des Fragenmotors: `src/core/engine/acceptance.test.ts` mit Fixture (gespeicherte KI-Antwort, ohne Netzwerk).
 
 ## Vor jedem Commit
 

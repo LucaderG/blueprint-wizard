@@ -10,6 +10,7 @@ import {
   type History,
   type Project,
 } from '@/core/blueprint'
+import { trackSave, waitForPendingSaves } from './pendingSaves'
 
 /** Wartezeit nach der letzten Änderung, bevor automatisch gespeichert wird. */
 export const AUTOSAVE_DELAY_MS = 600
@@ -57,21 +58,24 @@ export function useProjectEditor(id: string): ProjectEditorState {
 
   useEffect(() => {
     let active = true
-    repository.get(id).then(
-      (project) => {
-        if (!active) return
-        if (!project) return setLoaded({ id, status: 'notFound' })
-        latest.current = project
-        dirty.current = false
-        historyRef.current = createHistory(project)
-        setHistory(historyRef.current)
-        setSaveState('saved')
-        setLoaded({ id, status: 'ready' })
-      },
-      () => {
-        if (active) setLoaded({ id, status: 'error' })
-      },
-    )
+    // Erst laden, wenn eine andere Seite ihre letzten Änderungen geschrieben hat.
+    waitForPendingSaves(repository)
+      .then(() => repository.get(id))
+      .then(
+        (project) => {
+          if (!active) return
+          if (!project) return setLoaded({ id, status: 'notFound' })
+          latest.current = project
+          dirty.current = false
+          historyRef.current = createHistory(project)
+          setHistory(historyRef.current)
+          setSaveState('saved')
+          setLoaded({ id, status: 'ready' })
+        },
+        () => {
+          if (active) setLoaded({ id, status: 'error' })
+        },
+      )
     return () => {
       active = false
     }
@@ -93,6 +97,7 @@ export function useProjectEditor(id: string): ProjectEditorState {
         setSaveState('error')
       }
     })
+    trackSave(repository, queue.current)
     return queue.current
   }, [repository])
 

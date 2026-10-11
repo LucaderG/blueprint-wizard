@@ -2,6 +2,7 @@ import {
   createEmptyProject,
   CURRENT_SCHEMA_VERSION,
   migrateProject,
+  PROJECT_MIGRATIONS,
   ProjectFormatError,
   projectSchema,
   runMigrations,
@@ -149,6 +150,7 @@ describe('DexieProjectRepository (IndexedDB-spezifisch)', () => {
     describe('mit simulierter Migration', () => {
       // Fiktives Altformat (Version 0): Der Projektname hieß damals `title`.
       const legacyMigrations: MigrationMap = {
+        ...PROJECT_MIGRATIONS,
         0: ({ title, ...rest }) => ({ ...rest, name: title, schemaVersion: 1 }),
       }
 
