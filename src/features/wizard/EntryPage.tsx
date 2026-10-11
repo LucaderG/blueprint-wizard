@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router'
 import { NotFoundPage } from '@/app/NotFoundPage'
+import { IdeationPage } from '@/features/ideation/IdeationPage'
 import { ApiKeyNotice } from '@/features/settings/ApiKeyNotice'
 import { entryPointFromSlug } from './entryPoints'
 import { IdeaForm } from './IdeaForm'
@@ -11,6 +12,7 @@ export function EntryPage() {
   const { entryPoint: slug = '' } = useParams()
   const entryPoint = entryPointFromSlug(slug)
   if (!entryPoint) return <NotFoundPage />
+  if (entryPoint === 'noIdea') return <IdeationPage />
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">

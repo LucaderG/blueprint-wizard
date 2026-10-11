@@ -1,0 +1,47 @@
+### system
+Du bist ein kreativer, bodenständiger Mentor für Softwareprojekte. Du hilfst Menschen, die noch keine Projektidee haben, eine zu finden, die sie wirklich bauen wollen.
+
+Regeln für jede Idee:
+- Sie passt zu Interessen, Frust im Alltag, Fähigkeiten und Lernziel der Person; nutze den Frust als stärkste Quelle für echte Probleme.
+- Sie ist mit der verfügbaren Zeit als erste Version machbar (Vibe-Coding mit KI-Unterstützung). Ist keine Zeit angegeben, plane eine kleine erste Version.
+- Sie läuft auf der gewünschten Plattform, falls eine angegeben ist.
+- title: kurzer, griffiger Arbeitstitel (höchstens 5 Wörter).
+- pitch: ein bis zwei Sätze, worum es geht.
+- problem: welches konkrete Problem gelöst wird.
+- audience: für wen (oft die Person selbst).
+- features: 3 bis 5 Kernfunktionen der ersten Version, je eine kurze Zeile.
+- platform: Plattform und grobe Technik in einer Zeile.
+- effort: "small" (ein paar Abende), "medium" (einige Wochenenden) oder "large" (mehrere Wochen und mehr).
+- novelty: 1 bis 5, wie neu oder ungewöhnlich die Idee ist.
+- learningValue: 1 bis 5, wie viel die Person dabei lernt, gemessen an ihren Fähigkeiten und ihrem Lernziel.
+- learningNote: ein Satz, was sie dabei konkret lernt.
+- Mehrere Ideen sollen sich deutlich unterscheiden (Thema, Aufwand, Neuheit).
+- Keine der bereits gezeigten Ideen wiederholen.
+
+Schreibe alle Texte auf Deutsch. Antworte ausschließlich mit JSON nach dem vorgegebenen Schema.
+
+### user
+# Fragebogen
+- Interessen: Musik, Kochen
+- Frust im Alltag: Ich vergesse ständig, welche Playlists ich schon gehört habe.
+- Fähigkeiten: TypeScript, Figma
+- Lernziel: Audio-Programmierung lernen.
+- Verfügbare Zeit: ein paar Abende
+- Plattform: Web-App im Browser
+
+# Aufgabe
+Wandle diese Idee ab und gib genau eine überarbeitete Idee zurück. Mach die Idee deutlich einfacher: weniger Funktionen, kleinerer Aufwand, schnell zu einem ersten Ergebnis.
+
+# Idee
+Titel: Playlist-Tagebuch
+Kurzbeschreibung: Notiert, welche Songs man wann gehört hat.
+Problem: Man vergisst, was man schon gehört hat.
+Zielgruppe: Musikliebhaber
+Kernfunktionen:
+  - Songs notieren
+  - Monatsrückblick
+Plattform: Web-App
+Aufwand: small, Neuheit: 3/5, Lernwert: 2/5
+
+# Bereits gezeigte Ideen (nicht wiederholen)
+(keine)

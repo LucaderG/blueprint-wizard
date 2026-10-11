@@ -6,6 +6,17 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 
 ## [Unreleased]
 
+## [0.6.0] – 2026-10-11 – Phase 6: Ideenfindung von Null
+
+### Hinzugefügt
+
+- Einstieg „Ich habe keine Idee“ mit kurzem Fragebogen auf einer Seite: Interessen und Fähigkeiten als antippbare Vorschläge oder eigene Schlagwörter, Frust im Alltag, Lernziel, verfügbare Zeit und Plattform. Alles ist freiwillig; Interessen, ein Ärgernis oder ein Lernziel reichen für den Start.
+- Die KI schlägt vier Ideen vor, jeweils mit Kurzbeschreibung, Kernfunktionen, Aufwand, Neuheit und Lernwert. Ideen lassen sich einfacher oder ehrgeiziger machen, nach eigenem Wunsch abwandeln, „Mehr wie diese“ anfordern, zu zweit kombinieren oder neu würfeln (ohne Wiederholungen).
+- „Diese Idee nehmen“ legt direkt ein Projekt an: Problem, Zielgruppe, Kernfunktionen und Tech-Stack sind gefüllt und als übernommener KI-Inhalt markiert, weiter geht es im normalen Wizard.
+- Der Stand der Ideenfindung bleibt beim Neuladen erhalten (nur im aktuellen Tab).
+- Prompt `generate-ideas` (Version 1) mit Golden Files, Kernlogik in `src/core/ideation` und `src/core/engine/ideation.ts`, ADR 0007.
+- Ohne Key: „Ohne KI starten“ legt ein leeres Projekt an, Ärgernisse und Interessen landen als eigener Text in „Problem & Vision“.
+
 ## [0.5.1] – 2026-10-11 – Reibungsloserer Fragen-Ablauf
 
 ### Geändert

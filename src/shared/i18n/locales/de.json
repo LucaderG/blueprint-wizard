@@ -95,7 +95,7 @@
     "entries": {
       "noIdea": {
         "title": "Ich habe keine Idee",
-        "intro": "Eine geführte Ideensuche folgt in einer späteren Version. Bis dahin sag uns, was dich interessiert, oder starte direkt ohne Vorlage."
+        "intro": "Beantworte ein paar kurze Fragen. Die KI schlägt dir passende Projektideen vor, die du verfeinern, kombinieren oder neu würfeln kannst. Die gewählte Idee wird dein Start-Blueprint."
       },
       "partialIdea": {
         "title": "Ich habe eine Teil-Idee",
@@ -395,5 +395,122 @@
     },
     "errorDetails": "Technische Details: {{detail}}",
     "errorDetailsWithStatus": "Technische Details (HTTP {{status}}): {{detail}}"
+  },
+  "ideation": {
+    "questionnaire": {
+      "title": "Erzähl kurz von dir",
+      "lead": "Alles ist freiwillig. Je mehr du angibst, desto besser passen die Ideen. Für den Start reichen Interessen, ein Ärgernis oder ein Lernziel.",
+      "progress": "{{answered}} von {{total}} Fragen beantwortet",
+      "needMore": "Gib Interessen, ein Ärgernis aus dem Alltag oder ein Lernziel an, dann geht es los.",
+      "submit": "Ideen finden",
+      "backToIdeas": "Zurück zu den Ideen",
+      "withoutAi": "Ohne KI starten",
+      "withoutAiHint": "Ohne Key legst du ein leeres Projekt an; deine Antworten zu Ärgernissen und Interessen landen darin als Notiz.",
+      "fields": {
+        "interests": {
+          "label": "Was interessiert dich?",
+          "hint": "Tippe Vorschläge an oder schreib eigene, mit Enter oder Komma getrennt."
+        },
+        "frustrations": {
+          "label": "Was nervt dich im Alltag?",
+          "placeholder": "z. B. Ich vergesse ständig, wem ich was geliehen habe."
+        },
+        "skills": {
+          "label": "Was kannst du schon?",
+          "hint": "Programmieren ist keine Voraussetzung."
+        },
+        "learningGoal": {
+          "label": "Was möchtest du dabei lernen?",
+          "placeholder": "z. B. Meine erste App veröffentlichen oder mit KI-APIs arbeiten."
+        },
+        "availableTime": {
+          "label": "Wie viel Zeit hast du?"
+        },
+        "platform": {
+          "label": "Wo soll das Projekt laufen?"
+        }
+      },
+      "tagInputLabel": "{{field}} hinzufügen",
+      "tagAdd": "Hinzufügen",
+      "tagRemove": "{{tag}} entfernen",
+      "suggestionsLabel": "Vorschläge",
+      "times": {
+        "fewHours": "Ein paar Stunden",
+        "fewEvenings": "Ein paar Abende",
+        "fewWeekends": "Ein paar Wochenenden",
+        "fewWeeks": "Einige Wochen",
+        "longTerm": "Langfristig"
+      },
+      "platforms": {
+        "any": "Egal",
+        "web": "Web",
+        "mobile": "Smartphone",
+        "desktop": "Desktop",
+        "cli": "Kommandozeile"
+      },
+      "suggestions": {
+        "interests": {
+          "games": "Spiele",
+          "music": "Musik",
+          "sport": "Sport",
+          "cooking": "Kochen",
+          "travel": "Reisen",
+          "money": "Finanzen",
+          "learning": "Lernen",
+          "productivity": "Produktivität",
+          "health": "Gesundheit",
+          "pets": "Haustiere",
+          "photography": "Fotografie",
+          "plants": "Pflanzen"
+        },
+        "skills": {
+          "none": "Noch keine Vorkenntnisse",
+          "html": "HTML & CSS",
+          "javascript": "JavaScript",
+          "python": "Python",
+          "design": "Design",
+          "spreadsheets": "Tabellenkalkulation"
+        }
+      }
+    },
+    "ideas": {
+      "title": "Ideen für dich",
+      "lead": "Nimm eine Idee, wandle sie ab oder lass dir neue zeigen. Zum Kombinieren wählst du zwei Ideen aus.",
+      "reroll": "Neu würfeln",
+      "editProfile": "Antworten ändern",
+      "combine": "Ausgewählte kombinieren",
+      "combineHint_one": "Wähle noch eine zweite Idee zum Kombinieren.",
+      "combineHint_other": "Wähle zwei Ideen zum Kombinieren aus.",
+      "empty": "Noch keine Ideen.",
+      "effortLabel": "Aufwand",
+      "effort": {
+        "small": "Aufwand: klein",
+        "medium": "Aufwand: mittel",
+        "large": "Aufwand: groß"
+      },
+      "novelty": "Neuheit {{value}}/5",
+      "learning": "Lernwert {{value}}/5",
+      "features": "Kernfunktionen",
+      "choose": "Diese Idee nehmen",
+      "moreLike": "Mehr wie diese",
+      "simpler": "Einfacher",
+      "bolder": "Ehrgeiziger",
+      "select": "Zum Kombinieren auswählen",
+      "customLabel": "Eigener Wunsch für diese Idee",
+      "customPlaceholder": "z. B. mit Freunden teilen können",
+      "customSubmit": "Abwandeln",
+      "running": {
+        "generate": "Die KI sucht Ideen, die zu dir passen …",
+        "moreLike": "Die KI sucht ähnliche Ideen …",
+        "refine": "Die KI wandelt die Idee ab …",
+        "combine": "Die KI kombiniert die beiden Ideen …",
+        "choose": "Projekt wird angelegt …"
+      },
+      "cancel": "Abbrechen",
+      "retry": "Erneut versuchen",
+      "dismiss": "Schließen",
+      "errorIntro": "Das hat nicht geklappt.",
+      "nothingNew": "Die KI hat keine neue Idee geliefert. Versuch es noch einmal oder ändere deine Antworten."
+    }
   }
 }

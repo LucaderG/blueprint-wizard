@@ -246,45 +246,14 @@ describe('Einstieg „Fast fertig“', () => {
 })
 
 describe('Einstieg „Keine Idee“', () => {
-  it('erklärt die spätere Ideensuche und fragt nach Interessen', () => {
+  it('zeigt den Fragebogen der Ideensuche statt des Eingabeformulars', () => {
     renderRoute('/neu/keine-idee', { settings: aiSettings })
 
     expect(screen.getByRole('heading', { level: 1, name: 'Ich habe keine Idee' })).toBeVisible()
-    expect(
-      screen.getByText(/Eine geführte Ideensuche folgt in einer späteren Version/),
-    ).toBeVisible()
-    expect(textarea('Was interessiert dich? Was nervt dich im Alltag?')).toBeVisible()
-    expect(screen.queryByRole('button', { name: 'Datei laden' })).not.toBeInTheDocument()
-  })
-
-  it('ordnet mit KI mit dem Einstieg „keine Idee“ ein', async () => {
-    const user = userEvent.setup()
-    const aiProvider = new MockAiProvider([AI_ANSWER])
-    const { repository } = renderRoute('/neu/keine-idee', { settings: aiSettings, aiProvider })
-
-    await user.type(textarea('Was interessiert dich? Was nervt dich im Alltag?'), 'Termine')
-    await user.click(submitAi())
-
-    expect(
-      await screen.findByRole('heading', { level: 1, name: 'Familien-Organizer' }),
-    ).toBeVisible()
-    const [summary] = await repository.list()
-    expect((await repository.get(summary!.id))?.entryPoint).toBe('noIdea')
-    expect(aiProvider.requests[0]?.messages[0]?.content).toContain('noch keine konkrete Idee')
-  })
-
-  it('startet ohne KI und übernimmt den Text in „Problem & Vision“', async () => {
-    const user = userEvent.setup()
-    const { repository, router } = renderRoute('/neu/keine-idee')
-
-    await user.type(textarea('Was interessiert dich? Was nervt dich im Alltag?'), 'Müll')
-    await user.click(submitManual())
-
-    await waitFor(() => expect(router.state.location.pathname).toMatch(/^\/projekte\//))
-    const [summary] = await repository.list()
-    const project = await repository.get(summary!.id)
-    expect(project?.entryPoint).toBe('noIdea')
-    expect(project?.blueprint.sections.problem.content).toBe('Müll')
+    expect(screen.getByRole('heading', { level: 2, name: 'Erzähl kurz von dir' })).toBeVisible()
+    expect(screen.getByRole('button', { name: 'Ideen finden' })).toBeDisabled()
+    expect(screen.queryByRole('button', { name: 'Idee einordnen' })).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Beschreib deine Idee')).not.toBeInTheDocument()
   })
 })
 

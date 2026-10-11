@@ -1,6 +1,6 @@
 # CLAUDE.md – Arbeitsregeln für KI-Coding-Tools
 
-Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Projekt-Blueprint führt. Ziele, Architektur und Phasen stehen im [Implementierungsplan](docs/implementierungsplan.md). Aktueller Stand: **Phase 5 abgeschlossen** (v0.5.1), nächste Phase: 6 – Ideenfindung von Null.
+Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Projekt-Blueprint führt. Ziele, Architektur und Phasen stehen im [Implementierungsplan](docs/implementierungsplan.md). Aktueller Stand: **Phase 6 abgeschlossen** (v0.6.0), nächste Phase: 7 – Blueprint-Generierung & Export.
 
 ## Stack
 
@@ -55,6 +55,13 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 - Widersprüche erkennt `detectContradictions` (`src/core/engine/contradictions.ts`) mit festen Regeln. Eine neue Regel braucht einen positiven und einen negativen Testfall sowie den i18n-Text `decisions.contradictions.rules.<id>`.
 - Die UI nutzt das Feature ausschließlich über `useDecisions(editor)` (`src/features/decisions/useDecisions.ts`).
 - Einzelne KI-Aufgaben in Features laufen über `useAiTask` (`src/features/ai/useAiTask.ts`).
+
+## Ideenfindung (Einstieg „keine Idee“)
+
+- Fragebogen-Logik und Sitzungsschema liegen in `src/core/ideation` (`profile.ts`, `session.ts`); der Stand lebt nur im `sessionStorage`, nicht im Projekt (kein Schemawechsel).
+- KI-Ideen laufen über `generateIdeas` mit einer `IdeaRequest` (`generate`, `moreLike`, `refine`, `combine`); `applyIdeas` bereinigt und baut das Ergebnis ein (`src/core/engine/ideation.ts`).
+- Die gewählte Idee wird mit `applyChosenIdea` zum Projekt (Abschnitte als `aiAccepted`).
+- Die UI nutzt das Feature ausschließlich über `useIdeation()` (`src/features/ideation/useIdeation.ts`).
 
 ## KI-Aufrufe
 
