@@ -18,7 +18,8 @@ aus dem Browser auf. Antworten der KI müssen später zuverlässig in das Bluepr
   `insufficientCredits`, `rateLimited`, `timeout`). Auch Fehler in einer 200-Antwort und mitten im Stream
   werden erkannt. Die UI übersetzt nur den Code.
 - **Strukturierte Antworten:** `generateStructured()` wandelt ein Zod-Schema in JSON-Schema um, fordert es
-  per `response_format` (Strict-Modus) an, verlangt mit `require_parameters` ein Modell, das das kann,
+  per `response_format` (Strict-Modus) an (OpenRouter bevorzugt dann Anbieter, die das können; erzwungen
+  wird nichts, siehe Nachtrag),
   validiert die Antwort mit Zod und bittet bei Fehlern genau einmal um Korrektur.
 - **Schemas für KI-Antworten** verwenden `.nullable()` statt `.optional()`, weil der Strict-Modus alle
   Felder als Pflicht verlangt.
@@ -44,3 +45,11 @@ aus dem Browser auf. Antworten der KI müssen später zuverlässig in das Bluepr
   wenigen Endpunkte, schlechter testbar. Verworfen.
 - **Key verschlüsselt speichern:** ohne Server gäbe es keinen sicheren Ort für den Schlüssel. Verworfen.
 - **Eigener Proxy-Server:** nur nötig, wenn die App öffentlich mit einem fremden Key laufen soll. Vertagt.
+
+## Nachtrag 2026-10-11 (v0.3.1)
+
+`provider.require_parameters: true` führte im echten Betrieb bei jedem Modell zu einer Ablehnung, die als
+„Modell nicht verfügbar“ angezeigt wurde. Der Parameter ist entfernt: OpenRouter routet bei
+`response_format` ohnehin bevorzugt zu passenden Anbietern. Lehnt OpenRouter eine Anfrage mit Schema
+trotzdem mit 400 oder 404 ab, folgt genau ein zweiter Versuch ohne Schemazwang, das Schema steht dann im
+Prompt. Fehlermeldungen zeigen zusätzlich die Originalmeldung von OpenRouter als „Technische Details“.

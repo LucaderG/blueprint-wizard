@@ -194,7 +194,7 @@ describe('OpenRouterProvider', () => {
       await expect(createProvider().complete({ messages })).resolves.toMatchObject({ text: '' })
     })
 
-    it('sendet jsonSchema als response_format mit strict und require_parameters', async () => {
+    it('sendet jsonSchema als response_format mit strict, ohne Anbieter zu erzwingen', async () => {
       let body: Record<string, unknown> | undefined
       server.use(
         http.post(CHAT_URL, async ({ request }) => {
@@ -213,7 +213,81 @@ describe('OpenRouterProvider', () => {
         type: 'json_schema',
         json_schema: { name: 'blueprint_analysis', strict: true, schema },
       })
-      expect(body?.provider).toEqual({ require_parameters: true })
+      expect(body?.provider).toBeUndefined()
+    })
+
+    it.each([400, 404])(
+      'wiederholt bei Status %i einmal ohne Schemazwang und mit dem Schema im Prompt',
+      async (status) => {
+        const bodies: Record<string, unknown>[] = []
+        server.use(
+          http.post(CHAT_URL, async ({ request }) => {
+            const body = (await request.json()) as Record<string, unknown>
+            bodies.push(body)
+            return body.response_format
+              ? HttpResponse.json(
+                  { error: { code: status, message: 'No endpoints found' } },
+                  { status },
+                )
+              : HttpResponse.json(completionFixture('{"a":1}'))
+          }),
+        )
+        const schema = { type: 'object', properties: { a: { type: 'number' } } }
+
+        const result = await createProvider().complete({
+          messages,
+          jsonSchema: { name: 'test', schema },
+        })
+
+        expect(result.text).toBe('{"a":1}')
+        expect(bodies).toHaveLength(2)
+        const retryMessages = bodies[1]?.messages as { role: string; content: string }[]
+        expect(retryMessages).toHaveLength(messages.length + 1)
+        expect(retryMessages.at(-1)?.role).toBe('system')
+        expect(retryMessages.at(-1)?.content).toContain(JSON.stringify(schema))
+      },
+    )
+
+    it('wiederholt ohne Schema nicht, wenn gar kein Schema angefragt war', async () => {
+      let calls = 0
+      server.use(
+        http.post(CHAT_URL, () => {
+          calls++
+          return HttpResponse.json({ error: { message: 'nope' } }, { status: 404 })
+        }),
+      )
+
+      await expect(createProvider().complete({ messages })).rejects.toMatchObject({
+        code: 'modelUnavailable',
+      })
+      expect(calls).toBe(1)
+    })
+
+    it('gibt den Fehler des zweiten Versuchs weiter, wenn auch dieser scheitert', async () => {
+      server.use(
+        http.post(CHAT_URL, () =>
+          HttpResponse.json({ error: { message: 'Model not found' } }, { status: 404 }),
+        ),
+      )
+
+      await expect(
+        createProvider().complete({ messages, jsonSchema: { name: 't', schema: {} } }),
+      ).rejects.toMatchObject({ code: 'modelUnavailable', message: 'Model not found' })
+    })
+
+    it('wiederholt bei anderen Fehlern als 400/404 nicht', async () => {
+      let calls = 0
+      server.use(
+        http.post(CHAT_URL, () => {
+          calls++
+          return HttpResponse.json({ error: { message: 'down' } }, { status: 503 })
+        }),
+      )
+
+      await expect(
+        createProvider().complete({ messages, jsonSchema: { name: 't', schema: {} } }),
+      ).rejects.toMatchObject({ code: 'modelUnavailable' })
+      expect(calls).toBe(1)
     })
 
     it.each([

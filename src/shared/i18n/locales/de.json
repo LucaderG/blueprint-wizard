@@ -257,6 +257,8 @@
       "invalidResponse": "Die Antwort der KI hatte ein unerwartetes Format.",
       "aborted": "Die Anfrage wurde abgebrochen.",
       "unknown": "Das hat leider nicht geklappt. Bitte versuch es noch einmal."
-    }
+    },
+    "errorDetails": "Technische Details: {{detail}}",
+    "errorDetailsWithStatus": "Technische Details (HTTP {{status}}): {{detail}}"
   }
 }

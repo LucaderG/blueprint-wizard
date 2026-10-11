@@ -8,6 +8,7 @@ import { formatUsd } from '@/shared/lib/format'
 import { Button } from '@/shared/ui/button'
 import { Dialog } from '@/shared/ui/dialog'
 import { Input } from '@/shared/ui/input'
+import { aiErrorDetail } from './aiErrorDetail'
 import { aiErrorKey } from './aiErrors'
 import { SettingsSection } from './SettingsSection'
 
@@ -163,6 +164,11 @@ export function ApiKeySection() {
           className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive"
         >
           {t(aiErrorKey(current.error))}
+          {aiErrorDetail(current.error, t) && (
+            <span className="mt-1 block text-xs break-words opacity-80">
+              {aiErrorDetail(current.error, t)}
+            </span>
+          )}
         </p>
       )}
 

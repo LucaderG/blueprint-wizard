@@ -6,6 +6,7 @@ import { useSettings } from '@/app/useSettings'
 import type { EntryPoint, Project } from '@/core/blueprint'
 import { AiError } from '@/core/ai'
 import { classifyIdea } from '@/core/engine'
+import { aiErrorDetail } from '@/features/settings/aiErrorDetail'
 import { aiErrorKey, type AiErrorKey } from '@/features/settings/aiErrors'
 import { createProjectFromClassification, createProjectWithoutAi } from './startProject'
 
@@ -14,7 +15,7 @@ export type IdeaErrorKey = AiErrorKey | 'projects.errors.generic'
 export type IdeaState =
   | { status: 'idle' }
   | { status: 'running'; mode: 'ai' | 'manual' }
-  | { status: 'error'; errorKey: IdeaErrorKey }
+  | { status: 'error'; errorKey: IdeaErrorKey; detail: string | null }
 
 export interface IdeaSubmission {
   text: string
@@ -73,12 +74,12 @@ export function useIdeaClassification() {
         }
         const errorKey: IdeaErrorKey =
           error instanceof AiError ? aiErrorKey(error) : 'projects.errors.generic'
-        setState({ status: 'error', errorKey })
+        setState({ status: 'error', errorKey, detail: aiErrorDetail(error, t) })
       } finally {
         if (pendingRef.current === controller) pendingRef.current = null
       }
     },
-    [aiProvider, defaultName, openProject, repository, settings.outputLanguage],
+    [aiProvider, defaultName, openProject, repository, settings.outputLanguage, t],
   )
 
   const startWithoutAi = useCallback(
@@ -93,7 +94,7 @@ export function useIdeaClassification() {
         )
         openProject(project)
       } catch {
-        setState({ status: 'error', errorKey: 'projects.errors.generic' })
+        setState({ status: 'error', errorKey: 'projects.errors.generic', detail: null })
       }
     },
     [defaultName, openProject, repository],

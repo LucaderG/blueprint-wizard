@@ -93,7 +93,7 @@ test('ungültiger Key zeigt die verständliche Fehlermeldung', async ({ page }) 
   await keyInput(page).fill('sk-or-v1-falsch')
   await page.getByRole('button', { name: 'Verbindung testen' }).click()
 
-  await expect(page.getByRole('alert')).toHaveText(
+  await expect(page.getByRole('alert')).toContainText(
     'Der API-Key ist ungültig oder wurde widerrufen.',
   )
 })

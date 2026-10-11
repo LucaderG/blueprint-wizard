@@ -131,7 +131,7 @@ describe('Einstieg „Teil-Idee“', () => {
   it('zeigt bei KI-Fehlern die Meldung, legt kein Projekt an und behält den Text', async () => {
     const user = userEvent.setup()
     const aiProvider = new MockAiProvider([
-      new AiError('insufficientCredits', 'Guthaben aufgebraucht'),
+      new AiError('insufficientCredits', 'Guthaben aufgebraucht', { status: 402 }),
     ])
     const { repository } = renderRoute('/neu/teil-idee', { settings: aiSettings, aiProvider })
 
@@ -140,6 +140,9 @@ describe('Einstieg „Teil-Idee“', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Dein OpenRouter-Guthaben reicht nicht aus. Lade es auf und versuch es dann erneut.',
+    )
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Technische Details (HTTP 402): Guthaben aufgebraucht',
     )
     expect(await repository.list()).toEqual([])
     expect(textarea('Beschreib deine Idee')).toHaveValue('Meine Idee')

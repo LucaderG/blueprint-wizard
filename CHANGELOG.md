@@ -6,6 +6,17 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 
 ## [Unreleased]
 
+## [0.3.1] – Fehlerbehebung KI-Anfragen
+
+### Behoben
+
+- „Das gewählte Modell ist gerade nicht verfügbar“ erschien bei jedem Modell, weil die App Anbieter mit Unterstützung für strukturierte Antworten erzwungen hat (`require_parameters`). Der Zwang ist entfernt.
+
+### Hinzugefügt
+
+- Lehnt OpenRouter eine Anfrage mit Antwortschema ab (400/404), versucht die App es einmal ohne Schemazwang, mit dem Schema im Prompt. Die Antwort wird weiterhin per Zod geprüft.
+- Fehlermeldungen zeigen zusätzlich die Originalmeldung von OpenRouter („Technische Details“).
+
 ## [0.3.0] – Phase 3: Wizard-Gerüst & Einstiegspunkte
 
 ### Hinzugefügt

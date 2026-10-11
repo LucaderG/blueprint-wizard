@@ -142,6 +142,9 @@ export function IdeaForm({ entryPoint }: IdeaFormProps) {
           className="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive"
         >
           {t(state.errorKey)}
+          {state.detail && (
+            <span className="mt-1 block text-xs break-words opacity-80">{state.detail}</span>
+          )}
         </p>
       )}
 

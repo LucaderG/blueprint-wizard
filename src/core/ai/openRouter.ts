@@ -3,6 +3,7 @@ import { AiError, aiErrorCodeForStatus } from './errors'
 import { readSseData } from './sse'
 import type {
   AiProvider,
+  ChatMessage,
   CompletionRequest,
   CompletionResult,
   KeyInfo,
@@ -172,6 +173,24 @@ function normalizeError(error: unknown, context: RequestContext): AiError {
   return new AiError('unknown', 'Unerwarteter Fehler bei der KI-Anfrage', { cause: error })
 }
 
+/** Fehler, nach denen ein Versuch ohne erzwungenes Antwortschema sinnvoll ist. */
+function isSchemaRejection(error: AiError): boolean {
+  return error.status === 400 || error.status === 404
+}
+
+/** Entfernt den Schemazwang und beschreibt das Schema stattdessen im Prompt. */
+export function withSchemaInPrompt(request: CompletionRequest): CompletionRequest {
+  const { jsonSchema, ...rest } = request
+  if (!jsonSchema) return request
+  const instruction: ChatMessage = {
+    role: 'system',
+    content:
+      'Antworte ausschließlich mit einem einzigen JSON-Objekt ohne weiteren Text, ' +
+      `das genau diesem JSON-Schema entspricht:\n${JSON.stringify(jsonSchema.schema)}`,
+  }
+  return { ...rest, messages: [...rest.messages, instruction] }
+}
+
 // --- Provider ----------------------------------------------------------------------------------
 
 export class OpenRouterProvider implements AiProvider {
@@ -214,7 +233,6 @@ export class OpenRouterProvider implements AiProvider {
             schema: request.jsonSchema.schema,
           },
         },
-        provider: { require_parameters: true },
       }),
     })
   }
@@ -230,7 +248,24 @@ export class OpenRouterProvider implements AiProvider {
     return response
   }
 
+  /**
+   * Bei `jsonSchema` wird das Schema zuerst per `response_format` erzwungen. Lehnt OpenRouter das ab
+   * (400/404, z. B. weil kein Anbieter des Modells strukturierte Antworten kann), folgt genau ein
+   * zweiter Versuch ohne Schemazwang mit dem Schema im Prompt. Die Antwort wird danach ohnehin per
+   * Zod geprüft (`generateStructured`).
+   */
   async complete(request: CompletionRequest): Promise<CompletionResult> {
+    try {
+      return await this.completeOnce(request)
+    } catch (error) {
+      if (request.jsonSchema && error instanceof AiError && isSchemaRejection(error)) {
+        return this.completeOnce(withSchemaInPrompt(request))
+      }
+      throw error
+    }
+  }
+
+  private async completeOnce(request: CompletionRequest): Promise<CompletionResult> {
     const context = createContext(this.options.timeoutMs, request.signal)
     try {
       const response = await this.post(request, false, context)
