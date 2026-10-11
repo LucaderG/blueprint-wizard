@@ -4,6 +4,8 @@ Arbeitstitel: **Blueprint-Wizard** – eine KI-gestützte App, die dich von jede
 
 Stand: 11.10.2026 · Version 1 des Plans
 
+> **Umsetzungsstand:** Alle Phasen 0–9 sind umgesetzt (v1.0.0, 11.10.2026). Was pro Phase gebaut wurde, steht in `docs/uebergaben/` und im `CHANGELOG.md`.
+
 > **Legende:** 🔶 = Entscheidung, die Luca bestätigen sollte. Ich habe überall einen Standard gewählt, damit die Arbeit nicht blockiert.
 
 ---

@@ -10,7 +10,13 @@ import {
   type History,
   type Project,
 } from '@/core/blueprint'
-import { trackSave, waitForPendingSaves } from './pendingSaves'
+import {
+  forgetUnsaved,
+  getUnsaved,
+  rememberUnsaved,
+  trackSave,
+  waitForPendingSaves,
+} from './pendingSaves'
 
 /** Wartezeit nach der letzten Änderung, bevor automatisch gespeichert wird. */
 export const AUTOSAVE_DELAY_MS = 600
@@ -65,11 +71,13 @@ export function useProjectEditor(id: string): ProjectEditorState {
         (project) => {
           if (!active) return
           if (!project) return setLoaded({ id, status: 'notFound' })
-          latest.current = project
-          dirty.current = false
-          historyRef.current = createHistory(project)
+          // Ist das letzte Speichern gescheitert, gilt der ungespeicherte Stand samt Fehler weiter.
+          const draft = getUnsaved(repository, id)
+          latest.current = draft ?? project
+          dirty.current = !!draft
+          historyRef.current = createHistory(latest.current)
           setHistory(historyRef.current)
-          setSaveState('saved')
+          setSaveState(draft ? 'error' : 'saved')
           setLoaded({ id, status: 'ready' })
         },
         () => {
@@ -91,9 +99,11 @@ export function useProjectEditor(id: string): ProjectEditorState {
       setSaveState('saving')
       try {
         await repository.save(project)
+        forgetUnsaved(repository, project.id)
         setSaveState(dirty.current ? 'pending' : 'saved')
       } catch {
         dirty.current = true
+        rememberUnsaved(repository, latest.current ?? project)
         setSaveState('error')
       }
     })

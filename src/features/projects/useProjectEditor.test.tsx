@@ -250,6 +250,33 @@ describe('useProjectEditor', () => {
       expect((await repository.get(id))?.blueprint.sections.problem.content).toBe('Wichtig')
     })
 
+    it('verliert nach fehlgeschlagenem Speichern beim Seitenwechsel weder Stand noch Fehler', async () => {
+      const { editor, repository, id, wrapper, unmount } = await renderEditor()
+      vi.spyOn(repository, 'save').mockRejectedValue(new Error('Speicher voll'))
+
+      act(() => editor().edit(setProblem('Ungespeichert')))
+      await act(() => editor().flush())
+      unmount()
+
+      // Die nächste Seite lädt dasselbe Projekt, während das Speichern weiter scheitert.
+      const next = renderHook(() => useProjectEditor(id), { wrapper })
+      await waitFor(() => expect(next.result.current.status).toBe('ready'))
+      const state = readyState(next.result.current)
+      expect(state.project.blueprint.sections.problem.content).toBe('Ungespeichert')
+      expect(state.saveState).toBe('error')
+
+      vi.mocked(repository.save).mockRestore()
+      await act(() => readyState(next.result.current).flush())
+      expect(readyState(next.result.current).saveState).toBe('saved')
+      expect((await repository.get(id))?.blueprint.sections.problem.content).toBe('Ungespeichert')
+      next.unmount()
+
+      // Danach gilt wieder der gespeicherte Stand, ohne Fehlermeldung.
+      const third = renderHook(() => useProjectEditor(id), { wrapper })
+      await waitFor(() => expect(third.result.current.status).toBe('ready'))
+      expect(readyState(third.result.current).saveState).toBe('saved')
+    })
+
     it('behält Änderungen, die während eines laufenden Speicherns entstehen', async () => {
       const { editor, repository, id, result } = await renderEditor()
       let release: () => void = () => {}

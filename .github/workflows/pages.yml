@@ -1,0 +1,55 @@
+name: GitHub Pages
+
+# Veröffentlicht main nach grüner CI unter https://<owner>.github.io/<repo>/.
+# Einmalig nötig: Settings → Pages → Source „GitHub Actions“. Ablauf: docs/release-prozess.md.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Für GitHub Pages bauen
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Build mit Unterordner des Repos
+        run: npm run build
+        env:
+          BASE_PATH: /${{ github.event.repository.name }}/
+      # GitHub Pages kennt kein SPA-Routing: Unbekannte Pfade bekommen ebenfalls die App.
+      - run: cp dist/index.html dist/404.html
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    name: Veröffentlichen
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -6,6 +6,19 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 
 ## [Unreleased]
 
+## [1.0.0] – 2026-10-11 – Phase 9: Release & Wartung
+
+### Hinzugefügt
+
+- Öffentliche Adresse: <https://lucaderg.github.io/blueprint-wizard/>. Nach jeder grünen CI auf `main` wird die App automatisch auf GitHub Pages veröffentlicht. Die App funktioniert dafür auch in einem Unterordner (`BASE_PATH`), inklusive Direktaufruf von Unterseiten, installierbarer App und Offline-Start.
+- Release-Workflow: Ein Versions-Tag legt das GitHub-Release mit dem passenden CHANGELOG-Abschnitt an und prüft, ob die Version zu `package.json` passt.
+- Dependabot hält npm-Pakete (wöchentlich, kleine Updates gebündelt) und GitHub Actions (monatlich) aktuell.
+- Dokumentation: Nutzerhandbuch, Architektur-Überblick, Anleitung „Neuen Blueprint-Abschnitt hinzufügen“ und Release-/Update-Prozess. ADR 0010.
+
+### Behoben
+
+- Schlägt das Speichern fehl und man wechselt die Seite (z. B. zum Export), zeigt die nächste Seite jetzt den ungespeicherten Stand samt Fehlermeldung statt des älteren gespeicherten Stands. Gelingt das Speichern später, verschwindet der Hinweis.
+
 ## [0.8.0] – 2026-10-11 – Phase 8: Qualität & Politur
 
 ### Hinzugefügt

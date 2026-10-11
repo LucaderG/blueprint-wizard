@@ -2,9 +2,11 @@
 
 Eine KI-gestützte Web-App, die dich von jedem Ausgangspunkt – keine Idee, halbe Idee oder fast fertiges Konzept – zu einem fertigen Projekt-Blueprint führt. Am Ende stehen ein Blueprint als Markdown und vibe-coding-fertige Dateien (z. B. `CLAUDE.md`, Aufgabenliste, Start-Prompt).
 
-Die App läuft komplett im Browser: kein eigener Server, kein Konto. Projekte bleiben lokal auf deinem Gerät, die KI wird über deinen eigenen OpenRouter-Key angesprochen (ab Phase 2).
+Die App läuft komplett im Browser: kein eigener Server, kein Konto. Projekte bleiben lokal auf deinem Gerät, die KI wird über deinen eigenen OpenRouter-Key angesprochen
 
-**Projektstatus:** Phase 8 – Qualität & Politur (v0.8.0). Die App gibt es jetzt auch auf Englisch und im Dunkelmodus (Einstellungen → Darstellung), sie lässt sich als App installieren und läuft danach offline. Oben rechts zeigt sie die KI-Kosten der aktuellen Sitzung. Die drei Einstiegspunkte, Ideenfindung, Fragenmotor, Entscheidungen und Vorschläge führen zum bearbeitbaren Blueprint. „Blueprint fertigstellen“ zeigt den Reife-Check und eine Vorschau von `BLUEPRINT.md`, `CLAUDE.md`, `AGENTS.md`, `TASKS.md` und `START-PROMPT.md`. Dateien lassen sich einzeln oder als ZIP herunterladen, der Start-Prompt lässt sich kopieren. Der Export braucht keinen API-Key; offene Punkte bleiben sichtbar und verhindern den Export nicht. Details: [Implementierungsplan](docs/implementierungsplan.md).
+**Jetzt ausprobieren:** <https://lucaderg.github.io/blueprint-wizard/>. Du brauchst nur einen eigenen [OpenRouter](https://openrouter.ai/)-Key; der Export klappt auch ohne.
+
+**Projektstatus:** Version 1.0, alle Phasen des [Implementierungsplans](docs/implementierungsplan.md) sind umgesetzt. Drei Einstiege (keine Idee, halbe Idee, fertiges Konzept), Fragenmotor, Entscheidungen und Vorschläge führen zum bearbeitbaren Blueprint, den du als Coding-Paket exportierst. Die App gibt es auf Deutsch und Englisch, hell und dunkel, und sie lässt sich als App installieren und offline öffnen. Wie alles funktioniert, steht im [Nutzerhandbuch](docs/benutzerhandbuch.md).
 
 ## Blueprint fürs Coding exportieren
 
@@ -84,3 +86,7 @@ Vite 8, React 19, TypeScript (strict), Tailwind CSS v4, shadcn/ui-Komponenten, R
 - [CLAUDE.md](CLAUDE.md) – Arbeitsregeln für KI-Coding-Tools
 - [CHANGELOG.md](CHANGELOG.md) – Änderungen pro Version
 - [docs/adr/](docs/adr/) – Architekturentscheidungen
+- [Nutzerhandbuch](docs/benutzerhandbuch.md) – die App Schritt für Schritt
+- [Architektur-Überblick](docs/architektur.md) – Schichten, Datenfluss, Tests
+- [Neuen Blueprint-Abschnitt hinzufügen](docs/neuer-abschnitt.md) – Anleitung für Entwickler
+- [Release- und Update-Prozess](docs/release-prozess.md) – Versionen, Veröffentlichung, Abhängigkeiten

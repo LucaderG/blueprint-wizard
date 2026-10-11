@@ -1,0 +1,43 @@
+name: Release
+
+# Ein Versions-Tag (z. B. v1.0.0) legt das GitHub-Release mit dem passenden CHANGELOG-Abschnitt an.
+# Wer das Release lieber in der GitHub-Oberfläche anlegt, kann das tun; dann passiert hier nichts.
+# Ablauf: docs/release-prozess.md.
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: GitHub-Release anlegen
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Version aus package.json mit dem Tag abgleichen
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ "$GITHUB_REF_NAME" != "v$VERSION" ]]; then
+            echo "::error::Tag $GITHUB_REF_NAME passt nicht zu package.json ($VERSION)."
+            exit 1
+          fi
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+      - name: Release mit CHANGELOG-Abschnitt anlegen (falls noch nicht vorhanden)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            echo "Release $GITHUB_REF_NAME gibt es schon."
+            exit 0
+          fi
+          awk -v v="$VERSION" '
+            /^## \[/ { if (found) exit; if (index($0, "## [" v "]") == 1) { found = 1; next } }
+            found
+          ' CHANGELOG.md > notes.md
+          if [[ ! -s notes.md ]]; then
+            echo "::error::Kein CHANGELOG-Abschnitt für $VERSION gefunden."
+            exit 1
+          fi
+          gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file notes.md

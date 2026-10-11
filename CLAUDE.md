@@ -1,6 +1,6 @@
 # CLAUDE.md – Arbeitsregeln für KI-Coding-Tools
 
-Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Projekt-Blueprint führt. Ziele, Architektur und Phasen stehen im [Implementierungsplan](docs/implementierungsplan.md). Aktueller Stand: **Phase 8 umgesetzt** (v0.8.0), nächste Phase: 9 – Release & Wartung, nach Lucas Freigabe.
+Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Projekt-Blueprint führt. Ziele, Architektur und Phasen stehen im [Implementierungsplan](docs/implementierungsplan.md). Aktueller Stand: **v1.0.0, Implementierungsplan vollständig umgesetzt** (Phasen 0–9). Öffentlich unter https://lucaderg.github.io/blueprint-wizard/. Weiterentwicklung nach [Release-Prozess](docs/release-prozess.md); Ideen für später stehen im Plan unter „Spätere Ideen“.
 
 ## Stack
 
@@ -85,6 +85,8 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 - Zahlen, Daten und Beträge nur über `src/shared/lib/format.ts` formatieren (richtet sich nach der UI-Sprache), nie mit fest eingetragenem `'de-DE'`.
 - KI-Kosten: `UsageTrackingProvider` (`src/core/ai/usage.ts`) umschließt den Anbieter im `SettingsProvider`; die UI liest den Verbrauch über `useAiUsage()`. Ein neues Antwortschema bekommt den Text `usage.tasks.<schemaName>`.
 - Seiten außer Start und 404 werden per Route-`lazy` geladen. `renderRoute` löst sie vorab auf, Tests können also direkt abfragen.
+- Die App kann in einem Unterordner laufen (GitHub Pages, `BASE_PATH` beim Build, Router-`basename` aus `import.meta.env.BASE_URL`). **Keine absoluten Pfade** wie `href="/…"` oder `window.location = '/…'`: Links über den Router, Dateien über Vite.
+- Speichert `useProjectEditor` erfolglos, merkt `pendingSaves.ts` den ungespeicherten Stand (`rememberUnsaved`); die nächste Seite übernimmt ihn samt Fehler.
 - PWA über `vite-plugin-pwa`. In E2E ist der Service Worker blockiert (`serviceWorkers: 'block'`), nur `e2e/pwa.spec.ts` erlaubt ihn. `e2e/a11y.spec.ts` prüft alle Seiten mit axe (hell und dunkel); Lighthouse läuft in der CI (`lighthouserc.json`, Mindestwert 0,9).
 
 ## Tests
@@ -96,7 +98,7 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 - KI in Tests: `renderRoute(path, { settings: { apiKey: 'x' }, aiProvider: new MockAiProvider([...]) })`; OpenRouter-HTTP-Mocks in `src/test/msw/openrouter.ts`, in E2E per `page.route('https://openrouter.ai/api/v1/**')`.
 - Testdaten für Projekte: `makeProject()` und `withMaturity()` aus `src/core/blueprint/testing.ts`.
 - Neue Logik bekommt Tests. Abdeckung für `src/core/` ≥ 80 % Zeilen und Zweige (in `vitest.config.ts` erzwungen).
-- Prompts haben Golden Files in `src/core/ai/prompts/__golden__`. Bei einer bewussten Prompt-Änderung die VERSION erhöhen, mit `npx vitest run -u src/core/ai/prompts` neu erzeugen und die Diffs prüfen.
+- Prompts haben Golden Files in `src/core/ai/prompts/__golden__`. Bei einer bewussten Prompt-Änderung die VERSION erhöhen, mit `npx vitest run src/core/ai/prompts -u` (Pfad vor dem Flag, sonst läuft die ganze Suite) neu erzeugen und die Diffs prüfen.
 - Abnahmetest des Fragenmotors: `src/core/engine/acceptance.test.ts` mit Fixture (gespeicherte KI-Antwort, ohne Netzwerk).
 
 ## Vor jedem Commit
@@ -121,6 +123,12 @@ Am Ende jeder Phase abarbeiten:
 7. **Release-Tag:** z. B. `v0.3.0` nach Phase 3.
 8. **Übergabe-Notiz:** Was wurde gebaut, was ist offen, erster Schritt der nächsten Phase.
 9. **Kurzes Review mit Luca:** Demo/Screenshots, Freigabe für die nächste Phase.
+
+## Release & Wartung
+
+- Versionen nach SemVer; Ablauf, Pages-Veröffentlichung und Dependabot-Umgang stehen in `docs/release-prozess.md` (ADR 0010).
+- Veröffentlicht wird automatisch nach grüner CI auf `main` (`.github/workflows/pages.yml`); `release.yml` legt bei einem `v*.*.*`-Tag das GitHub-Release aus dem CHANGELOG an.
+- Ein neuer Blueprint-Abschnitt: Anleitung in `docs/neuer-abschnitt.md`.
 
 ## Konventionen
 
