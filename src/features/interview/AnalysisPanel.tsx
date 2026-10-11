@@ -10,7 +10,7 @@ interface AnalysisPanelProps {
   analysis: BlueprintAnalysis | null
   state: AnalysisState
   hasAi: boolean
-  /** Solange Vorschläge eingearbeitet werden, startet keine neue Analyse. */
+  /** Solange Antworten eingearbeitet werden, startet keine neue Analyse. */
   integrationRunning: boolean
   onAnalyze: () => void
   onCancel: () => void
@@ -46,16 +46,17 @@ export function AnalysisPanel({
             </Button>
           </div>
         ) : (
-          <Button size="sm" disabled={!hasAi || integrationRunning} onClick={onAnalyze}>
+          <Button
+            size="sm"
+            variant={analysis ? 'outline' : 'default'}
+            disabled={!hasAi || integrationRunning}
+            onClick={onAnalyze}
+          >
             <Sparkles className="size-4" aria-hidden />
             {analysis ? t('interview.analysis.rerun') : t('interview.analysis.run')}
           </Button>
         )}
       </div>
-
-      {integrationRunning && (
-        <p className="text-sm text-muted-foreground">{t('interview.analysis.integrationHint')}</p>
-      )}
 
       {state.status === 'error' && (
         <p
@@ -85,15 +86,11 @@ function AnalysisResult({ analysis }: { analysis: BlueprintAnalysis }) {
   const hasFindings = analysis.contradictions.length > 0 || analysis.gaps.length > 0
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
+      <p className="text-sm whitespace-pre-wrap">{analysis.summary}</p>
       <p className="text-xs text-muted-foreground">
         {t('interview.analysis.analyzedAt', { date: formatDateTime(analysis.analyzedAt) })}
       </p>
-
-      <div className="space-y-1">
-        <h3 className="font-semibold">{t('interview.analysis.summary')}</h3>
-        <p className="text-sm whitespace-pre-wrap">{analysis.summary}</p>
-      </div>
 
       {analysis.contradictions.length > 0 && (
         <section
@@ -112,12 +109,14 @@ function AnalysisResult({ analysis }: { analysis: BlueprintAnalysis }) {
       )}
 
       {analysis.gaps.length > 0 && (
-        <section aria-labelledby={gapsId} className="space-y-2">
-          <h3 id={gapsId} className="font-semibold">
-            {t('interview.analysis.gaps')}
-          </h3>
-          <FindingList findings={analysis.gaps} />
-        </section>
+        <details aria-labelledby={gapsId} className="space-y-2">
+          <summary id={gapsId} className="cursor-pointer font-semibold">
+            {t('interview.analysis.gapsWithCount', { count: analysis.gaps.length })}
+          </summary>
+          <div className="pt-2">
+            <FindingList findings={analysis.gaps} />
+          </div>
+        </details>
       )}
 
       {!hasFindings && (

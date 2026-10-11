@@ -46,3 +46,15 @@ wurde. Bisher lagen Fragen pro Abschnitt im Schema, ohne Optionen, Abhängigkeit
 - **KI liefert die fertige Reihenfolge:** einfacher, aber nicht reproduzierbar und nicht testbar.
 - **Fragen pro Abschnitt behalten:** Abhängigkeiten zwischen Abschnitten und ein gemeinsamer Verlauf wären umständlich.
 - **Antworten direkt in Abschnitte schreiben:** schneller, aber die KI könnte unbemerkt Inhalt entfernen.
+
+## Nachtrag (v0.5.1): Ein-Klick-Ablauf
+
+Die Bestätigung pro Frage und pro Abschnitt erwies sich in der Praxis als mühsam. Seit v0.5.1 gilt:
+
+- Eine Runde zeigt alle offenen Fragen (`MAX_ROUND_SIZE = 8`), die gemeinsam beantwortet und mit einem Klick
+  übernommen werden.
+- Vorschläge aus `integrateAnswers` werden direkt übernommen. Die Oberfläche zeigt eine Zusammenfassung mit
+  Vorher/Nachher und „Zurücknehmen“ (`revertIntegration`, nur solange der Abschnitt unverändert ist).
+- Nur stark kürzende Änderungen (`isSuspiciousShrink`) warten weiter auf Bestätigung. Damit bleibt der Schutz
+  vor unbemerkt entferntem Inhalt erhalten, ohne jeden Schritt zu bremsen.
+- Die Analyse läuft automatisch beim ersten Öffnen und wenn keine Fragen mehr offen sind.

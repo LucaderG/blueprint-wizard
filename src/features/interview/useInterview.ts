@@ -12,6 +12,7 @@ import {
   deferQuestion,
   integrateAnswers,
   prioritizeQuestions,
+  revertIntegration,
   selectRound,
   type IntegrationProposal,
   type Prioritization,
@@ -38,11 +39,18 @@ export type AnalysisState =
 export type IntegrationState =
   | { status: 'idle' }
   | { status: 'running'; questionIds: string[] }
-  | { status: 'review'; questionIds: string[]; proposals: IntegrationProposal[] }
+  | {
+      status: 'done'
+      questionIds: string[]
+      /** Automatisch übernommene Änderungen (lassen sich mit `revertApplied` zurücknehmen). */
+      applied: IntegrationProposal[]
+      /** Änderungen, die deutlich kürzen und deshalb erst nach Bestätigung übernommen werden. */
+      toReview: IntegrationProposal[]
+    }
   | { status: 'error'; questionIds: string[]; errorKey: InterviewErrorKey; detail: string | null }
 
 export interface InterviewController {
-  /** Fragen der aktuellen Runde (1–3), nach Priorität. */
+  /** Alle Fragen, die gerade gestellt werden können, nach Priorität. */
   round: Question[]
   prioritization: Prioritization
   analysis: AnalysisState
@@ -50,14 +58,21 @@ export interface InterviewController {
   hasAi: boolean
   /** Lässt die KI den Blueprint analysieren und neue Fragen vorschlagen. */
   analyze: () => Promise<void>
-  /** Speichert die Antworten der Runde (ein Rückgängig-Schritt) und arbeitet sie ein. */
+  /**
+   * Speichert alle Antworten und arbeitet sie mit einem Klick ein: Die KI formuliert die Abschnitte,
+   * die Änderungen werden direkt übernommen (rückgängig machbar). Nur stark kürzende Änderungen
+   * warten auf Bestätigung. Sind danach keine Fragen mehr offen, wird neu analysiert.
+   */
   submitRound: (drafts: Readonly<Record<string, AnswerDraft>>) => Promise<void>
+  /** Nimmt die zuletzt automatisch übernommenen Änderungen zurück. */
+  revertApplied: () => void
   acceptProposal: (sectionId: SectionId) => void
   rejectProposal: (sectionId: SectionId) => void
-  acceptAllProposals: () => void
+  /** Versucht das Einarbeiten nach einem Fehler noch einmal. */
+  retryIntegration: () => Promise<void>
   /** Fallback ohne KI: Antworten wörtlich an die Abschnitte anhängen. */
   appendWithoutAi: () => void
-  /** Schließt Fehlermeldungen bzw. die Vorschläge, ohne etwas zu übernehmen. */
+  /** Schließt die Zusammenfassung bzw. Fehlermeldung. */
   dismissIntegration: () => void
   cancel: () => void
 }
@@ -165,6 +180,17 @@ export function useInterview(editor: ReadyEditor): InterviewController {
     }
   }, [aiProvider, edit, settings.outputLanguage, t])
 
+  /**
+   * Neue Fragen holen, sobald keine stellbare Frage mehr offen ist (nach einer Runde). Übrig gebliebene
+   * „Später“-Fragen zählen nicht, sonst tauchte die eben zurückgestellte Frage sofort wieder auf.
+   */
+  const analyzeIfExhausted = useCallback(
+    (current: Project) => {
+      if (prioritizeQuestions(current).ready.length === 0) void analyze()
+    },
+    [analyze],
+  )
+
   const integrate = useCallback(
     async (questionIds: string[], basis: Project) => {
       if (questionIds.length === 0) return
@@ -183,9 +209,19 @@ export function useInterview(editor: ReadyEditor): InterviewController {
           signal: controller.signal,
         })
         if (controller.signal.aborted) return setIntegration(resetIfRunning)
+        const applied = proposals.filter((p) => !p.shrinkWarning)
+        const toReview = proposals.filter((p) => p.shrinkWarning)
+        if (applied.length > 0) {
+          const next = applyIntegration(projectRef.current, applied)
+          edit(() => next)
+          projectRef.current = next
+        }
         setIntegration(
-          proposals.length > 0 ? { status: 'review', questionIds, proposals } : { status: 'idle' },
+          proposals.length > 0
+            ? { status: 'done', questionIds, applied, toReview }
+            : { status: 'idle' },
         )
+        analyzeIfExhausted(projectRef.current)
       } catch (error) {
         if (controller.signal.aborted) return setIntegration(resetIfRunning)
         if (isAbort(error)) return setIntegration({ status: 'idle' })
@@ -194,7 +230,7 @@ export function useInterview(editor: ReadyEditor): InterviewController {
         finish(pendingRef, controller)
       }
     },
-    [aiProvider, edit, settings.outputLanguage, t],
+    [aiProvider, analyzeIfExhausted, edit, settings.outputLanguage, t],
   )
 
   const submitRound = useCallback(
@@ -204,44 +240,63 @@ export function useInterview(editor: ReadyEditor): InterviewController {
       if (next === projectRef.current) return
       edit(() => next)
       projectRef.current = next
-      await integrate(answeredIds, next)
+      if (answeredIds.length > 0) await integrate(answeredIds, next)
+      else analyzeIfExhausted(next)
     },
-    [edit, integrate],
+    [analyzeIfExhausted, edit, integrate],
   )
 
-  const removeProposals = useCallback((sectionIds: readonly SectionId[]) => {
+  const retryIntegration = useCallback(async () => {
+    if (integration.status !== 'error') return
+    await integrate(integration.questionIds, projectRef.current)
+  }, [integrate, integration])
+
+  const revertApplied = useCallback(() => {
+    if (integration.status !== 'done' || integration.applied.length === 0) return
+    const { applied } = integration
+    edit((current) => revertIntegration(current, applied))
+    setIntegration((state) =>
+      state.status === 'done'
+        ? state.toReview.length > 0
+          ? { ...state, applied: [] }
+          : { status: 'idle' }
+        : state,
+    )
+  }, [edit, integration])
+
+  const removeFromReview = useCallback((sectionId: SectionId) => {
     setIntegration((state) => {
-      if (state.status !== 'review') return state
-      const proposals = state.proposals.filter((p) => !sectionIds.includes(p.sectionId))
-      return proposals.length > 0 ? { ...state, proposals } : { status: 'idle' }
+      if (state.status !== 'done') return state
+      const toReview = state.toReview.filter((p) => p.sectionId !== sectionId)
+      return toReview.length > 0 || state.applied.length > 0
+        ? { ...state, toReview }
+        : { status: 'idle' }
     })
   }, [])
 
-  const reviewProposals = useMemo(
-    () => (integration.status === 'review' ? integration.proposals : []),
-    [integration],
-  )
-
   const acceptProposal = useCallback(
     (sectionId: SectionId) => {
-      const proposal = reviewProposals.find((p) => p.sectionId === sectionId)
+      if (integration.status !== 'done') return
+      const proposal = integration.toReview.find((p) => p.sectionId === sectionId)
       if (!proposal) return
       edit((current) => applyIntegration(current, [proposal]))
-      removeProposals([sectionId])
+      setIntegration((state) =>
+        state.status === 'done'
+          ? {
+              ...state,
+              applied: [...state.applied, proposal],
+              toReview: state.toReview.filter((p) => p.sectionId !== sectionId),
+            }
+          : state,
+      )
     },
-    [edit, removeProposals, reviewProposals],
+    [edit, integration],
   )
 
   const rejectProposal = useCallback(
-    (sectionId: SectionId) => removeProposals([sectionId]),
-    [removeProposals],
+    (sectionId: SectionId) => removeFromReview(sectionId),
+    [removeFromReview],
   )
-
-  const acceptAllProposals = useCallback(() => {
-    if (reviewProposals.length === 0) return
-    edit((current) => applyIntegration(current, reviewProposals))
-    setIntegration({ status: 'idle' })
-  }, [edit, reviewProposals])
 
   const appendWithoutAi = useCallback(() => {
     if (integration.status !== 'error') return
@@ -268,6 +323,19 @@ export function useInterview(editor: ReadyEditor): InterviewController {
     )
   }, [])
 
+  // Erster Besuch ohne Analyse und ohne Fragen: gleich analysieren, statt auf einen Klick zu warten.
+  const autoAnalyzed = useRef(false)
+  useEffect(() => {
+    if (autoAnalyzed.current || !aiProvider) return
+    const { interview } = projectRef.current
+    const hasPending = interview.questions.some(
+      (q) => q.status === 'open' || q.status === 'deferred',
+    )
+    if (interview.analysis !== null || hasPending) return
+    autoAnalyzed.current = true
+    void analyze()
+  }, [aiProvider, analyze])
+
   return {
     round,
     prioritization,
@@ -276,9 +344,10 @@ export function useInterview(editor: ReadyEditor): InterviewController {
     hasAi: aiProvider !== null,
     analyze,
     submitRound,
+    revertApplied,
     acceptProposal,
     rejectProposal,
-    acceptAllProposals,
+    retryIntegration,
     appendWithoutAi,
     dismissIntegration,
     cancel,

@@ -417,8 +417,8 @@ describe('selectRound', () => {
     )
 
   it('nutzt die Standardgröße, wenn keine Größe angegeben ist', () => {
-    expect(DEFAULT_ROUND_SIZE).toBe(3)
-    expect(selectRound(fiveReady())).toHaveLength(3)
+    expect(DEFAULT_ROUND_SIZE).toBe(MAX_ROUND_SIZE)
+    expect(selectRound(fiveReady())).toHaveLength(5)
   })
 
   it.each([
@@ -427,7 +427,7 @@ describe('selectRound', () => {
     [-5, 1],
     [2.7, 2],
     [3, 3],
-    [10, MAX_ROUND_SIZE],
+    [10, 5],
   ])('Größe %s ergibt %i Fragen', (size, expected) => {
     expect(selectRound(fiveReady(), size)).toHaveLength(expected)
   })

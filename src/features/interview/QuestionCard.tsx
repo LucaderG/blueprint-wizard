@@ -2,9 +2,7 @@ import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Question } from '@/core/blueprint'
 import { cn } from '@/shared/lib/utils'
-import { Button } from '@/shared/ui/button'
-import { Input } from '@/shared/ui/input'
-import type { AnswerDraft } from './useInterview'
+import { EMPTY_CARD_DRAFT, toAnswerDraft, type CardDraft } from './cardDraft'
 
 type LeverageLevel = 'foundation' | 'important' | 'detail'
 
@@ -23,28 +21,37 @@ const LEVERAGE_CLASS: Record<LeverageLevel, string> = {
 
 interface QuestionCardProps {
   question: Question
-  draft: AnswerDraft | undefined
-  onDraftChange: (draft: AnswerDraft | undefined) => void
+  draft: CardDraft
+  disabled: boolean
+  onDraftChange: (draft: CardDraft) => void
 }
 
-/** Eine Frage mit Optionen, optionaler Ergänzung, Freitext und „Später“. */
-export function QuestionCard({ question, draft, onDraftChange }: QuestionCardProps) {
+/**
+ * Kompakte Frage: Optionen zum Antippen (erneutes Antippen hebt die Wahl auf), ein Textfeld für eine
+ * eigene Antwort oder Ergänzung und „Später“.
+ */
+export function QuestionCard({ question, draft, disabled, onDraftChange }: QuestionCardProps) {
   const { t } = useTranslation()
   const headingId = useId()
   const helpId = useId()
   const groupName = useId()
-  const noteId = useId()
   const textId = useId()
 
   const level = leverageLevel(question.leverage)
-  const selectedOptionId = draft?.kind === 'option' ? draft.optionId : null
-  const note = draft?.kind === 'option' ? draft.note : ''
-  const text = draft?.kind === 'text' ? draft.text : ''
-  const later = draft?.kind === 'later'
+  const hasOptions = question.options.length > 0
+  const answered = toAnswerDraft(draft) !== null && !draft.later
 
   return (
-    <article aria-labelledby={headingId} className="space-y-4 rounded-lg border bg-card p-4">
-      <header className="space-y-2">
+    <article
+      aria-labelledby={headingId}
+      className={cn(
+        // Abstand nach unten, damit die feste Fußleiste der Runde fokussierte Karten nicht verdeckt.
+        'scroll-mb-24 space-y-3 rounded-lg border bg-card p-4 transition-colors',
+        answered && 'border-primary/50',
+        draft.later && 'opacity-60',
+      )}
+    >
+      <header className="space-y-1.5">
         <div className="flex flex-wrap items-center gap-2">
           <span className="rounded-full border border-border px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
             {t(`sections.${question.sectionId}`)}
@@ -54,8 +61,20 @@ export function QuestionCard({ question, draft, onDraftChange }: QuestionCardPro
           >
             {t(`interview.question.leverage.${level}`)}
           </span>
+          <button
+            type="button"
+            aria-pressed={draft.later}
+            disabled={disabled}
+            onClick={() => onDraftChange({ ...EMPTY_CARD_DRAFT, later: !draft.later })}
+            className={cn(
+              'ml-auto rounded-md px-2 py-1 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-50',
+              draft.later && 'bg-muted text-foreground',
+            )}
+          >
+            {t('interview.round.later')}
+          </button>
         </div>
-        <h3 id={headingId} className="text-lg font-semibold break-words">
+        <h3 id={headingId} className="font-semibold break-words">
           {question.text}
         </h3>
         {question.why && (
@@ -65,78 +84,59 @@ export function QuestionCard({ question, draft, onDraftChange }: QuestionCardPro
         )}
       </header>
 
-      {question.options.length > 0 && (
-        <fieldset className="space-y-2" aria-describedby={question.why ? helpId : undefined}>
-          <legend className="mb-2 text-sm font-medium">
-            {t('interview.question.optionsLegend')}
-          </legend>
-          {question.options.map((option) => (
-            <label
-              key={option.id}
-              className="flex cursor-pointer items-start gap-3 rounded-md border border-border p-3 text-sm hover:bg-muted has-[:checked]:border-primary has-[:checked]:bg-primary/5 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring"
+      {!draft.later && (
+        <>
+          {hasOptions && (
+            <fieldset
+              disabled={disabled}
+              aria-describedby={question.why ? helpId : undefined}
+              className="flex flex-wrap gap-2"
             >
-              <input
-                type="radio"
-                name={groupName}
-                value={option.id}
-                checked={selectedOptionId === option.id}
-                onChange={() => onDraftChange({ kind: 'option', optionId: option.id, note: note })}
-                className="mt-0.5 size-4 shrink-0 accent-primary"
-              />
-              <span className="leading-relaxed">{option.label}</span>
+              <legend className="sr-only">{t('interview.question.optionsLegend')}</legend>
+              {question.options.map((option) => {
+                const checked = draft.optionId === option.id
+                return (
+                  <label
+                    key={option.id}
+                    className="flex cursor-pointer items-center gap-2 rounded-full border border-border px-3 py-1.5 text-sm hover:bg-muted has-[:checked]:border-primary has-[:checked]:bg-primary/10 has-[:checked]:text-primary has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring"
+                  >
+                    <input
+                      type="radio"
+                      name={groupName}
+                      value={option.id}
+                      checked={checked}
+                      onChange={() => onDraftChange({ ...draft, optionId: option.id })}
+                      // Erneutes Antippen der gewählten Option hebt die Wahl wieder auf.
+                      onClick={() => checked && onDraftChange({ ...draft, optionId: null })}
+                      className="sr-only"
+                    />
+                    {option.label}
+                  </label>
+                )
+              })}
+            </fieldset>
+          )}
+
+          <div>
+            <label htmlFor={textId} className="sr-only">
+              {hasOptions ? t('interview.question.noteLabel') : t('interview.question.textLabel')}
             </label>
-          ))}
-        </fieldset>
+            <textarea
+              id={textId}
+              rows={hasOptions ? 1 : 2}
+              disabled={disabled}
+              value={draft.text}
+              placeholder={
+                hasOptions
+                  ? t('interview.question.notePlaceholder')
+                  : t('interview.question.textPlaceholder')
+              }
+              onChange={(event) => onDraftChange({ ...draft, text: event.target.value })}
+              className="w-full resize-y rounded-md border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:opacity-50"
+            />
+          </div>
+        </>
       )}
-
-      {selectedOptionId !== null && (
-        <div className="space-y-1.5">
-          <label htmlFor={noteId} className="text-sm font-medium">
-            {t('interview.question.noteLabel')}
-          </label>
-          <Input
-            id={noteId}
-            value={note}
-            onChange={(event) =>
-              onDraftChange({
-                kind: 'option',
-                optionId: selectedOptionId,
-                note: event.target.value,
-              })
-            }
-          />
-        </div>
-      )}
-
-      <div className="space-y-1.5">
-        <label htmlFor={textId} className="text-sm font-medium">
-          {t('interview.question.textLabel')}
-        </label>
-        <textarea
-          id={textId}
-          rows={3}
-          value={text}
-          onChange={(event) =>
-            onDraftChange(
-              event.target.value === '' ? undefined : { kind: 'text', text: event.target.value },
-            )
-          }
-          className="w-full rounded-md border border-border bg-background p-3 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-        />
-      </div>
-
-      <div className="flex justify-end">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          aria-pressed={later}
-          className={cn(later && 'border-primary bg-primary/5 text-primary')}
-          onClick={() => onDraftChange(later ? undefined : { kind: 'later' })}
-        >
-          {t('interview.round.later')}
-        </Button>
-      </div>
     </article>
   )
 }

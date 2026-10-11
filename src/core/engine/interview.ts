@@ -22,6 +22,7 @@ import type {
   Project,
   Question,
   QuestionAnswer,
+  SectionSource,
 } from '@/core/blueprint/schema'
 import { SECTION_IDS, type SectionId } from '@/core/blueprint/sections'
 import { clampLeverage, cleanTextList, keepHighestLeverage, normalizeText } from './cleaning'
@@ -297,6 +298,9 @@ export interface IntegrationProposal {
   before: string
   after: string
   maturity: Maturity
+  /** Stand vor dem Einarbeiten, damit sich die Übernahme gezielt zurücknehmen lässt. */
+  beforeMaturity: Maturity
+  beforeSource: SectionSource
   /** Der neue Text ist deutlich kürzer als der alte – möglicher Datenverlust. */
   shrinkWarning: boolean
 }
@@ -362,13 +366,16 @@ export async function integrateAnswers({
     const after = suggestion.content.trim()
     if (!affected.includes(suggestion.id) || after === '') continue
     if (proposals.some((p) => p.sectionId === suggestion.id)) continue
-    const before = project.blueprint.sections[suggestion.id].content
+    const section = project.blueprint.sections[suggestion.id]
+    const before = section.content
     if (after === before.trim()) continue
     proposals.push({
       sectionId: suggestion.id,
       before,
       after,
       maturity: suggestion.maturity === 'empty' ? 'vague' : suggestion.maturity,
+      beforeMaturity: section.maturity,
+      beforeSource: section.source,
       shrinkWarning: isSuspiciousShrink(before, after),
     })
   }
@@ -389,6 +396,27 @@ export function applyIntegration(
       }),
     project,
   )
+}
+
+/**
+ * Nimmt übernommene Vorschläge zurück (Abschnitt wieder auf den Stand davor). Abschnitte, die seitdem
+ * anders bearbeitet wurden, bleiben unverändert, damit keine spätere Änderung verloren geht.
+ */
+export function revertIntegration(
+  project: Project,
+  proposals: readonly Pick<
+    IntegrationProposal,
+    'sectionId' | 'before' | 'after' | 'beforeMaturity' | 'beforeSource'
+  >[],
+): Project {
+  return proposals.reduce((current, p) => {
+    if (current.blueprint.sections[p.sectionId].content !== p.after) return current
+    return updateSection(current, p.sectionId, {
+      content: p.before,
+      maturity: p.beforeMaturity,
+      source: p.beforeSource,
+    })
+  }, project)
 }
 
 /**

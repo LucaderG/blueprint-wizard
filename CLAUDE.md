@@ -1,6 +1,6 @@
 # CLAUDE.md – Arbeitsregeln für KI-Coding-Tools
 
-Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Projekt-Blueprint führt. Ziele, Architektur und Phasen stehen im [Implementierungsplan](docs/implementierungsplan.md). Aktueller Stand: **Phase 5 abgeschlossen** (v0.5.0), nächste Phase: 6 – Ideenfindung von Null.
+Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Projekt-Blueprint führt. Ziele, Architektur und Phasen stehen im [Implementierungsplan](docs/implementierungsplan.md). Aktueller Stand: **Phase 5 abgeschlossen** (v0.5.1), nächste Phase: 6 – Ideenfindung von Null.
 
 ## Stack
 
@@ -43,7 +43,8 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 - Die Reihenfolge der Fragen bestimmt nur `src/core/engine/prioritization.ts`, nie die KI.
 - KI-Ergebnisse der Lückenanalyse übernimmt `applyAnalysis` (`src/core/engine/interview.ts`), das Eingaben bereinigt.
 - Antworten und „Später“ laufen über `answerQuestion` / `deferQuestion`, jeweils mit Verlaufseintrag.
-- Einarbeiten der Antworten nur als Vorschlag: `integrateAnswers` → Bestätigung → `applyIntegration`.
+- Alle offenen Fragen einer Runde (`selectRound`, bis zu 8) werden gemeinsam beantwortet und mit einem Klick übernommen (`submitRound`).
+- Einarbeiten: `integrateAnswers` liefert Vorschläge; unauffällige werden direkt übernommen (rücknehmbar über `revertIntegration`), nur stark kürzende (`isSuspiciousShrink`) warten auf Bestätigung → `applyIntegration`.
 - Die UI nutzt den Fragenmotor ausschließlich über `useInterview(editor)` (`src/features/interview/useInterview.ts`).
 
 ## Entscheidungen & Vorschläge

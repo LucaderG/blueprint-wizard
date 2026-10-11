@@ -6,6 +6,19 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 
 ## [Unreleased]
 
+## [0.5.1] – 2026-10-11 – Reibungsloserer Fragen-Ablauf
+
+### Geändert
+
+- Die Fragen-Seite zeigt alle offenen Fragen (bis zu 8) auf einmal. Man beantwortet, was man weiß, und übernimmt alles mit einem Klick auf „Antworten übernehmen“ (oder Strg/Cmd + Enter). Unbeantwortete Fragen bleiben stehen, „Später“ ist ein Schalter direkt an der Frage.
+- Die KI arbeitet die Antworten danach direkt in den Blueprint ein, ohne Bestätigung pro Abschnitt. Eine kurze Zusammenfassung nennt die geänderten Abschnitte, mit „Änderungen ansehen“ (Vorher/Nachher) und „Zurücknehmen“. Nur Änderungen, die einen Abschnitt stark kürzen, warten auf Bestätigung.
+- Die Analyse startet beim ersten Öffnen automatisch und läuft erneut, sobald alle Fragen beantwortet sind. Folgefragen erscheinen dadurch ohne zusätzlichen Klick.
+- Rundengröße von 3 auf 8 Fragen erhöht.
+
+### Hinzugefügt
+
+- `revertIntegration` im Kern nimmt eingearbeitete Änderungen zurück, solange der Abschnitt seitdem nicht weiter bearbeitet wurde.
+
 ## [0.5.0] – 2026-10-11 – Phase 5: Entscheidungen & Vorschläge
 
 ### Hinzugefügt

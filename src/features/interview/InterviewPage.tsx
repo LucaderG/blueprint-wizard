@@ -7,14 +7,14 @@ import { useProjectEditor, type ProjectEditorState } from '@/features/projects/u
 import { ApiKeyNotice } from '@/features/settings/ApiKeyNotice'
 import { Button } from '@/shared/ui/button'
 import { AnalysisPanel } from './AnalysisPanel'
+import { ChangesSummary } from './ChangesSummary'
 import { InterviewHistory } from './InterviewHistory'
-import { IntegrationReview } from './IntegrationReview'
 import { QuestionRound } from './QuestionRound'
 import { useInterview } from './useInterview'
 
 type ReadyState = Extract<ProjectEditorState, { status: 'ready' }>
 
-/** Fragenseite eines Projekts: Analyse, Fragerunde, Vorschläge zum Übernehmen und Verlauf. */
+/** Fragenseite eines Projekts: Analyse, alle offenen Fragen auf einmal, Rückmeldung und Verlauf. */
 export function InterviewPage() {
   const { t } = useTranslation()
   const { projectId = '' } = useParams()
@@ -101,24 +101,24 @@ function InterviewView(editor: ReadyState) {
         onCancel={controller.cancel}
       />
 
-      {controller.integration.status === 'idle' ? (
-        <QuestionRound
-          round={controller.round}
-          blockedCount={controller.prioritization.blocked.length}
-          analysisRunning={analysisRunning}
-          onSubmit={controller.submitRound}
-        />
-      ) : (
-        <IntegrationReview
-          integration={controller.integration}
-          acceptProposal={controller.acceptProposal}
-          rejectProposal={controller.rejectProposal}
-          acceptAllProposals={controller.acceptAllProposals}
-          appendWithoutAi={controller.appendWithoutAi}
-          dismissIntegration={controller.dismissIntegration}
-          cancel={controller.cancel}
-        />
-      )}
+      <ChangesSummary
+        integration={controller.integration}
+        revertApplied={controller.revertApplied}
+        acceptProposal={controller.acceptProposal}
+        rejectProposal={controller.rejectProposal}
+        retryIntegration={controller.retryIntegration}
+        appendWithoutAi={controller.appendWithoutAi}
+        dismissIntegration={controller.dismissIntegration}
+        cancel={controller.cancel}
+      />
+
+      <QuestionRound
+        round={controller.round}
+        blockedCount={controller.prioritization.blocked.length}
+        analysisRunning={analysisRunning}
+        integrationRunning={integrationRunning}
+        onSubmit={controller.submitRound}
+      />
 
       <InterviewHistory log={project.interview.log} />
     </div>

@@ -79,6 +79,23 @@ describe('applyDrafts', () => {
     expect(project.interview.log.map((e) => e.action)).toEqual(['answered', 'deferred'])
   })
 
+  it('speichert eine Option mit Ergänzung als Antwort und schreibt sie in den Verlauf', () => {
+    const { project, answeredIds } = applyDrafts(
+      projectWithQuestions(),
+      { q2: { kind: 'option', optionId: 'q2-o1', note: 'Für Teams' } },
+      now,
+    )
+
+    expect(answeredIds).toEqual(['q2'])
+    expect(project.interview.questions.find((q) => q.id === 'q2')).toMatchObject({
+      status: 'answered',
+      answer: { kind: 'option', optionId: 'q2-o1', note: 'Für Teams' },
+    })
+    expect(project.interview.log).toMatchObject([
+      { questionId: 'q2', action: 'answered', answerText: 'Web – Für Teams' },
+    ])
+  })
+
   it('liefert ohne Entwürfe dasselbe Projekt zurück', () => {
     const original = projectWithQuestions()
 

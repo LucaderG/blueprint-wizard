@@ -136,7 +136,7 @@ async function saveKey(page: Page) {
   await expect(page.getByText('Key gespeichert')).toBeVisible()
 }
 
-test('Fragenmotor: Analyse, Grundsatzfrage beantworten, Später, Vorschlag übernehmen, Verlauf und Neuladen', async ({
+test('Fragenmotor: automatische Analyse, Antworten übernehmen, Änderungen, Verlauf und Neuladen', async ({
   page,
 }) => {
   await mockOpenRouter(page)
@@ -151,40 +151,46 @@ test('Fragenmotor: Analyse, Grundsatzfrage beantworten, Später, Vorschlag über
   await dialog.getByRole('button', { name: 'Anlegen' }).click()
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Fragenmotor-Test')
 
-  // Fragen-Seite öffnen.
+  // Fragen-Seite öffnen: die Analyse startet beim ersten Besuch von selbst.
   await page.getByRole('link', { name: 'Fragen beantworten' }).click()
   await expect(page).toHaveURL(/\/projekte\/[\w-]+\/fragen$/)
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Fragenmotor-Test')
 
-  // Analyse: Grundsatzfragen erscheinen, die Detailfrage bleibt zurück.
-  await page.getByRole('button', { name: 'Blueprint analysieren', exact: true }).click()
+  // Alle stellbaren Fragen auf einmal, die Grundsatzfrage zur Plattform an erster Stelle.
+  // Die Detailfrage bleibt zurück, solange die Grundsatzabschnitte leer sind.
   const platformCard = page.getByRole('article').filter({
     has: page.getByRole('heading', { name: PLATFORM }),
   })
   await expect(platformCard).toBeVisible()
   await expect(page.getByRole('heading', { name: AUDIENCE })).toBeVisible()
   await expect(page.getByRole('heading', { name: DETAIL })).toHaveCount(0)
-  // Die Grundsatzfrage zur Plattform steht an erster Stelle der Runde.
-  const round = page.getByRole('region', { name: 'Fragen', exact: true })
+  const round = page.getByRole('region', { name: /Offene Fragen/ })
   await expect(round.getByRole('listitem').first()).toContainText(PLATFORM)
+  await expect(page.getByRole('button', { name: 'Neu analysieren' })).toBeEnabled()
 
-  // Erste Frage beantworten, zweite zurückstellen, speichern.
-  await platformCard.getByRole('radio', { name: 'Web', exact: true }).check()
+  // Plattform beantworten, Zielgruppe zurückstellen, alles mit einem Klick übernehmen.
+  // Die Option wird über ihr sichtbares Label gewählt, wie von einer Person. Die Fußleiste der
+  // Runde ist sticky, daher wird die Karte vorher in die Mitte des Viewports geholt.
+  const web = platformCard.getByText('Web', { exact: true })
+  await web.evaluate((element) => element.scrollIntoView({ block: 'center' }))
+  await web.click()
+  await expect(platformCard.getByRole('radio', { name: 'Web', exact: true })).toBeChecked()
   const audienceCard = page.getByRole('article').filter({
     has: page.getByRole('heading', { name: AUDIENCE }),
   })
   await audienceCard.getByRole('button', { name: 'Später', exact: true }).click()
-  await page.getByRole('button', { name: 'Antworten speichern', exact: true }).click()
+  await page.getByRole('button', { name: 'Antworten übernehmen', exact: true }).click()
 
-  // Vorschlag mit Vorher/Nachher erscheint und wird übernommen.
-  const proposal = page.getByRole('article').filter({
-    has: page.getByRole('heading', { name: TECH_SECTION }),
-  })
-  await expect(proposal.getByText('Vorher', { exact: true })).toBeVisible()
-  await expect(proposal.getByText('Nachher', { exact: true })).toBeVisible()
-  await expect(proposal.getByText(TECH_TEXT)).toBeVisible()
-  await proposal.getByRole('button', { name: 'Übernehmen', exact: true }).click()
-  await expect(proposal).toHaveCount(0)
+  // Erfolgsmeldung: der Abschnitt wurde direkt eingearbeitet.
+  await expect(
+    page.getByText(`Eingearbeitet in 1 Abschnitt: ${TECH_SECTION}.`, { exact: true }),
+  ).toBeVisible()
+
+  // Änderungen ansehen: Vorher und Nachher.
+  await page.getByText('Änderungen ansehen', { exact: true }).click()
+  await expect(page.getByText('Vorher', { exact: true })).toBeVisible()
+  await expect(page.getByText('Nachher', { exact: true })).toBeVisible()
+  await expect(page.getByText(TECH_TEXT)).toBeVisible()
 
   // Verlauf: Antwort und „Später“ sind sichtbar.
   const history = page.locator('details', { hasText: 'Verlauf' })

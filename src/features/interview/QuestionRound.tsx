@@ -1,120 +1,141 @@
-import { useState } from 'react'
+import { Check, LoaderCircle } from 'lucide-react'
+import { useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Question } from '@/core/blueprint'
 import { Button } from '@/shared/ui/button'
+import { EMPTY_CARD_DRAFT, toAnswerDraft, type CardDraft } from './cardDraft'
 import { QuestionCard } from './QuestionCard'
-import { isAnswered, type AnswerDraft } from './useInterview'
+import type { AnswerDraft } from './useInterview'
 
 interface QuestionRoundProps {
   round: Question[]
   /** Anzahl der Fragen, die noch auf andere Antworten warten. */
   blockedCount: number
   analysisRunning: boolean
+  integrationRunning: boolean
   onSubmit: (drafts: Readonly<Record<string, AnswerDraft>>) => Promise<void>
 }
 
-/** Die aktuelle Fragerunde (1–3 Fragen) mit lokalen Entwürfen, bis sie gespeichert werden. */
+/**
+ * Alle offenen Fragen auf einmal. Beantwortet wird, was man weiß; ein Klick auf „Antworten übernehmen“
+ * speichert alles und arbeitet es in den Blueprint ein. Unbeantwortete Fragen bleiben stehen.
+ */
 export function QuestionRound({
   round,
   blockedCount,
   analysisRunning,
+  integrationRunning,
   onSubmit,
 }: QuestionRoundProps) {
   const { t } = useTranslation()
-  // Entwürfe nach Frage-ID. Die ID-Liste ist ein String, damit der Effekt nur bei echten Änderungen läuft.
-  const [drafts, setDrafts] = useState<Record<string, AnswerDraft>>({})
+  const [drafts, setDrafts] = useState<Record<string, CardDraft>>({})
   const [submitting, setSubmitting] = useState(false)
-  const roundKey = round.map((q) => q.id).join(',')
-  const [draftsRoundKey, setDraftsRoundKey] = useState(roundKey)
+  const busy = submitting || analysisRunning || integrationRunning
 
-  // Entwürfe für Fragen verwerfen, die nicht mehr in der Runde stehen. Die Anpassung passiert beim
-  // Rendern (React-Muster für abgeleiteten State), nicht in einem Effekt.
-  if (draftsRoundKey !== roundKey) {
-    const ids = new Set(roundKey.split(','))
-    setDraftsRoundKey(roundKey)
-    setDrafts((previous) =>
-      Object.fromEntries(Object.entries(previous).filter(([id]) => ids.has(id))),
-    )
-  }
-
-  const setDraft = (questionId: string, draft: AnswerDraft | undefined) =>
-    setDrafts((previous) => {
-      const next = { ...previous }
-      if (draft) next[questionId] = draft
-      else delete next[questionId]
-      return next
-    })
-
-  // Nur Entwürfe, die eine Antwort oder „Später“ enthalten, und nur Fragen dieser Runde.
-  const sendable = round.flatMap((question): [string, AnswerDraft][] => {
+  // Nur Entwürfe zu Fragen, die gerade angezeigt werden; alte IDs (nach neuer Analyse) zählen nicht.
+  const answers = round.flatMap((question): [string, AnswerDraft][] => {
     const draft = drafts[question.id]
-    return draft && (isAnswered(draft) || draft.kind === 'later') ? [[question.id, draft]] : []
+    const answer = draft ? toAnswerDraft(draft) : null
+    return answer ? [[question.id, answer]] : []
   })
-  const canSubmit = sendable.length > 0 && !analysisRunning && !submitting
+  const answeredCount = answers.filter(([, a]) => a.kind !== 'later').length
+  const laterCount = answers.length - answeredCount
+  const canSubmit = answers.length > 0 && !busy
 
   async function handleSubmit() {
     if (!canSubmit) return
-    const sent = Object.fromEntries(sendable)
+    const sent = Object.fromEntries(answers)
     setSubmitting(true)
     try {
       await onSubmit(sent)
     } finally {
       setSubmitting(false)
-      setDrafts((previous) => {
-        const next = { ...previous }
-        for (const id of Object.keys(sent)) delete next[id]
-        return next
-      })
+      setDrafts((previous) =>
+        Object.fromEntries(Object.entries(previous).filter(([id]) => !(id in sent))),
+      )
     }
   }
 
-  return (
-    <section aria-labelledby="interview-round-heading" className="space-y-4">
-      <div className="space-y-1">
+  // Strg/Cmd + Enter übernimmt die Antworten aus jedem Textfeld heraus.
+  function handleKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+      event.preventDefault()
+      void handleSubmit()
+    }
+  }
+
+  if (round.length === 0) {
+    return (
+      <section aria-labelledby="interview-round-heading" className="space-y-2">
         <h2 id="interview-round-heading" className="text-xl font-semibold">
           {t('interview.round.title')}
         </h2>
-        {round.length > 0 && (
-          <p className="text-sm text-muted-foreground">{t('interview.round.lead')}</p>
-        )}
-      </div>
-
-      {round.length === 0 ? (
         <div className="space-y-2 rounded-lg border border-dashed p-4 text-sm">
-          <p>{t('interview.round.empty')}</p>
+          {analysisRunning ? (
+            <p role="status" className="flex items-center gap-2">
+              <LoaderCircle className="size-4 shrink-0 animate-spin" aria-hidden />
+              {t('interview.round.searching')}
+            </p>
+          ) : (
+            <p>{t('interview.round.empty')}</p>
+          )}
           {blockedCount > 0 && (
-            <>
-              <p className="font-medium">{t('interview.round.blocked', { count: blockedCount })}</p>
-              <p className="text-muted-foreground">{t('interview.round.blockedHint')}</p>
-            </>
+            <p className="text-muted-foreground">
+              {t('interview.round.blocked', { count: blockedCount })}
+            </p>
           )}
         </div>
-      ) : (
-        <>
-          <ol className="space-y-3">
-            {round.map((question) => (
-              <li key={question.id}>
-                <QuestionCard
-                  question={question}
-                  draft={drafts[question.id]}
-                  onDraftChange={(draft) => setDraft(question.id, draft)}
-                />
-              </li>
-            ))}
-          </ol>
+      </section>
+    )
+  }
 
-          <div className="flex flex-wrap items-center justify-end gap-3">
-            {analysisRunning && (
-              <p className="text-sm text-muted-foreground">
-                {t('interview.round.analysisRunning')}
-              </p>
-            )}
-            <Button disabled={!canSubmit} onClick={() => void handleSubmit()}>
-              {t('interview.round.save')}
-            </Button>
-          </div>
-        </>
-      )}
+  return (
+    <section
+      aria-labelledby="interview-round-heading"
+      className="space-y-3"
+      onKeyDown={handleKeyDown}
+    >
+      <div className="space-y-1">
+        <h2 id="interview-round-heading" className="text-xl font-semibold">
+          {t('interview.round.titleWithCount', { count: round.length })}
+        </h2>
+        <p className="text-sm text-muted-foreground">{t('interview.round.lead')}</p>
+      </div>
+
+      <ol className="space-y-3">
+        {round.map((question) => (
+          <li key={question.id}>
+            <QuestionCard
+              question={question}
+              draft={drafts[question.id] ?? EMPTY_CARD_DRAFT}
+              disabled={busy}
+              onDraftChange={(draft) =>
+                setDrafts((previous) => ({ ...previous, [question.id]: draft }))
+              }
+            />
+          </li>
+        ))}
+      </ol>
+
+      <div className="sticky bottom-0 -mx-1 flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-background/95 p-3 shadow-sm backdrop-blur">
+        <p className="text-sm text-muted-foreground" aria-live="polite">
+          {integrationRunning
+            ? t('interview.integration.running')
+            : t('interview.round.progress', {
+                answered: answeredCount,
+                total: round.length,
+                later: laterCount,
+              })}
+        </p>
+        <Button disabled={!canSubmit} onClick={() => void handleSubmit()}>
+          {busy ? (
+            <LoaderCircle className="size-4 animate-spin" aria-hidden />
+          ) : (
+            <Check className="size-4" aria-hidden />
+          )}
+          {t('interview.round.submit')}
+        </Button>
+      </div>
     </section>
   )
 }

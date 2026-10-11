@@ -43,8 +43,12 @@ export const SECTION_PREREQUISITES: Record<SectionId, readonly SectionId[]> = {
   roadmap: ['features'],
 }
 
-export const DEFAULT_ROUND_SIZE = 3
-export const MAX_ROUND_SIZE = 3
+/**
+ * Eine Runde zeigt alle stellbaren Fragen auf einmal (so viele, wie eine Analyse höchstens liefert),
+ * damit sie gemeinsam beantwortet werden können.
+ */
+export const MAX_ROUND_SIZE = 8
+export const DEFAULT_ROUND_SIZE = MAX_ROUND_SIZE
 
 export type BlockReason =
   | { kind: 'dependency'; questionIds: string[] }
@@ -152,7 +156,7 @@ export function prioritizeQuestions(project: Project): Prioritization {
 }
 
 /**
- * Wählt die Fragen der nächsten Runde (1–3).
+ * Wählt die Fragen der nächsten Runde (bis zu `MAX_ROUND_SIZE`).
  * Reihenfolge der Quellen: stellbare Fragen; sind keine da, zurückgestellte („Später“);
  * sind auch die erschöpft, Fragen, die nur an leeren Abschnitten hängen (sonst ginge es nie weiter).
  * Fragen mit offener Abhängigkeit kommen nie vor ihrer Voraussetzung.

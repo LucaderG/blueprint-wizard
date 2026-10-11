@@ -19,6 +19,7 @@ import type {
 } from '@/core/blueprint/schema'
 import { projectSchema } from '@/core/blueprint/schema'
 import type { SectionId } from '@/core/blueprint/sections'
+import { updateSection } from '@/core/blueprint/editing'
 import { makeProject } from '@/core/blueprint/testing'
 import {
   analyzeBlueprint,
@@ -31,6 +32,7 @@ import {
   InterviewError,
   integrateAnswers,
   isSuspiciousShrink,
+  revertIntegration,
 } from './interview'
 
 // ---------------------------------------------------------------------------
@@ -815,9 +817,34 @@ describe('integrateAnswers – Vorschläge', () => {
         before: FEATURES,
         after: `${FEATURES}\n- Erinnerung`,
         maturity: 'decided',
+        beforeMaturity: 'vague',
+        beforeSource: 'user',
         shrinkWarning: false,
       },
     ])
+  })
+
+  it('merkt sich Reifegrad und Quelle des Abschnitts vor dem Einarbeiten', async () => {
+    const project = withSection(integrationProject(), 'features', {
+      maturity: 'decided',
+      source: 'aiSuggestion',
+    })
+    const { proposals } = await integrateAnswers({
+      provider: new MockAiProvider([
+        integrationResponse([
+          { id: 'features', content: `${FEATURES}\n- Erinnerung`, maturity: 'vague' },
+        ]),
+      ]),
+      project,
+      questionIds: ['f1'],
+      language: 'de',
+    })
+
+    expect(proposals[0]).toMatchObject({
+      beforeMaturity: 'decided',
+      beforeSource: 'aiSuggestion',
+      maturity: 'vague',
+    })
   })
 
   it('verwirft Abschnitte, die nicht betroffen sind', async () => {
@@ -917,6 +944,105 @@ describe('applyIntegration', () => {
     const project = integrationProject()
 
     expect(applyIntegration(project, [])).toEqual(project)
+  })
+})
+
+describe('revertIntegration', () => {
+  /** Vorschlag wie ihn `integrateAnswers` für den Abschnitt „features“ liefert. */
+  const featuresProposal = {
+    sectionId: 'features' as const,
+    before: FEATURES,
+    after: `${FEATURES}\n- Erinnerung`,
+    maturity: 'decided' as const,
+    beforeMaturity: 'vague' as const,
+    beforeSource: 'user' as const,
+  }
+
+  it('stellt Inhalt, Reife und Quelle des Abschnitts wieder her', () => {
+    const project = integrationProject()
+    const applied = applyIntegration(project, [featuresProposal])
+
+    const result = revertIntegration(applied, [featuresProposal])
+
+    expect(result.blueprint.sections.features).toEqual(project.blueprint.sections.features)
+    expectValid(result)
+  })
+
+  it('stellt einen zuvor leeren Abschnitt wieder leer her', () => {
+    const project = integrationProject()
+    const proposal = {
+      sectionId: 'audience' as const,
+      before: '',
+      after: 'Einzelpersonen für mich',
+      maturity: 'vague' as const,
+      beforeMaturity: 'empty' as const,
+      beforeSource: 'user' as const,
+    }
+    const applied = applyIntegration(project, [proposal])
+
+    const result = revertIntegration(applied, [proposal])
+
+    expect(result.blueprint.sections.audience).toEqual({
+      id: 'audience',
+      content: '',
+      maturity: 'empty',
+      source: 'user',
+    })
+    expectValid(result)
+  })
+
+  it('lässt einen Abschnitt unverändert, der seit dem Einarbeiten anders bearbeitet wurde', () => {
+    const applied = applyIntegration(integrationProject(), [featuresProposal])
+    const edited = updateSection(applied, 'features', { content: 'Eigene Änderung' })
+
+    const result = revertIntegration(edited, [featuresProposal])
+
+    expect(result.blueprint.sections.features.content).toBe('Eigene Änderung')
+    expect(result.blueprint.sections.features).toEqual(edited.blueprint.sections.features)
+  })
+
+  it('stellt nur die übergebenen Abschnitte wieder her und lässt andere unberührt', () => {
+    const project = integrationProject()
+    const audienceProposal = {
+      sectionId: 'audience' as const,
+      before: '',
+      after: 'Einzelpersonen',
+      maturity: 'vague' as const,
+      beforeMaturity: 'empty' as const,
+      beforeSource: 'user' as const,
+    }
+    const applied = applyIntegration(project, [featuresProposal, audienceProposal])
+
+    const result = revertIntegration(applied, [featuresProposal])
+
+    expect(result.blueprint.sections.features).toEqual(project.blueprint.sections.features)
+    expect(result.blueprint.sections.audience).toEqual(applied.blueprint.sections.audience)
+    expect(result.blueprint.sections.risks).toBe(project.blueprint.sections.risks)
+    expect(result.interview).toEqual(project.interview)
+  })
+
+  it('nimmt mehrere Übernahmen gemeinsam zurück', () => {
+    const project = integrationProject()
+    const audienceProposal = {
+      sectionId: 'audience' as const,
+      before: '',
+      after: 'Einzelpersonen',
+      maturity: 'vague' as const,
+      beforeMaturity: 'empty' as const,
+      beforeSource: 'user' as const,
+    }
+    const applied = applyIntegration(project, [featuresProposal, audienceProposal])
+
+    const result = revertIntegration(applied, [featuresProposal, audienceProposal])
+
+    expect(result.blueprint).toEqual(project.blueprint)
+    expectValid(result)
+  })
+
+  it('verändert nichts ohne Vorschläge', () => {
+    const project = integrationProject()
+
+    expect(revertIntegration(project, [])).toEqual(project)
   })
 })
 
