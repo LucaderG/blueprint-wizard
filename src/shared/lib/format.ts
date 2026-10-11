@@ -12,3 +12,10 @@ export function formatDateTime(iso: string): string {
 export function formatPercent(value: number): string {
   return percentFormat.format(value / 100)
 }
+
+const usdFormat = new Intl.NumberFormat(LOCALE, { style: 'currency', currency: 'USD' })
+
+/** Formatiert einen Dollarbetrag deutsch, z. B. „1,25 $“. */
+export function formatUsd(value: number): string {
+  return usdFormat.format(value)
+}

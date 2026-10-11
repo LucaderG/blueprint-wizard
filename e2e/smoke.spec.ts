@@ -12,7 +12,7 @@ test('App startet und zeigt die Startseite', async ({ page }) => {
 
 test('Einstellungen sind erreichbar', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('link', { name: 'Einstellungen' }).click()
+  await page.getByRole('link', { name: 'Einstellungen', exact: true }).click()
 
   await expect(page).toHaveURL(/\/einstellungen$/)
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Einstellungen')

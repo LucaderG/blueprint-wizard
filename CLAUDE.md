@@ -1,6 +1,6 @@
 # CLAUDE.md – Arbeitsregeln für KI-Coding-Tools
 
-Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Projekt-Blueprint führt. Ziele, Architektur und Phasen stehen im [Implementierungsplan](docs/implementierungsplan.md). Aktueller Stand: **Phase 1 abgeschlossen**, nächste Phase: 2 – Einstellungen & OpenRouter-Anbindung.
+Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Projekt-Blueprint führt. Ziele, Architektur und Phasen stehen im [Implementierungsplan](docs/implementierungsplan.md). Aktueller Stand: **Phase 2 abgeschlossen**, nächste Phase: 3 – Wizard-Gerüst & Einstiegspunkte.
 
 ## Stack
 
@@ -10,7 +10,7 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 - Vitest + Testing Library + MSW, Playwright für E2E
 - ESLint + Prettier, Husky + lint-staged
 - Zod 4 für alle Datenschemas (`src/core/blueprint/schema.ts`), Dexie 4 für IndexedDB (`src/core/storage`)
-- Geplant: OpenRouter (KI) ab Phase 2.
+- OpenRouter als KI-Anbieter (`src/core/ai`, ADR 0003); Einstellungen in `localStorage` (`src/core/settings`).
 - Pfad-Alias: `@/` zeigt auf `src/`.
 
 ## Architekturregeln
@@ -30,12 +30,20 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 - Komponenten greifen nur über `useProjectRepository()` auf Projekte zu, nie direkt auf Dexie.
 - Neue Repository-Logik gehört in `projectOperations.ts`, damit IndexedDB- und Memory-Variante gleich bleiben; die Vertrags-Testsuite `projectRepository.contract.ts` prüft beide.
 
+## KI-Aufrufe
+
+- Features holen den Anbieter über `useAiProvider()` (`null` ohne Key → `ApiKeyNotice` bzw. Link zu den Einstellungen zeigen). Nie direkt `fetch` auf OpenRouter.
+- Strukturierte Antworten immer über `generateStructured()` mit Zod-Schema. Im Schema `.nullable()` statt `.optional()` (Strict-Modus).
+- Fehler sind `AiError`; Meldungen kommen über `aiErrorKey()` aus `src/features/settings/aiErrors.ts` (`ai.errors.*`).
+- Prompts kommen ab Phase 3 als versionierte Dateien nach `src/core/ai/prompts/`.
+
 ## Tests
 
 - **Tests rufen nie echte APIs auf.** MSW läuft in jedem Test mit `onUnhandledRequest: 'error'` (`src/test/setup.ts`); nicht gemockte Requests lassen den Test fehlschlagen. Handler kommen in `src/test/msw/handlers.ts` oder per `server.use(...)` im Test.
 - Unit- und Komponententests liegen neben dem Code als `*.test.ts` / `*.test.tsx`.
 - E2E-Tests liegen in `e2e/` (Playwright, Chromium).
 - Seiten testen mit `renderRoute('/pfad', { repository })` aus `src/test/render.tsx` (Standard: frisches `MemoryProjectRepository`).
+- KI in Tests: `renderRoute(path, { settings: { apiKey: 'x' }, aiProvider: new MockAiProvider([...]) })`; OpenRouter-HTTP-Mocks in `src/test/msw/openrouter.ts`, in E2E per `page.route('https://openrouter.ai/api/v1/**')`.
 - Testdaten für Projekte: `makeProject()` und `withMaturity()` aus `src/core/blueprint/testing.ts`.
 - Neue Logik bekommt Tests. Abdeckung für `src/core/` ≥ 80 % Zeilen und Zweige (in `vitest.config.ts` erzwungen).
 

@@ -1,12 +1,17 @@
 import { useTranslation } from 'react-i18next'
+import { ApiKeySection } from './ApiKeySection'
+import { ModelSection } from './ModelSection'
+import { ResponseSection } from './ResponseSection'
 
 export function SettingsPage() {
   const { t } = useTranslation()
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-8">
       <h1 className="text-2xl font-semibold">{t('settings.title')}</h1>
-      <p className="text-muted-foreground">{t('settings.placeholder')}</p>
+      <ApiKeySection />
+      <ModelSection />
+      <ResponseSection />
     </div>
   )
 }

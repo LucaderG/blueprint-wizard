@@ -1,6 +1,7 @@
 import { Lightbulb, ListChecks, PenLine } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { ProjectsSection } from '@/features/projects/ProjectsSection'
+import { ApiKeyNotice } from '@/features/settings/ApiKeyNotice'
 
 const entryPoints = [
   { key: 'noIdea', icon: Lightbulb },
@@ -34,6 +35,8 @@ export function HomePage() {
       </ul>
 
       <p className="text-sm text-muted-foreground">{t('home.comingSoon')}</p>
+
+      <ApiKeyNotice />
 
       <ProjectsSection />
     </div>

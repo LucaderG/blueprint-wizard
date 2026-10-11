@@ -6,6 +6,23 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.0] – Phase 2: Einstellungen & OpenRouter-Anbindung
+
+### Hinzugefügt
+
+- KI-Schnittstelle `AiProvider` mit `OpenRouterProvider` (Antworten und Streaming) und `MockAiProvider` für Tests.
+- Einheitliche KI-Fehler (`AiError`) für ungültigen Key, fehlendes Guthaben, Rate-Limit, Timeout, Netzwerk, nicht verfügbares Modell, Fehler mitten im Stream und mehr.
+- Strukturierte Antworten: Zod-Schema → JSON-Schema, Validierung und genau ein automatischer Reparaturversuch (`generateStructured`).
+- Key-Prüfung und Modellliste über die OpenRouter-API; Standardmodell `anthropic/claude-sonnet-5.5`.
+- Einstellungsspeicher in `localStorage` mit Rückfall auf Standardwerte pro Feld.
+- Einstellungsseite mit OpenRouter-API-Key (anzeigen/verbergen, speichern, „Verbindung testen“ mit Guthaben-Anzeige, „Key löschen“ mit Bestätigung).
+- Modellauswahl mit Textfilter, Filter für strukturierte Antworten, Preisen pro Million Tokens und manueller Modell-ID bei Ladefehler.
+- Einstellungen für Temperatur und Antwortsprache.
+- Hinweis auf der Startseite, solange kein API-Key hinterlegt ist.
+- Zuordnung aller KI-Fehlercodes zu deutschen Meldungen (`ai.errors.*`).
+- E2E-Tests für die Einstellungen; OpenRouter wird dort per `page.route` gemockt.
+- ADR 0003 zur KI-Anbindung.
+
 ## [0.1.0] – Phase 1: Datenmodell & Speicherung
 
 ### Hinzugefügt

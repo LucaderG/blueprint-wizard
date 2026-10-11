@@ -24,11 +24,72 @@
         "description": "Füge dein Konzept ein. Wir prüfen Lücken und schärfen Details."
       }
     },
-    "comingSoon": "Der Wizard ist in Arbeit und wird in den nächsten Phasen freigeschaltet."
+    "comingSoon": "Der Wizard ist in Arbeit und wird in den nächsten Phasen freigeschaltet.",
+    "apiKeyNotice": {
+      "text": "Für die KI-Funktionen brauchst du einen OpenRouter-API-Key.",
+      "link": "Zu den Einstellungen"
+    }
   },
   "settings": {
     "title": "Einstellungen",
-    "placeholder": "Hier hinterlegst du bald deinen OpenRouter-API-Key."
+    "saved": "Gespeichert",
+    "apiKey": {
+      "title": "OpenRouter-API-Key",
+      "intro": "Der Blueprint-Wizard nutzt OpenRouter für seine KI-Funktionen. Dafür brauchst du einen eigenen API-Key von OpenRouter.",
+      "createLink": "API-Key bei OpenRouter erstellen",
+      "label": "API-Key",
+      "placeholder": "sk-or-…",
+      "show": "Key anzeigen",
+      "hide": "Key verbergen",
+      "statusSaved": "Key gespeichert",
+      "statusNone": "Kein Key hinterlegt",
+      "privacy": "Dein Key wird nur in diesem Browser gespeichert und ausschließlich an OpenRouter gesendet.",
+      "save": "Speichern",
+      "test": "Verbindung testen",
+      "testing": "Verbindung wird geprüft …",
+      "testSuccess": "Verbindung erfolgreich",
+      "usage": "Bisher verbraucht: {{usage}}",
+      "remaining": "Verbleibendes Limit: {{remaining}}",
+      "freeTier": "Kostenloses Konto",
+      "delete": "Key löschen",
+      "deleteDialog": {
+        "title": "Key löschen?",
+        "description": "Der gespeicherte API-Key wird aus diesem Browser entfernt. Die KI-Funktionen sind danach erst wieder nutzbar, wenn du einen neuen Key hinterlegst.",
+        "confirm": "Löschen",
+        "cancel": "Abbrechen"
+      }
+    },
+    "model": {
+      "title": "Modell",
+      "intro": "Das Modell bestimmt, welche KI antwortet und was jede Anfrage kostet.",
+      "current": "Aktuelles Modell",
+      "restore": "Standard wiederherstellen",
+      "filterLabel": "Modelle filtern",
+      "filterPlaceholder": "Name oder ID, z. B. claude",
+      "structuredOnly": "Nur Modelle mit strukturierten Antworten",
+      "listLabel": "Verfügbare Modelle",
+      "loading": "Modelle werden geladen …",
+      "loadError": "Die Modellliste konnte nicht geladen werden. Du kannst die Modell-ID auch direkt eintragen.",
+      "retry": "Erneut versuchen",
+      "manualLabel": "Modell-ID",
+      "manualPlaceholder": "z. B. anthropic/claude-sonnet-5.5",
+      "manualSubmit": "Übernehmen",
+      "noResults": "Keine Modelle passen zu deinem Filter.",
+      "optionLabel": "{{name}} – {{prices}}",
+      "prices": "Eingabe {{input}}, Ausgabe {{output}} pro Mio. Tokens",
+      "free": "kostenlos",
+      "unknownPrice": "unbekannt"
+    },
+    "response": {
+      "title": "Antworten",
+      "temperatureLabel": "Kreativität (Temperatur)",
+      "temperatureHint": "0 = vorhersehbar, 2 = sehr kreativ",
+      "languageLabel": "Antwortsprache",
+      "languages": {
+        "de": "Deutsch",
+        "en": "English"
+      }
+    }
   },
   "notFound": {
     "title": "Seite nicht gefunden",
@@ -119,5 +180,21 @@
     "empty": "leer",
     "vague": "vage",
     "decided": "entschieden"
+  },
+  "ai": {
+    "errors": {
+      "missingKey": "Es ist noch kein API-Key hinterlegt. Trage ihn in den Einstellungen ein.",
+      "invalidKey": "Der API-Key ist ungültig oder wurde widerrufen.",
+      "insufficientCredits": "Dein OpenRouter-Guthaben reicht nicht aus. Lade es auf und versuch es dann erneut.",
+      "forbidden": "Dein API-Key darf dieses Modell nicht verwenden.",
+      "rateLimited": "Es wurden gerade zu viele Anfragen gesendet. Warte einen Moment und versuch es erneut.",
+      "timeout": "Die KI hat zu lange gebraucht. Versuch es noch einmal.",
+      "network": "Keine Verbindung zu OpenRouter. Prüfe deine Internetverbindung.",
+      "modelUnavailable": "Das gewählte Modell ist gerade nicht verfügbar. Wähle in den Einstellungen ein anderes Modell.",
+      "badRequest": "OpenRouter hat die Anfrage abgelehnt. Prüfe das gewählte Modell in den Einstellungen.",
+      "invalidResponse": "Die Antwort der KI hatte ein unerwartetes Format.",
+      "aborted": "Die Anfrage wurde abgebrochen.",
+      "unknown": "Das hat leider nicht geklappt. Bitte versuch es noch einmal."
+    }
   }
 }
