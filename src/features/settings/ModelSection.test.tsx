@@ -58,7 +58,7 @@ describe('Abschnitt Modell', () => {
 
   it('filtert per Text nach Name und ID', async () => {
     const user = userEvent.setup()
-    renderRoute('/einstellungen')
+    renderRoute('/einstellungen', { settings: { model: 'anthropic/claude-sonnet-5.5' } })
 
     const filter = await screen.findByRole('searchbox', { name: 'Modelle filtern' })
     await user.type(filter, 'HAIKU')
@@ -68,7 +68,7 @@ describe('Abschnitt Modell', () => {
       within(list)
         .getAllByRole('option')
         .map((option) => option.getAttribute('value')),
-    ).toEqual([DEFAULT_MODEL, 'anthropic/claude-haiku-5.5'])
+    ).toEqual(['anthropic/claude-sonnet-5.5', 'anthropic/claude-haiku-5.5'])
 
     await user.clear(filter)
     await user.type(filter, 'haiku-5.5')

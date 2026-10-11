@@ -6,6 +6,10 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 
 ## [Unreleased]
 
+### Geändert
+
+- Standardmodell ist jetzt `anthropic/claude-haiku-5.5` (vorher `anthropic/claude-sonnet-5.5`). Bereits gespeicherte Einstellungen bleiben unverändert.
+
 ## [0.2.0] – Phase 2: Einstellungen & OpenRouter-Anbindung
 
 ### Hinzugefügt

@@ -13,7 +13,7 @@ import type {
 export const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
 export const OPENROUTER_KEYS_URL = 'https://openrouter.ai/keys'
 /** Standardmodell (Entscheidung Phase 2, siehe ADR 0003). In den Einstellungen frei änderbar. */
-export const DEFAULT_MODEL = 'anthropic/claude-sonnet-5.5'
+export const DEFAULT_MODEL = 'anthropic/claude-haiku-5.5'
 export const DEFAULT_TIMEOUT_MS = 90_000
 
 type FetchFn = typeof fetch

@@ -24,9 +24,11 @@ aus dem Browser auf. Antworten der KI müssen später zuverlässig in das Bluepr
   Felder als Pflicht verlangt.
 - **Einstellungen in `localStorage`** (`src/core/settings`), nicht in IndexedDB: wenige kleine Werte,
   synchron lesbar beim Start. Ungültige Felder fallen einzeln auf Standardwerte zurück.
-- **Standardmodell `anthropic/claude-sonnet-5.5`:** stark im Schlussfolgern und mit strukturierten
-  Antworten laut OpenRouter-Modellliste (Stand 2026-10-11), Kosten etwa 2 $ / 10 $ pro Million Tokens.
-  Günstigere Alternative: `anthropic/claude-haiku-5.5`. In den Einstellungen frei wählbar.
+- **Standardmodell `anthropic/claude-haiku-5.5`:** schnell, günstig (etwa 0,10 $ / 0,50 $ pro Million
+  Tokens) und mit strukturierten Antworten laut OpenRouter-Modellliste. Ursprünglich war
+  `anthropic/claude-sonnet-5.5` gewählt; nach dem ersten echten Test hat Luca am 2026-10-11 Haiku 5.5 als
+  Standard festgelegt. Sonnet 5.5 bleibt die Empfehlung für tiefere Analysen und ist in den Einstellungen
+  frei wählbar.
 - **Timeout 90 Sekunden** pro Anfrage, Abbruch über `AbortSignal` möglich.
 
 ## Konsequenzen
