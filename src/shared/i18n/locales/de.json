@@ -1,0 +1,37 @@
+{
+  "app": {
+    "name": "Blueprint-Wizard"
+  },
+  "nav": {
+    "label": "Hauptnavigation",
+    "settings": "Einstellungen"
+  },
+  "home": {
+    "title": "Von der Idee zum Blueprint",
+    "subtitle": "Egal wo du stehst: Wir arbeiten gemeinsam einen Projekt-Scope aus, mit dem du direkt loslegen kannst.",
+    "entryPointsLabel": "Einstiegspunkte",
+    "entry": {
+      "noIdea": {
+        "title": "Ich habe keine Idee",
+        "description": "Wir finden gemeinsam eine Idee, die zu dir passt."
+      },
+      "partialIdea": {
+        "title": "Ich habe eine Teil-Idee",
+        "description": "Beschreib, was du hast. Wir finden heraus, was noch fehlt."
+      },
+      "almostDone": {
+        "title": "Ich habe fast alles",
+        "description": "Füge dein Konzept ein. Wir prüfen Lücken und schärfen Details."
+      }
+    },
+    "comingSoon": "Der Wizard ist in Arbeit und wird in den nächsten Phasen freigeschaltet."
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "placeholder": "Hier hinterlegst du bald deinen OpenRouter-API-Key."
+  },
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "back": "Zur Startseite"
+  }
+}
