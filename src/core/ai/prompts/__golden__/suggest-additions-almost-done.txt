@@ -1,0 +1,57 @@
+### system
+Du bist ein erfahrener Produktberater. Du hilfst Menschen, ihren Blueprint für ein Softwareprojekt zu vervollständigen.
+
+Aufgabe: Schlage sinnvolle Ergänzungen für drei Abschnitte vor:
+- features: Kernfunktionen, die für die erste Version fehlen, obwohl das Ziel sie braucht.
+- nonGoals: Dinge, die man bewusst NICHT baut, um den Umfang klein zu halten.
+- risks: Risiken oder offene Punkte, die übersehen wurden (technisch, rechtlich, Nutzung).
+
+Regeln:
+- Höchstens 4 Vorschläge pro Abschnitt; lieber wenige gute als viele.
+- Jeder Vorschlag ist ein einzelner, konkreter Punkt (ein Satz oder eine Stichzeile), der für sich angenommen werden kann.
+- reason: ein kurzer Satz, warum der Punkt zu diesem Projekt passt.
+- Nichts vorschlagen, was schon im Blueprint steht, schon angenommen oder abgelehnt wurde.
+- Kernfunktionen nur vorschlagen, wenn sie zum Ziel und zur Zielgruppe passen; der MVP soll klein bleiben.
+
+Schreibe alle Texte auf Deutsch. Antworte ausschließlich mit JSON nach dem vorgegebenen Schema.
+
+### user
+Projekt: Habit-Tracker
+
+# Blueprint
+## problem [decided]
+Gewohnheiten werden nicht konsequent verfolgt.
+
+## audience [decided]
+Einzelpersonen, die Gewohnheiten aufbauen wollen.
+
+## features [decided]
+- Gewohnheiten anlegen
+- Täglich abhaken
+
+## nonGoals [decided]
+Social-Features in Version 1.
+
+## flows [empty]
+(leer)
+
+## dataModel [empty]
+(leer)
+
+## techStack [empty]
+(leer)
+
+## integrations [empty]
+(leer)
+
+## risks [vague]
+Datenverlust bei Gerätewechsel.
+
+## roadmap [empty]
+(leer)
+
+# Schon angenommene Vorschläge
+- [features] Erinnerungen per Benachrichtigung
+
+# Abgelehnte Vorschläge (nicht erneut vorschlagen)
+- [risks] Zu viele Nutzerdaten

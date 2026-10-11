@@ -1,3 +1,7 @@
 export * from './classification'
 export * from './interview'
 export * from './prioritization'
+export * from './additions'
+export * from './cleaning'
+export * from './contradictions'
+export * from './decisions'

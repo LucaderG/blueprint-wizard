@@ -1,4 +1,4 @@
-import { ArrowLeft, MessageCircleQuestion, Redo2, Undo2 } from 'lucide-react'
+import { ArrowLeft, MessageCircleQuestion, Redo2, Scale, Undo2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import {
@@ -9,7 +9,8 @@ import {
   type Maturity,
   type SectionId,
 } from '@/core/blueprint'
-import { prioritizeQuestions } from '@/core/engine'
+import { detectContradictions, prioritizeQuestions, rankDecisions } from '@/core/engine'
+import { DecisionLog } from '@/features/decisions/DecisionLog'
 import type { ProjectEditorState } from '@/features/projects/useProjectEditor'
 import { CompletenessBar } from '@/features/projects/CompletenessBar'
 import { Button } from '@/shared/ui/button'
@@ -38,6 +39,8 @@ export function BlueprintOverview({
   const completeness = computeCompleteness(project.blueprint)
   const counts = countByMaturity(project.blueprint)
   const openQuestions = prioritizeQuestions(project).ready.length
+  const contradictionCount = detectContradictions(project).length
+  const decisionLog = rankDecisions(project).log
 
   useHistoryShortcuts({ canUndo, canRedo, undo, redo })
 
@@ -81,6 +84,23 @@ export function BlueprintOverview({
                 )}
               </Link>
             </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link to={`/projekte/${project.id}/entscheidungen`}>
+                <Scale className="size-4" aria-hidden />
+                {t('blueprint.toolbar.decisions')}
+                {contradictionCount > 0 && (
+                  <span
+                    role="img"
+                    aria-label={t('blueprint.toolbar.contradictions', {
+                      count: contradictionCount,
+                    })}
+                    className="rounded-full bg-destructive px-1.5 text-xs text-destructive-foreground"
+                  >
+                    {contradictionCount}
+                  </span>
+                )}
+              </Link>
+            </Button>
           </div>
           <SaveStatus saveState={saveState} onRetry={() => void flush()} />
         </div>
@@ -105,6 +125,8 @@ export function BlueprintOverview({
           ))}
         </ol>
       </section>
+
+      {decisionLog.length > 0 && <DecisionLog readOnly decisions={decisionLog} />}
     </div>
   )
 }

@@ -1,6 +1,8 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { decisionsResultSchema } from '@/core/ai/prompts'
 import { updateSection, type Project, type SectionId } from '@/core/blueprint'
+import { applyDecisionCandidates, decide } from '@/core/engine'
 import { MemoryProjectRepository } from '@/core/storage'
 import { renderRoute } from '@/test/render'
 
@@ -346,5 +348,98 @@ describe('Projektseite', () => {
     expect(router.state.location.pathname).toBe(`/projekte/${id}/fragen`)
     expect(await screen.findByRole('heading', { level: 1, name: 'Alpha' })).toBeVisible()
     expect(screen.getByRole('heading', { level: 2, name: 'Fragen' })).toBeVisible()
+  })
+
+  it('führt über „Entscheidungen & Vorschläge“ zur Entscheidungsseite', async () => {
+    const user = userEvent.setup()
+    const { repository, id } = await seedProject()
+    const { router } = renderRoute(`/projekte/${id}`, { repository })
+    await screen.findByRole('heading', { level: 1, name: 'Alpha' })
+
+    await user.click(screen.getByRole('link', { name: 'Entscheidungen & Vorschläge' }))
+
+    expect(router.state.location.pathname).toBe(`/projekte/${id}/entscheidungen`)
+    expect(
+      await screen.findByRole('heading', { level: 2, name: 'Wichtigste Entscheidungen' }),
+    ).toBeVisible()
+    expect(screen.getByRole('heading', { level: 2, name: 'Vorschläge' })).toBeVisible()
+  })
+
+  it('zeigt die Zahl der Widersprüche als Warn-Badge am Link', async () => {
+    const { repository, id } = await seedProject((project) => {
+      const withTech = updateSection(project, 'techStack', {
+        content: 'Offline-first mit lokaler Datenbank.',
+      })
+      return updateSection(withTech, 'features', {
+        content: 'Echtzeit-Zusammenarbeit für Teams',
+      })
+    })
+
+    await openProject(repository, id)
+
+    const link = screen.getByRole('link', { name: /Entscheidungen & Vorschläge/ })
+    expect(within(link).getByRole('img', { name: '1 Widerspruch' })).toHaveTextContent('1')
+  })
+
+  it('zeigt kein Warn-Badge ohne Widersprüche', async () => {
+    const { repository, id } = await seedProject()
+
+    await openProject(repository, id)
+
+    expect(screen.getByRole('link', { name: 'Entscheidungen & Vorschläge' })).toBeVisible()
+    expect(screen.queryByRole('img', { name: /Widerspruch/ })).not.toBeInTheDocument()
+  })
+
+  it('zeigt das Entscheidungsprotokoll nur, wenn es getroffene Entscheidungen gibt', async () => {
+    const { repository, id } = await seedProject((project) => {
+      const seeded = applyDecisionCandidates(
+        project,
+        decisionsResultSchema.parse({
+          decisions: [
+            {
+              sectionId: 'techStack',
+              title: 'Web-App oder native App?',
+              context: '',
+              leverage: 5,
+              options: [
+                { label: 'Web-App', pros: [], cons: [], consequence: '' },
+                { label: 'Native App', pros: [], cons: [], consequence: '' },
+              ],
+              recommendedOption: null,
+            },
+          ],
+        }),
+        { now: new Date() },
+      )
+      const decision = seeded.decisions[0]!
+      return decide(
+        seeded,
+        decision.id,
+        decision.options[1]!.id,
+        'Weil es passt.',
+        new Date('2026-10-11T10:00:00Z'),
+      )
+    })
+
+    await openProject(repository, id)
+
+    const heading = screen.getByRole('heading', { level: 2, name: 'Entscheidungsprotokoll' })
+    const log = heading.closest('section') as HTMLElement
+    expect(
+      within(log).getByRole('heading', { level: 3, name: 'Web-App oder native App?' }),
+    ).toBeVisible()
+    expect(within(log).getByText('Native App')).toBeVisible()
+    expect(within(log).getByText('Weil es passt.')).toBeVisible()
+    expect(within(log).queryByRole('button')).not.toBeInTheDocument()
+  })
+
+  it('zeigt kein Entscheidungsprotokoll ohne getroffene Entscheidungen', async () => {
+    const { repository, id } = await seedProject()
+
+    await openProject(repository, id)
+
+    expect(
+      screen.queryByRole('heading', { level: 2, name: 'Entscheidungsprotokoll' }),
+    ).not.toBeInTheDocument()
   })
 })

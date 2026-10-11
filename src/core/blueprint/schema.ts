@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { SECTION_IDS, type SectionId } from './sections'
 
 /** Aktuelle Version des gespeicherten Projektformats. Bei jeder Schemaänderung erhöhen und eine Migration ergänzen. */
-export const CURRENT_SCHEMA_VERSION = 2
+export const CURRENT_SCHEMA_VERSION = 3
 
 export const sectionIdSchema = z.enum(SECTION_IDS)
 
@@ -17,34 +17,11 @@ export type SectionSource = z.infer<typeof sectionSourceSchema>
 /** Wie stark eine Frage oder Entscheidung das Projekt verändert (1 = Detail, 5 = Grundsatz). */
 export const leverageSchema = z.number().int().min(1).max(5)
 
-export const decisionOptionSchema = z.object({
-  id: z.string().min(1),
-  label: z.string().min(1),
-  consequence: z.string(),
-})
-export type DecisionOption = z.infer<typeof decisionOptionSchema>
-
-export const decisionSchema = z
-  .object({
-    id: z.string().min(1),
-    question: z.string().min(1),
-    options: z.array(decisionOptionSchema).min(2),
-    chosenOptionId: z.string().nullable(),
-    rationale: z.string(),
-    leverage: leverageSchema,
-  })
-  .refine((d) => d.chosenOptionId === null || d.options.some((o) => o.id === d.chosenOptionId), {
-    message: 'chosenOptionId muss auf eine vorhandene Option zeigen',
-    path: ['chosenOptionId'],
-  })
-export type Decision = z.infer<typeof decisionSchema>
-
 export const sectionSchema = z.object({
   id: sectionIdSchema,
   content: z.string(),
   maturity: maturitySchema,
   source: sectionSourceSchema,
-  decisions: z.array(decisionSchema),
 })
 export type Section = z.infer<typeof sectionSchema>
 
@@ -156,6 +133,75 @@ export const interviewSchema = z
   })
 export type Interview = z.infer<typeof interviewSchema>
 
+export const decisionOptionSchema = z.object({
+  id: z.string().min(1),
+  label: z.string().min(1),
+  pros: z.array(z.string().min(1)),
+  cons: z.array(z.string().min(1)),
+  /** Was diese Wahl für das Projekt bedeutet (Folgen für Aufwand, Technik, Umfang). */
+  consequence: z.string(),
+})
+export type DecisionOption = z.infer<typeof decisionOptionSchema>
+
+/** `dismissed` = verworfen oder durch eine neue Ermittlung überholt. */
+export const decisionStatusSchema = z.enum(['open', 'decided', 'dismissed'])
+export type DecisionStatus = z.infer<typeof decisionStatusSchema>
+
+export const decisionSchema = z
+  .object({
+    id: z.string().min(1),
+    /** Abschnitt, den die Entscheidung vor allem prägt. */
+    sectionId: sectionIdSchema,
+    title: z.string().min(1),
+    /** Warum die Entscheidung ansteht und was davon abhängt. */
+    context: z.string(),
+    leverage: leverageSchema,
+    options: z.array(decisionOptionSchema).min(2),
+    recommendedOptionId: z.string().nullable(),
+    chosenOptionId: z.string().nullable(),
+    /** Begründung der Wahl (Entscheidungsprotokoll). */
+    rationale: z.string(),
+    status: decisionStatusSchema,
+    createdAt: z.iso.datetime(),
+    decidedAt: z.iso.datetime().nullable(),
+  })
+  .refine((d) => (d.status === 'decided') === (d.chosenOptionId !== null), {
+    message: 'Nur entschiedene Entscheidungen haben eine gewählte Option',
+    path: ['chosenOptionId'],
+  })
+  .refine((d) => (d.status === 'decided') === (d.decidedAt !== null), {
+    message: 'Nur entschiedene Entscheidungen haben einen Zeitpunkt',
+    path: ['decidedAt'],
+  })
+  .refine(
+    (d) =>
+      [d.chosenOptionId, d.recommendedOptionId].every(
+        (id) => id === null || d.options.some((o) => o.id === id),
+      ),
+    { message: 'Option muss vorhanden sein', path: ['options'] },
+  )
+export type Decision = z.infer<typeof decisionSchema>
+
+/** Abschnitte, für die der Vorschlagsmodus Ergänzungen macht. */
+export const ADDITION_SECTION_IDS = ['features', 'nonGoals', 'risks'] as const
+export const additionSectionIdSchema = z.enum(ADDITION_SECTION_IDS)
+export type AdditionSectionId = z.infer<typeof additionSectionIdSchema>
+
+/** Ein Ergänzungsvorschlag der KI (Vorschlagsmodus), einzeln annehmbar oder ablehnbar. */
+export const additionSchema = z.object({
+  id: z.string().min(1),
+  sectionId: additionSectionIdSchema,
+  text: z.string().min(1),
+  reason: z.string(),
+  status: z.enum(['open', 'accepted', 'rejected', 'dismissed']),
+  createdAt: z.iso.datetime(),
+  resolvedAt: z.iso.datetime().nullable(),
+})
+export type Addition = z.infer<typeof additionSchema>
+
+const uniqueIds = (items: readonly { id: string }[]) =>
+  new Set(items.map((item) => item.id)).size === items.length
+
 export const projectSchema = z.object({
   schemaVersion: z.literal(CURRENT_SCHEMA_VERSION),
   id: z.string().min(1),
@@ -165,5 +211,7 @@ export const projectSchema = z.object({
   updatedAt: z.iso.datetime(),
   blueprint: blueprintSchema,
   interview: interviewSchema,
+  decisions: z.array(decisionSchema).refine(uniqueIds, 'Entscheidungs-IDs müssen eindeutig sein'),
+  additions: z.array(additionSchema).refine(uniqueIds, 'Vorschlags-IDs müssen eindeutig sein'),
 })
 export type Project = z.infer<typeof projectSchema>

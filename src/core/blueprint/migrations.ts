@@ -13,6 +13,7 @@ export type MigrationMap = Readonly<Record<number, Migration>>
  */
 export const PROJECT_MIGRATIONS: MigrationMap = {
   1: migrateV1ToV2,
+  2: migrateV2ToV3,
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -117,4 +118,62 @@ export function migrateProject(data: unknown): Project {
     })
   }
   return result.data
+}
+
+/**
+ * v2 → v3: Entscheidungen wandern aus den Abschnitten in die projektweite Liste `decisions`
+ * (mit Vor-/Nachteilen, Status und Zeitpunkten); neu ist die Liste `additions` (Vorschlagsmodus).
+ * Aus `question` wird `title`; eine gewählte Option macht die Entscheidung zu „entschieden“.
+ */
+function migrateV2ToV3(data: Record<string, unknown>): Record<string, unknown> {
+  const timestamp = typeof data.updatedAt === 'string' ? data.updatedAt : new Date(0).toISOString()
+  const decisions: Record<string, unknown>[] = []
+  let blueprint = data.blueprint
+
+  if (isRecord(data.blueprint) && isRecord(data.blueprint.sections)) {
+    const sections: Record<string, unknown> = {}
+    for (const [key, section] of Object.entries(data.blueprint.sections)) {
+      if (!isRecord(section)) {
+        sections[key] = section
+        continue
+      }
+      const { decisions: oldDecisions, ...rest } = section
+      sections[key] = rest
+      if (!Array.isArray(oldDecisions)) continue
+      for (const old of oldDecisions) {
+        if (!isRecord(old)) continue
+        const options = Array.isArray(old.options) ? old.options.filter(isRecord) : []
+        // Unbrauchbare Altdaten (weniger als zwei Optionen) entfallen, statt das Projekt zu sperren.
+        if (options.length < 2) continue
+        // Eine gewählte Option, die es nicht mehr gibt, macht die Entscheidung wieder offen.
+        const chosen =
+          typeof old.chosenOptionId === 'string' && options.some((o) => o.id === old.chosenOptionId)
+            ? old.chosenOptionId
+            : null
+        decisions.push({
+          id: old.id,
+          sectionId: key,
+          title: old.question,
+          context: '',
+          leverage: old.leverage,
+          options: options.map((o) => ({
+            id: o.id,
+            label: o.label,
+            pros: [],
+            cons: [],
+            consequence: typeof o.consequence === 'string' ? o.consequence : '',
+          })),
+          recommendedOptionId: null,
+          chosenOptionId: chosen,
+          rationale: typeof old.rationale === 'string' ? old.rationale : '',
+          status: chosen ? 'decided' : 'open',
+          createdAt: timestamp,
+          decidedAt: chosen ? timestamp : null,
+        })
+      }
+    }
+    blueprint = { ...data.blueprint, sections }
+  }
+
+  return { ...data, schemaVersion: 3, blueprint, decisions, additions: [] }
 }

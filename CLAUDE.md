@@ -1,6 +1,6 @@
 # CLAUDE.md – Arbeitsregeln für KI-Coding-Tools
 
-Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Projekt-Blueprint führt. Ziele, Architektur und Phasen stehen im [Implementierungsplan](docs/implementierungsplan.md). Aktueller Stand: **Phase 4 abgeschlossen** (v0.4.0), nächste Phase: 5 – Entscheidungen & Vorschläge.
+Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Projekt-Blueprint führt. Ziele, Architektur und Phasen stehen im [Implementierungsplan](docs/implementierungsplan.md). Aktueller Stand: **Phase 5 abgeschlossen** (v0.5.0), nächste Phase: 6 – Ideenfindung von Null.
 
 ## Stack
 
@@ -28,6 +28,7 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 - Das Zod-Schema in `src/core/blueprint/schema.ts` ist die Quelle der Wahrheit; Typen werden daraus abgeleitet.
 - **Schemaänderung = Migration:** `CURRENT_SCHEMA_VERSION` erhöhen, Eintrag in `PROJECT_MIGRATIONS` (`migrations.ts`) ergänzen, Test mit echten Altdaten schreiben.
 - Der Zustand des Fragenmotors liegt projektweit in `project.interview` (`questions`, `log`, `analysis`); Schemaversion 2 (Migration v1 → v2 in `migrations.ts`).
+- Entscheidungen liegen projektweit in `project.decisions`, Ergänzungsvorschläge in `project.additions`; Schemaversion 3 (Migration v2 → v3 in `migrations.ts`).
 - Komponenten greifen nur über `useProjectRepository()` auf Projekte zu, nie direkt auf Dexie.
 - Neue Repository-Logik gehört in `projectOperations.ts`, damit IndexedDB- und Memory-Variante gleich bleiben; die Vertrags-Testsuite `projectRepository.contract.ts` prüft beide.
 
@@ -44,6 +45,15 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 - Antworten und „Später“ laufen über `answerQuestion` / `deferQuestion`, jeweils mit Verlaufseintrag.
 - Einarbeiten der Antworten nur als Vorschlag: `integrateAnswers` → Bestätigung → `applyIntegration`.
 - Die UI nutzt den Fragenmotor ausschließlich über `useInterview(editor)` (`src/features/interview/useInterview.ts`).
+
+## Entscheidungen & Vorschläge
+
+- Die Rangfolge der Entscheidungen bestimmt nur `rankDecisions` (`src/core/engine/decisions.ts`), nie die KI.
+- KI-Ergebnisse übernehmen `applyDecisionCandidates` und `applyAdditionCandidates`; sie bereinigen die Eingaben.
+- Zustandsänderungen laufen über `decide`, `reopenDecision`, `dismissDecision`, `acceptAddition` und `rejectAddition`.
+- Widersprüche erkennt `detectContradictions` (`src/core/engine/contradictions.ts`) mit festen Regeln. Eine neue Regel braucht einen positiven und einen negativen Testfall sowie den i18n-Text `decisions.contradictions.rules.<id>`.
+- Die UI nutzt das Feature ausschließlich über `useDecisions(editor)` (`src/features/decisions/useDecisions.ts`).
+- Einzelne KI-Aufgaben in Features laufen über `useAiTask` (`src/features/ai/useAiTask.ts`).
 
 ## KI-Aufrufe
 

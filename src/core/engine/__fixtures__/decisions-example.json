@@ -1,0 +1,211 @@
+{
+  "decisions": [
+    {
+      "sectionId": "techStack",
+      "title": "Web-App oder native App?",
+      "context": "Die Plattform bestimmt Technik, Aufwand und die Art der Verteilung.",
+      "leverage": 5,
+      "options": [
+        {
+          "label": "Web-App",
+          "pros": [
+            "Läuft auf allen Geräten mit Browser",
+            "Keine Veröffentlichung im App-Store nötig"
+          ],
+          "cons": ["Kein Zugriff auf alle Gerätefunktionen"],
+          "consequence": "Eine Codebasis, Veröffentlichung über eine Webadresse."
+        },
+        {
+          "label": "Native App",
+          "pros": ["Volle Gerätefunktionen", "Bessere Nutzung unterwegs"],
+          "cons": [
+            "Zwei Plattformen oder ein zusätzliches Framework nötig",
+            "Prüfung im App-Store"
+          ],
+          "consequence": "Mehr Aufwand, dafür Zugriff auf Benachrichtigungen und Kamera."
+        }
+      ],
+      "recommendedOption": 0
+    },
+    {
+      "sectionId": "flows",
+      "title": "Welches Farbschema soll die Oberfläche haben?",
+      "context": "Ein Gestaltungsdetail ohne Einfluss auf Technik oder Umfang.",
+      "leverage": 1,
+      "options": [
+        {
+          "label": "Hell",
+          "pros": ["Klassisch gut lesbar"],
+          "cons": ["Kann abends blenden"],
+          "consequence": "Standard, schnell umgesetzt."
+        },
+        {
+          "label": "Dunkel",
+          "pros": ["Schont die Augen abends"],
+          "cons": ["Zweites Farbset muss abgestimmt werden"],
+          "consequence": "Etwas mehr Gestaltungsaufwand."
+        }
+      ],
+      "recommendedOption": 0
+    },
+    {
+      "sectionId": "dataModel",
+      "title": "Werden Rezepte lokal oder auf einem Server gespeichert?",
+      "context": "Entscheidet über Konten, den Abgleich zwischen Geräten und das Hosting.",
+      "leverage": 5,
+      "options": [
+        {
+          "label": "Nur auf dem Gerät",
+          "pros": ["Keine Konten nötig", "Keine Serverkosten"],
+          "cons": ["Kein Abgleich zwischen Geräten"],
+          "consequence": "Kein Backend nötig; die Daten bleiben beim Nutzer."
+        },
+        {
+          "label": "Auf einem Server",
+          "pros": ["Abgleich zwischen Geräten", "Daten sind gesichert"],
+          "cons": ["Konten und Datenschutz nötig", "Laufende Hosting-Kosten"],
+          "consequence": "Backend und Anmeldung werden Teil der ersten Version."
+        }
+      ],
+      "recommendedOption": 1
+    },
+    {
+      "sectionId": "integrations",
+      "title": "Brauchen Nutzer ein Konto mit Anmeldung?",
+      "context": "Ein Konto erlaubt den Abgleich, bringt aber Aufwand und Datenschutzpflichten mit.",
+      "leverage": 4,
+      "options": [
+        {
+          "label": "Ja, mit Anmeldung",
+          "pros": ["Daten sind auf allen Geräten verfügbar"],
+          "cons": ["Passwort-Zurücksetzen und Datenschutz nötig"],
+          "consequence": "Die Anmeldung wird Teil der ersten Version."
+        },
+        {
+          "label": "Nein, ohne Anmeldung",
+          "pros": ["Schneller Einstieg"],
+          "cons": ["Keine geräteübergreifende Nutzung"],
+          "consequence": "Kein Benutzerkonto nötig."
+        }
+      ],
+      "recommendedOption": 1
+    },
+    {
+      "sectionId": "roadmap",
+      "title": "Wie verdient die App Geld?",
+      "context": "Beeinflusst die spätere Roadmap, aber nicht den Umfang des ersten Schritts.",
+      "leverage": 3,
+      "options": [
+        {
+          "label": "Kostenlos ohne Werbung",
+          "pros": ["Einfache Nutzung"],
+          "cons": ["Keine Einnahmen"],
+          "consequence": "Kein Zahlungs-Modul nötig."
+        },
+        {
+          "label": "Einmalkauf",
+          "pros": ["Klares Modell"],
+          "cons": ["Zahlungsabwicklung nötig"],
+          "consequence": "Ein Zahlungsanbieter wird eingebunden."
+        },
+        {
+          "label": "Abo",
+          "pros": ["Laufende Einnahmen"],
+          "cons": ["Hürde für Gelegenheitsnutzer"],
+          "consequence": "Abo-Verwaltung und Zahlungen ab der zweiten Phase."
+        }
+      ],
+      "recommendedOption": 0
+    },
+    {
+      "sectionId": "flows",
+      "title": "Welche Schriftart passt?",
+      "context": "Ein reines Gestaltungsdetail.",
+      "leverage": 1,
+      "options": [
+        {
+          "label": "Systemschrift",
+          "pros": ["Keine Ladezeit", "Vertraut auf allen Geräten"],
+          "cons": ["Wirkt weniger eigenständig"],
+          "consequence": "Keine zusätzliche Schrift einzubinden."
+        },
+        {
+          "label": "Serifenlose Google-Schrift",
+          "pros": ["Eigenständiger Auftritt"],
+          "cons": ["Zusätzlicher Download beim Laden"],
+          "consequence": "Eine Schrift wird eingebunden."
+        }
+      ],
+      "recommendedOption": 0
+    },
+    {
+      "sectionId": "features",
+      "title": "Was gehört zum MVP, also zur ersten Version?",
+      "context": "Der Schnitt bestimmt Aufwand und Termin der ersten Version.",
+      "leverage": 5,
+      "options": [
+        {
+          "label": "Nur Wochenplan und Einkaufsliste",
+          "pros": ["Kleiner Umfang", "Schnell testbar"],
+          "cons": ["Keine Rezeptsuche"],
+          "consequence": "Wochenplan und Einkaufsliste lassen sich in wenigen Wochen bauen."
+        },
+        {
+          "label": "Plus Rezeptsuche",
+          "pros": ["Mehr Nutzen von Anfang an"],
+          "cons": ["Größerer Umfang", "Rezeptquelle wird nötig"],
+          "consequence": "Zusätzlich eine Anbindung an Rezeptquellen."
+        },
+        {
+          "label": "Plus Teilen mit anderen",
+          "pros": ["Pläne lassen sich mit der Familie teilen"],
+          "cons": ["Rechte- und Freigabelogik nötig"],
+          "consequence": "Freigaben und Einladungen werden Teil des Umfangs."
+        }
+      ],
+      "recommendedOption": 0
+    },
+    {
+      "sectionId": "integrations",
+      "title": "Woher kommen die Rezepte?",
+      "context": "Eigene Rezepte erfassen oder eine externe Rezept-API anbinden.",
+      "leverage": 3,
+      "options": [
+        {
+          "label": "Eigene Rezepte erfassen",
+          "pros": ["Keine Abhängigkeit von Dritten", "Keine Lizenzfragen"],
+          "cons": ["Erfassung ist mühsam"],
+          "consequence": "Eine Erfassungsmaske gehört zum Umfang."
+        },
+        {
+          "label": "Externe Rezept-API",
+          "pros": ["Großer Rezeptbestand"],
+          "cons": ["Lizenz- und Kostenfragen", "Abhängig vom Anbieter"],
+          "consequence": "Anbindung und Lizenzprüfung sind nötig."
+        }
+      ],
+      "recommendedOption": null
+    },
+    {
+      "sectionId": "features",
+      "title": "Sollen Erinnerungen an den Wochenplan verschickt werden?",
+      "context": "Nützlich, aber mit Aufwand für Berechtigungen und Technik verbunden.",
+      "leverage": 2,
+      "options": [
+        {
+          "label": "Ja, Push-Erinnerungen",
+          "pros": ["Erinnert zuverlässig"],
+          "cons": ["Berechtigungen und Technik nötig"],
+          "consequence": "Ein Push-Dienst wird eingebunden."
+        },
+        {
+          "label": "Nein, nicht im MVP",
+          "pros": ["Weniger Aufwand"],
+          "cons": ["Keine Erinnerungen"],
+          "consequence": "Keine Technik für Benachrichtigungen nötig."
+        }
+      ],
+      "recommendedOption": 1
+    }
+  ]
+}

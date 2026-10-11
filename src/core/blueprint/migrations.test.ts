@@ -4,6 +4,7 @@ import { CURRENT_SCHEMA_VERSION, projectSchema } from './schema'
 import { SECTION_IDS, type SectionId } from './sections'
 import { makeProject } from './testing'
 import projectV1 from './__fixtures__/project-v1.json'
+import projectV2 from './__fixtures__/project-v2.json'
 
 function formatError(fn: () => unknown) {
   try {
@@ -90,7 +91,7 @@ describe('Migration v1 → v2', () => {
   it('liefert ein gültiges v2-Projekt', () => {
     const project = migrated()
 
-    expect(project.schemaVersion).toBe(2)
+    expect(project.schemaVersion).toBe(CURRENT_SCHEMA_VERSION)
     expect(() => projectSchema.parse(project)).not.toThrow()
   })
 
@@ -195,5 +196,137 @@ describe('Migration v1 → v2', () => {
     const fixtureIds = Object.keys(projectV1.blueprint.sections) as SectionId[]
 
     expect(fixtureIds.sort()).toEqual([...SECTION_IDS].sort())
+  })
+})
+
+describe('Migration v2 → v3', () => {
+  // Echte v2-Altdaten: siehe __fixtures__/project-v2.json (Entscheidungen noch in den Abschnitten).
+  const migrated = () => migrateProject(JSON.parse(JSON.stringify(projectV2)))
+  const decisionById = (id: string) => migrated().decisions.find((d) => d.id === id)
+
+  it('liefert ein gültiges v3-Projekt', () => {
+    const project = migrated()
+
+    expect(project.schemaVersion).toBe(CURRENT_SCHEMA_VERSION)
+    expect(() => projectSchema.parse(project)).not.toThrow()
+  })
+
+  it('übernimmt Identität, Name, Einstieg und Zeitstempel', () => {
+    const { id, name, entryPoint, createdAt, updatedAt } = migrated()
+
+    expect({ id, name, entryPoint, createdAt, updatedAt }).toEqual({
+      id: projectV2.id,
+      name: projectV2.name,
+      entryPoint: projectV2.entryPoint,
+      createdAt: projectV2.createdAt,
+      updatedAt: projectV2.updatedAt,
+    })
+  })
+
+  it('überführt alle Entscheidungen in die Projektliste, mit ihrem Abschnitt', () => {
+    const decisions = migrated().decisions
+
+    // Die Reihenfolge der Liste folgt den Abschnitten der Altdaten und ist nicht bedeutsam.
+    expect(decisions.map((d) => [d.id, d.sectionId]).sort()).toEqual([
+      ['v2-d1', 'techStack'],
+      ['v2-d2', 'dataModel'],
+    ])
+  })
+
+  it('macht aus „question“ den Titel', () => {
+    expect(decisionById('v2-d1')?.title).toBe('Web-App oder native App?')
+    expect(decisionById('v2-d2')?.title).toBe('Wo werden die Rezepte gespeichert?')
+  })
+
+  it('macht eine getroffene Entscheidung zu „entschieden“ mit Begründung und Zeitpunkt', () => {
+    expect(decisionById('v2-d1')).toMatchObject({
+      status: 'decided',
+      chosenOptionId: 'web',
+      rationale: 'Der Browser reicht für die erste Version.',
+      decidedAt: projectV2.updatedAt,
+      leverage: 5,
+    })
+  })
+
+  it('lässt eine offene Entscheidung offen', () => {
+    expect(decisionById('v2-d2')).toMatchObject({
+      status: 'open',
+      chosenOptionId: null,
+      rationale: '',
+      decidedAt: null,
+      leverage: 4,
+    })
+  })
+
+  it('übernimmt Optionen mit Bezeichnung und Folgen, ergänzt Vor- und Nachteile leer', () => {
+    expect(decisionById('v2-d1')?.options).toEqual([
+      {
+        id: 'web',
+        label: 'Web-App',
+        pros: [],
+        cons: [],
+        consequence: 'Läuft im Browser auf allen Geräten, ohne App-Store',
+      },
+      {
+        id: 'native',
+        label: 'Native App',
+        pros: [],
+        cons: [],
+        consequence: 'Eine App je Plattform und Veröffentlichung im App-Store',
+      },
+    ])
+  })
+
+  it('setzt Empfehlung und Kontext auf leer, weil das Altformat sie nicht kannte', () => {
+    expect(decisionById('v2-d1')).toMatchObject({ context: '', recommendedOptionId: null })
+  })
+
+  it('entfernt das decisions-Feld aus allen Abschnitten', () => {
+    const { sections } = migrated().blueprint
+
+    for (const id of SECTION_IDS) {
+      expect(sections[id], id).not.toHaveProperty('decisions')
+    }
+  })
+
+  it('lässt Inhalt, Reife und Quelle der Abschnitte unverändert', () => {
+    const { sections } = migrated().blueprint
+
+    for (const id of SECTION_IDS) {
+      const old = projectV2.blueprint.sections[id]
+      expect(sections[id], id).toMatchObject({
+        id,
+        content: old.content,
+        maturity: old.maturity,
+        source: old.source,
+      })
+    }
+    expect(sections.risks.source).toBe('aiAccepted')
+  })
+
+  it('lässt den Fragenmotor unverändert', () => {
+    expect(migrated().interview).toEqual(projectV2.interview)
+  })
+
+  it('startet ohne Vorschläge', () => {
+    expect(migrated().additions).toEqual([])
+  })
+
+  it('lässt bereits migrierte Daten unverändert', () => {
+    const once = migrated()
+
+    expect(migrateProject(JSON.parse(JSON.stringify(once)))).toEqual(once)
+  })
+})
+
+describe('Migration v1 → v3 (Kette)', () => {
+  it('läuft die v1-Fixture über beide Migrationen bis v3', () => {
+    const project = migrateProject(JSON.parse(JSON.stringify(projectV1)))
+
+    expect(project.schemaVersion).toBe(CURRENT_SCHEMA_VERSION)
+    expect(() => projectSchema.parse(project)).not.toThrow()
+    expect(project.interview.questions).toHaveLength(4)
+    expect(project.decisions).toEqual([])
+    expect(project.additions).toEqual([])
   })
 })

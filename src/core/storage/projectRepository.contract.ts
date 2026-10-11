@@ -72,6 +72,8 @@ export function describeProjectRepositoryContract(
           updatedAt: at(0),
           blueprint: createEmptyBlueprint(),
           interview: createEmptyInterview(),
+          decisions: [],
+          additions: [],
         })
         expect(await repo.get('id-1')).toEqual(project)
       })

@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 2,
+  "id": "9f3c2a1e-7b4d-4e2a-9c1f-5a6b7c8d9e02",
+  "name": "Rezeptplaner",
+  "entryPoint": "partialIdea",
+  "createdAt": "2026-01-10T09:00:00.000Z",
+  "updatedAt": "2026-03-10T12:00:00.000Z",
+  "blueprint": {
+    "sections": {
+      "problem": {
+        "id": "problem",
+        "content": "Wochenplanung mit Rezepten kostet Zeit und endet oft ohne Einkaufsliste.",
+        "maturity": "decided",
+        "source": "user",
+        "decisions": []
+      },
+      "audience": {
+        "id": "audience",
+        "content": "Berufstätige, die für die Familie kochen.",
+        "maturity": "vague",
+        "source": "user",
+        "decisions": []
+      },
+      "features": {
+        "id": "features",
+        "content": "- Rezepte für die Woche planen\n- Einkaufsliste erzeugen",
+        "maturity": "vague",
+        "source": "user",
+        "decisions": []
+      },
+      "nonGoals": {
+        "id": "nonGoals",
+        "content": "",
+        "maturity": "empty",
+        "source": "user",
+        "decisions": []
+      },
+      "flows": {
+        "id": "flows",
+        "content": "",
+        "maturity": "empty",
+        "source": "user",
+        "decisions": []
+      },
+      "dataModel": {
+        "id": "dataModel",
+        "content": "Rezepte und Wochenpläne.",
+        "maturity": "vague",
+        "source": "aiSuggestion",
+        "decisions": [
+          {
+            "id": "v2-d2",
+            "question": "Wo werden die Rezepte gespeichert?",
+            "options": [
+              {
+                "id": "local",
+                "label": "Nur auf dem Gerät",
+                "consequence": "Keine Konten nötig, aber kein Abgleich zwischen Geräten"
+              },
+              {
+                "id": "server",
+                "label": "Auf einem Server",
+                "consequence": "Abgleich zwischen Geräten, dafür Konten und Hosting nötig"
+              }
+            ],
+            "chosenOptionId": null,
+            "rationale": "",
+            "leverage": 4
+          }
+        ]
+      },
+      "techStack": {
+        "id": "techStack",
+        "content": "Web-App mit React.",
+        "maturity": "decided",
+        "source": "user",
+        "decisions": [
+          {
+            "id": "v2-d1",
+            "question": "Web-App oder native App?",
+            "options": [
+              {
+                "id": "web",
+                "label": "Web-App",
+                "consequence": "Läuft im Browser auf allen Geräten, ohne App-Store"
+              },
+              {
+                "id": "native",
+                "label": "Native App",
+                "consequence": "Eine App je Plattform und Veröffentlichung im App-Store"
+              }
+            ],
+            "chosenOptionId": "web",
+            "rationale": "Der Browser reicht für die erste Version.",
+            "leverage": 5
+          }
+        ]
+      },
+      "integrations": {
+        "id": "integrations",
+        "content": "",
+        "maturity": "empty",
+        "source": "user",
+        "decisions": []
+      },
+      "risks": {
+        "id": "risks",
+        "content": "Rezeptquellen können sich ändern.",
+        "maturity": "vague",
+        "source": "aiAccepted",
+        "decisions": []
+      },
+      "roadmap": {
+        "id": "roadmap",
+        "content": "",
+        "maturity": "empty",
+        "source": "user",
+        "decisions": []
+      }
+    }
+  },
+  "interview": {
+    "questions": [
+      {
+        "id": "v2-q1",
+        "sectionId": "audience",
+        "text": "Für wen ist die App gedacht?",
+        "why": "Bestimmt den Umfang der ersten Version.",
+        "leverage": 5,
+        "options": [{ "id": "family", "label": "Familien" }],
+        "dependsOn": [],
+        "status": "answered",
+        "answer": { "kind": "option", "optionId": "family", "note": "Vor allem für mich" },
+        "createdAt": "2026-02-01T10:00:00.000Z",
+        "answeredAt": "2026-02-02T10:00:00.000Z"
+      },
+      {
+        "id": "v2-q2",
+        "sectionId": "nonGoals",
+        "text": "Sollen Rezepte mit anderen geteilt werden können?",
+        "why": "",
+        "leverage": 2,
+        "options": [],
+        "dependsOn": [],
+        "status": "open",
+        "answer": null,
+        "createdAt": "2026-02-01T10:00:00.000Z",
+        "answeredAt": null
+      }
+    ],
+    "log": [
+      {
+        "questionId": "v2-q1",
+        "questionText": "Für wen ist die App gedacht?",
+        "sectionId": "audience",
+        "action": "answered",
+        "answerText": "Familien – Vor allem für mich",
+        "at": "2026-02-02T10:00:00.000Z"
+      }
+    ],
+    "analysis": null
+  }
+}

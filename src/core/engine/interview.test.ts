@@ -885,7 +885,6 @@ describe('applyIntegration', () => {
       content: `${FEATURES}\n- Erinnerung`,
       maturity: 'decided',
       source: 'aiAccepted',
-      decisions: [],
     })
     expectValid(result)
   })

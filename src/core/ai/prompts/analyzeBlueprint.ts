@@ -57,9 +57,9 @@ const ENTRY_POINT_HINT: Record<EntryPoint, string> = {
   almostDone: 'Die Person ist mit einem fast fertigen Konzept gestartet.',
 }
 
-const LANGUAGE_NAME = { de: 'Deutsch', en: 'Englisch' } as const
+export const LANGUAGE_NAME = { de: 'Deutsch', en: 'Englisch' } as const
 
-function describeBlueprint(project: AnalyzeBlueprintInput['project']): string {
+export function describeBlueprint(project: Pick<Project, 'blueprint'>): string {
   return SECTION_IDS.map((id) => {
     const section = project.blueprint.sections[id]
     const content = section.content.trim() || '(leer)'
@@ -67,7 +67,7 @@ function describeBlueprint(project: AnalyzeBlueprintInput['project']): string {
   }).join('\n\n')
 }
 
-function describeLog(log: readonly InterviewLogEntry[]): string {
+export function describeLog(log: readonly InterviewLogEntry[]): string {
   const answered = log.filter((entry) => entry.action === 'answered').slice(-MAX_LOG_CONTEXT)
   if (answered.length === 0) return '(noch keine)'
   return answered.map((e) => `- [${e.sectionId}] ${e.questionText} → ${e.answerText}`).join('\n')

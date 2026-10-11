@@ -24,6 +24,7 @@ import type {
   QuestionAnswer,
 } from '@/core/blueprint/schema'
 import { SECTION_IDS, type SectionId } from '@/core/blueprint/sections'
+import { clampLeverage, cleanTextList, keepHighestLeverage, normalizeText } from './cleaning'
 
 type Language = 'de' | 'en'
 
@@ -32,24 +33,12 @@ export class InterviewError extends Error {
   override name = 'InterviewError'
 }
 
-const normalize = (text: string) => text.trim().toLowerCase().replace(/\s+/g, ' ')
-
-function clampLeverage(value: number): number {
-  if (!Number.isFinite(value)) return 3
-  return Math.min(5, Math.max(1, Math.round(value)))
-}
+const normalize = normalizeText
 
 function cleanOptions(options: readonly string[]): string[] {
-  const seen = new Set<string>()
-  const result: string[] = []
-  for (const option of options) {
-    const label = option.trim()
-    if (!label || seen.has(normalize(label))) continue
-    seen.add(normalize(label))
-    result.push(label)
-  }
+  const result = cleanTextList(options, MAX_QUESTION_OPTIONS)
   // Eine einzelne Option ist keine Auswahl.
-  return result.length >= 2 ? result.slice(0, MAX_QUESTION_OPTIONS) : []
+  return result.length >= 2 ? result : []
 }
 
 function cleanFindings(findings: readonly AnalysisFinding[]): AnalysisFinding[] {
@@ -108,12 +97,20 @@ export function applyAnalysis(
   const added: Question[] = []
   const pendingDependsOn = new Map<string, readonly string[]>()
 
-  for (const candidate of result.questions) {
-    if (added.length >= MAX_ANALYSIS_QUESTIONS) break
-    const text = candidate.text.trim()
-    if (!text || knownTexts.has(normalize(text))) continue
-    knownTexts.add(normalize(text))
+  // Erst bereinigen, dann auf die Fragen mit dem höchsten Hebel kürzen (nicht nach Position).
+  const candidates = keepHighestLeverage(
+    result.questions.filter((candidate) => {
+      const key = normalize(candidate.text)
+      if (!key || knownTexts.has(key)) return false
+      knownTexts.add(key)
+      return true
+    }),
+    MAX_ANALYSIS_QUESTIONS,
+    (candidate) => clampLeverage(candidate.leverage),
+  )
 
+  for (const candidate of candidates) {
+    const text = candidate.text.trim()
     const id = createId()
     const key = candidate.key.trim()
     if (key && !idByKey.has(key)) idByKey.set(key, id)

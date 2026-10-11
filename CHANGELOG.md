@@ -6,6 +6,31 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 
 ## [Unreleased]
 
+## [0.5.0] – 2026-10-11 – Phase 5: Entscheidungen & Vorschläge
+
+### Hinzugefügt
+
+- Seite „Entscheidungen & Vorschläge“ unter `/projekte/:projectId/entscheidungen`. Der Abschnitt „Wichtigste Entscheidungen“ zeigt bis zu 7 Kernentscheidungen, sortiert nach Hebel × Unsicherheit des Abschnitts. Jede Entscheidung hat 2–4 Optionen mit Vor- und Nachteilen, die Folge der Wahl und eine Empfehlung.
+- Entscheiden mit Begründung, Verwerfen und Wieder öffnen. Die KI ermittelt die Entscheidungen über den Prompt `identify-decisions` (Version 1) und das Zod-Schema der Entscheidungen.
+- Entscheidungsprotokoll mit den getroffenen Entscheiden in zeitlicher Reihenfolge, auf der Entscheidungsseite und auf der Projektseite.
+- Vorschlagsmodus: Der Prompt `suggest-additions` (Version 1) schlägt Kernfunktionen, Nicht-Ziele und Risiken vor, höchstens vier je Abschnitt. Vorschläge lassen sich einzeln annehmen oder ablehnen. Angenommene Vorschläge werden als Stichpunkt an den Abschnitt angehängt, vorhandener Inhalt bleibt unverändert.
+- Regelbasierte Widerspruchswarnungen mit Fundstellen in den Abschnitten und gewählten Optionen. Zusätzlich werden die Widersprüche aus der KI-Analyse angezeigt. Auf der Projektseite zeigt ein Zähler die Widersprüche an.
+- ADR 0006 zu Entscheidungen, Vorschlägen und Widerspruchswarnungen.
+- Tests: 1047 Unit- und Komponententests in 57 Dateien, alle grün. Neu sind Tests für Schema, Migration v2 → v3 (Fixture `src/core/blueprint/__fixtures__/project-v2.json`, Kette v1 → v3), Rangfolge, Annehmen und Ablehnen, Widerspruchsregeln mit positiven und negativen Beispielen sowie Golden Files für beide Prompts. E2E-Tests: 19, davon 2 neu in `e2e/decisions.spec.ts` („Vorschlag annehmen → erscheint im Blueprint“, „Entscheidung treffen → Protokoll, Widerspruch wird angezeigt“).
+
+### Geändert
+
+- Datenformat auf Version 3: Entscheidungen liegen projektweit unter `decisions` statt pro Abschnitt, neu ist die Liste `additions` für Vorschläge. Projekte aus v0.4.x werden beim Laden automatisch migriert. Alte Entscheidungen, die sich nicht übernehmen lassen, werden verworfen, statt das Projekt zu sperren.
+- Der Fragenmotor kürzt zu viele KI-Fragen jetzt nach Hebel statt nach Position.
+
+### Behoben
+
+- Widerspruchsregeln meldeten Fehlalarme bei Formulierungen wie „Freemium“, „Login ist nicht erforderlich“, „ohne den lästigen Login“, „entfällt“ und bei zeitlicher Staffelung wie „App-Store in Phase 2“.
+- Altdaten mit nur einer Option oder ohne gewählte Option sperren das Projekt nicht mehr.
+- Aufzählungszeichen in KI-Vorschlägen führten zu „- - Text“. Sie werden jetzt entfernt.
+- Klicks auf veraltete IDs (z. B. nach einer neuen Ermittlung) führen nicht mehr zu Fehlern.
+- Fundstellen der Widersprüche werden in einem eigenen Abschnitt angezeigt.
+
 ## [0.4.0] – 2026-10-11 – Phase 4: Intelligenter Fragenmotor
 
 ### Hinzugefügt

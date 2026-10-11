@@ -8,7 +8,7 @@ import {
 import { SECTION_IDS, type SectionId } from './sections'
 
 export function createEmptySection(id: SectionId): Section {
-  return { id, content: '', maturity: 'empty', source: 'user', decisions: [] }
+  return { id, content: '', maturity: 'empty', source: 'user' }
 }
 
 export function createEmptyBlueprint(): Blueprint {
@@ -37,5 +37,7 @@ export function createEmptyProject({ id, name, now }: CreateProjectOptions): Pro
     updatedAt: timestamp,
     blueprint: createEmptyBlueprint(),
     interview: createEmptyInterview(),
+    decisions: [],
+    additions: [],
   }
 }

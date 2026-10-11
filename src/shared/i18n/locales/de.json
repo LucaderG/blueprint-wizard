@@ -218,7 +218,10 @@
     "toolbar": {
       "undo": "Rückgängig",
       "redo": "Wiederholen",
-      "askQuestions": "Fragen beantworten"
+      "askQuestions": "Fragen beantworten",
+      "decisions": "Entscheidungen & Vorschläge",
+      "contradictions_one": "{{count}} Widerspruch",
+      "contradictions_other": "{{count}} Widersprüche"
     },
     "saveStatus": {
       "saved": "Gespeichert",
@@ -303,6 +306,72 @@
       "summary": "Verlauf ({{count}})",
       "empty": "Hier erscheinen die Fragen, die du beantwortet oder zurückgestellt hast.",
       "later": "Später"
+    }
+  },
+  "decisions": {
+    "page": {
+      "back": "Zurück zum Projekt",
+      "lead": "Triff die Entscheidungen, die deinen Blueprint am stärksten prägen, und ergänze fehlende Punkte. Die KI schlägt vor, entscheiden musst du."
+    },
+    "contradictions": {
+      "title": "Widersprüche im Blueprint",
+      "intro": "Diese Stellen passen nicht gut zusammen. Prüfe, welche Aussage gilt, und passe den betroffenen Abschnitt an.",
+      "fromAnalysis": "Aus der letzten Analyse",
+      "quote": "„{{text}}“",
+      "rules": {
+        "offlineVsRealtime": "Offline-first und Echtzeit-Zusammenarbeit vertragen sich schlecht – Echtzeit braucht eine Verbindung.",
+        "localOnlyVsAccounts": "Die Daten sollen lokal bleiben, gleichzeitig ist von Konten, Anmeldung oder Synchronisation die Rede.",
+        "freeVsPaid": "Die App soll kostenlos sein, gleichzeitig ist von Abo, Bezahlung oder Gebühren die Rede.",
+        "webOnlyVsNative": "Die App soll nur im Web laufen, gleichzeitig ist von nativen Apps oder App-Stores die Rede.",
+        "noAiVsAi": "Ohne KI soll es gehen, gleichzeitig kommt KI vor.",
+        "privacyVsTracking": "Die App soll datensparsam sein, gleichzeitig kommen Tracking, Analytics oder Werbung vor.",
+        "featureIsNonGoal": "Ein Punkt steht sowohl bei den Kernfunktionen als auch bei den Nicht-Zielen.",
+        "unknown": "Zwei Aussagen im Blueprint widersprechen sich."
+      }
+    },
+    "leverage": {
+      "foundation": "Grundsatz",
+      "important": "Wichtig",
+      "detail": "Detail"
+    },
+    "list": {
+      "title": "Wichtigste Entscheidungen",
+      "intro": "Diese Entscheidungen prägen dein Projekt am stärksten. Die Reihenfolge ergibt sich aus Hebel und Reifegrad der Abschnitte.",
+      "find": "Entscheidungen finden",
+      "rerun": "Neu ermitteln",
+      "running": "Entscheidungen werden ermittelt …",
+      "cancel": "Abbrechen",
+      "empty": "Noch keine Entscheidungen ermittelt. Die KI findet die Punkte, die deinen Blueprint am stärksten prägen.",
+      "emptyDone": "Alle Entscheidungen sind getroffen oder verworfen. Ermittle neue, wenn sich dein Blueprint geändert hat.",
+      "more_one": "Weitere Entscheidung (1)",
+      "more_other": "Weitere Entscheidungen ({{count}})"
+    },
+    "card": {
+      "recommended": "Empfohlen",
+      "pros": "Vorteile",
+      "cons": "Nachteile",
+      "consequence": "Folge: {{text}}",
+      "optionsLegend": "Option wählen",
+      "rationaleLabel": "Begründung (optional)",
+      "decide": "Entscheiden",
+      "dismiss": "Verwerfen"
+    },
+    "additions": {
+      "title": "Vorschläge",
+      "intro": "Die KI schlägt Kernfunktionen, Nicht-Ziele und Risiken vor. Nimm einzeln an, was passt, und lehne den Rest ab.",
+      "fetch": "Vorschläge holen",
+      "running": "Vorschläge werden erstellt …",
+      "cancel": "Abbrechen",
+      "empty": "Gerade keine offenen Vorschläge. Hol dir neue, wenn sich dein Blueprint geändert hat.",
+      "accept": "Annehmen",
+      "reject": "Ablehnen",
+      "summary": "Angenommen: {{accepted}} · Abgelehnt: {{rejected}}"
+    },
+    "log": {
+      "title": "Entscheidungsprotokoll",
+      "empty": "Hier erscheinen die Entscheidungen, die du getroffen hast.",
+      "noRationale": "Keine Begründung",
+      "reopen": "Wieder öffnen"
     }
   },
   "ai": {
