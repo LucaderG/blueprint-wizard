@@ -512,5 +512,113 @@
       "errorIntro": "Das hat nicht geklappt.",
       "nothingNew": "Die KI hat keine neue Idee geliefert. Versuch es noch einmal oder ändere deine Antworten."
     }
+  },
+  "export": {
+    "document": {
+      "maturityLabel": "Reifegrad",
+      "missing": "Noch offen.",
+      "updatedAt": "Projektstand",
+      "formatVersion": "Exportformat",
+      "unaccepted": "KI-Vorschlag – noch nicht übernommen",
+      "openPoints": "Offene Punkte",
+      "noOpenPoints": "Keine offenen Punkte im Reife-Check.",
+      "emptySections": "Leere Abschnitte",
+      "vagueSections": "Noch nicht entschiedene Abschnitte",
+      "unacceptedSections": "Noch nicht übernommene KI-Inhalte",
+      "questions": "Offene und zurückgestellte Fragen",
+      "decisions": "Offene Entscheidungen",
+      "additions": "Offene Ergänzungsvorschläge",
+      "contradictions": "Mögliche Widersprüche",
+      "analysisContradictions": "Widersprüche aus der letzten KI-Analyse (Stand prüfen)",
+      "decisionLog": "Entscheidungsprotokoll",
+      "chosen": "Gewählt",
+      "recommended": "Empfehlung, noch keine Entscheidung",
+      "rationale": "Begründung",
+      "context": "Kontext",
+      "pros": "Vorteile",
+      "cons": "Nachteile",
+      "consequence": "Folge",
+      "questionWhy": "Warum wichtig",
+      "deferred": "Zurückgestellt",
+      "suggestedAddition": "Vorschlag, noch nicht angenommen",
+      "analysis": "Letzte KI-Analyse (kann inzwischen überholt sein)",
+      "gaps": "Gemeldete Lücken",
+      "interviewLog": "Fragenverlauf",
+      "answer": "Antwort",
+      "agentTitle": "Kontext & Arbeitsregeln",
+      "agentIntro": "Dieses Repository setzt das folgende Projekt um. BLUEPRINT.md enthält die vollständigen Anforderungen, TASKS.md die Aufgaben. CLAUDE.md und AGENTS.md enthalten dieselben Regeln.",
+      "rulesTitle": "Arbeitsregeln",
+      "rules": [
+        "Lies zuerst BLUEPRINT.md und TASKS.md. Behalte den vereinbarten MVP-Umfang und die Nicht-Ziele bei.",
+        "Behandle leere oder vage Abschnitte, offene Entscheidungen und nicht übernommene KI-Vorschläge als ungeklärt. Stelle vor betroffenen Umsetzungsschritten gezielte Fragen. Empfehlungen sind keine getroffenen Entscheidungen.",
+        "Prüfe die Projekt-Roadmap gegen den vorgeschlagenen Ablauf in TASKS.md. Die Projekt-Roadmap hat Vorrang; stimme fehlende Phasen und Abnahmekriterien ab.",
+        "Verwende den festgelegten Tech-Stack und prüfe vorhandenen Code und Arbeitsregeln, bevor du Änderungen machst. Erfinde keine noch nicht festgelegten Bibliotheken, Dienste oder Zugangsdaten.",
+        "Arbeite in kleinen, überprüfbaren Schritten. Prüfe die Abnahmekriterien der aktuellen Phase und berichte, was umgesetzt und geprüft wurde und was noch offen ist.",
+        "Bewahre vorhandene Nutzeränderungen. Halte Geheimnisse und Zugangsdaten aus Quellcode, Exportdateien und Commits heraus.",
+        "Dokumentiere neue Entscheidungen und passe Aufgaben und Blueprint bei abgestimmten Änderungen an."
+      ],
+      "tasksTitle": "Umsetzungsschritte & Abnahme",
+      "roadmapMissing": "Noch keine Projekt-Roadmap festgelegt. Kläre die Reihenfolge vor dem Implementieren.",
+      "planNote": "Der folgende Ablauf ist eine Vorlage, kein bereits abgestimmter Projektplan. Gleiche ihn mit der Projekt-Roadmap ab. Leite konkrete Aufgaben und Abnahmekriterien aus BLUEPRINT.md ab und kläre fehlende Angaben.",
+      "acceptance": "Abnahme",
+      "phases": [
+        {
+          "title": "Phase 0 – Umfang und offene Punkte klären",
+          "tasks": [
+            "Offene Punkte in BLUEPRINT.md mit dem Nutzer klären; notwendige Entscheidungen protokollieren.",
+            "MVP, Nicht-Ziele, Roadmap und Abnahmekriterien gemeinsam festlegen."
+          ],
+          "acceptance": "Die für den nächsten Schritt benötigten Anforderungen sind geklärt; verbleibende Annahmen sind sichtbar."
+        },
+        {
+          "title": "Phase 1 – Fundament und Datenmodell",
+          "tasks": [
+            "Projekt mit dem vereinbarten Tech-Stack aufsetzen; Start und Prüfungen dokumentieren.",
+            "Das vereinbarte Datenmodell und die notwendigen Integrationen vorbereiten."
+          ],
+          "acceptance": "Das Projekt startet mit den dokumentierten Schritten; Datenmodell und Integrationen entsprechen BLUEPRINT.md."
+        },
+        {
+          "title": "Phase 2 – MVP und Nutzerabläufe",
+          "tasks": [
+            "Kernfunktionen im festgelegten MVP-Umfang umsetzen.",
+            "Nutzerabläufe einschließlich Fehlerfällen umsetzen und mit passenden Tests prüfen."
+          ],
+          "acceptance": "Die in BLUEPRINT.md beschriebenen Kernfunktionen und Nutzerabläufe funktionieren; Nicht-Ziele wurden eingehalten."
+        },
+        {
+          "title": "Phase 3 – Qualität und Übergabe",
+          "tasks": [
+            "Risiken und offene Punkte prüfen; wichtige Fehlerfälle und Datenspeicherung absichern.",
+            "Installation, Nutzung und Betrieb dokumentieren; vereinbarte Veröffentlichung vorbereiten."
+          ],
+          "acceptance": "Die abgestimmten Prüfungen bestehen; Nutzung und verbleibende Einschränkungen sind dokumentiert."
+        }
+      ],
+      "startTitle": "Start-Prompt",
+      "startIntro": "Setze das Projekt „{{name}}“ in diesem Repository um.",
+      "startBody": "Lies zuerst BLUEPRINT.md, CLAUDE.md oder AGENTS.md und TASKS.md vollständig. Fasse Ziel, MVP, Nicht-Ziele und Tech-Stack kurz zusammen. Prüfe den vorhandenen Code und die offenen Punkte. Kläre nur die Fragen, die den nächsten Umsetzungsschritt blockieren; behandle vage Inhalte und KI-Vorschläge nicht als bestätigte Anforderungen. Gleiche den vorgeschlagenen Ablauf mit der Projekt-Roadmap ab. Beginne dann mit der ersten geklärten, noch nicht erledigten Phase, prüfe ihre Abnahmekriterien und berichte das Ergebnis. Erfinde keine fehlenden Anforderungen oder Zugangsdaten.",
+      "analysisGaps": "Lücken aus der letzten KI-Analyse (Stand prüfen)"
+    },
+    "open": "Blueprint fertigstellen",
+    "title": "Blueprint fertigstellen",
+    "lead": "Prüfe den Stand, sieh dir die Dateien an und lade dein Paket für den Start mit einem KI-Coding-Tool herunter.",
+    "back": "Zurück zum Projekt",
+    "checkTitle": "Reife-Check",
+    "ready": "Dein Blueprint ist ausgearbeitet.",
+    "warning": "Es gibt noch offene Punkte. Du kannst trotzdem exportieren; die Hinweise bleiben im Blueprint erhalten.",
+    "percentage": "Vollständigkeit",
+    "preview": "Dateivorschau",
+    "files": "Datei auswählen",
+    "downloadZip": "Alles als ZIP herunterladen",
+    "downloadFile": "Datei herunterladen",
+    "copy": "Start-Prompt kopieren",
+    "copied": "Start-Prompt kopiert.",
+    "copyError": "Kopieren hat nicht geklappt. Markiere den Start-Prompt in der Vorschau und kopiere ihn selbst.",
+    "downloadError": "Der Download hat nicht geklappt. Bitte versuch es erneut.",
+    "downloaded": "Download gestartet.",
+    "howToTitle": "So startest du damit",
+    "howTo": "Entpacke das ZIP in einen leeren Projektordner. Öffne den Ordner mit deinem KI-Coding-Tool und füge den Start-Prompt ein. Das Tool liest BLUEPRINT.md, CLAUDE.md oder AGENTS.md und TASKS.md.",
+    "localHint": "Der Export entsteht lokal aus deinem Projekt. Dafür brauchst du keinen API-Key."
   }
 }

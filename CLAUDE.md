@@ -1,6 +1,6 @@
 # CLAUDE.md – Arbeitsregeln für KI-Coding-Tools
 
-Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Projekt-Blueprint führt. Ziele, Architektur und Phasen stehen im [Implementierungsplan](docs/implementierungsplan.md). Aktueller Stand: **Phase 6 abgeschlossen** (v0.6.0), nächste Phase: 7 – Blueprint-Generierung & Export.
+Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Projekt-Blueprint führt. Ziele, Architektur und Phasen stehen im [Implementierungsplan](docs/implementierungsplan.md). Aktueller Stand: **Phase 7 umgesetzt** (v0.7.0), nächste Phase: 8 – Qualität & Politur, nach Lucas Freigabe.
 
 ## Stack
 
@@ -62,6 +62,14 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 - KI-Ideen laufen über `generateIdeas` mit einer `IdeaRequest` (`generate`, `moreLike`, `refine`, `combine`); `applyIdeas` bereinigt und baut das Ergebnis ein (`src/core/engine/ideation.ts`).
 - Die gewählte Idee wird mit `applyChosenIdea` zum Projekt (Abschnitte als `aiAccepted`).
 - Die UI nutzt das Feature ausschließlich über `useIdeation()` (`src/features/ideation/useIdeation.ts`).
+
+## Blueprint-Export
+
+- Generatoren in `src/core/export/generators.ts` sind reine Funktionen. Texte werden über `ExportLabels` übergeben; der Kern importiert weder i18next noch die UI. Snapshot-Tests halten die Exportversion (`EXPORT_VERSION`, unabhängig vom Projektschema) fest.
+- `checkReadiness` meldet leere/vage Abschnitte, nicht übernommene KI-Vorschläge, offene/zurückgestellte Fragen, Entscheidungen, Ergänzungen und Widersprüche. Alte KI-Analysen bleiben als „Stand prüfen“ gekennzeichnet. Hinweise verhindern den Export nicht.
+- `generateExportFiles` erzeugt genau fünf Dateien: `BLUEPRINT.md`, `CLAUDE.md`, `AGENTS.md`, `TASKS.md`, `START-PROMPT.md`. Die Kontextdateien sind identisch. Bestehende Inhalte und die Projekt-Roadmap bleiben erhalten; die ergänzte Aufgabenliste ist als Vorlage gekennzeichnet.
+- ZIPs erzeugt `createExportZip` in `archive.ts` über `fflate`, UTF-8 und feste Dateinamen/Zeitstempel. Keine App-Einstellungen und kein Netzwerkzugriff. Die Exportseite liest Projekte über `useProjectEditor`; das Projektschema bleibt v3.
+- Die Vorschau ist ein schreibgeschütztes Textfeld, kein HTML-/Markdown-Renderer. Neue Exportinhalte oder Regeln brauchen Snapshot-Diff-Prüfung und Tests für vollständige Dateien und ZIP-Inhalte.
 
 ## KI-Aufrufe
 

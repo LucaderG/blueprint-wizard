@@ -6,6 +6,21 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 
 ## [Unreleased]
 
+## [0.7.0] – 2026-10-11 – Phase 7: Blueprint-Generierung & Export
+
+### Hinzugefügt
+
+- „Blueprint fertigstellen“ auf der Projektseite mit Reife-Check, Dateivorschau und Download unter `/projekte/:projectId/export`. Offene Punkte werden angezeigt; Export ist trotzdem möglich, ohne Bestätigungsdialog und ohne API-Key.
+- Reine Generatoren für `BLUEPRINT.md`, identische Kontextdateien `CLAUDE.md` und `AGENTS.md`, `TASKS.md` mit vorhandener Roadmap und Phasenvorlage samt Abnahmekriterien sowie `START-PROMPT.md` zum Kopieren.
+- Blueprint bewahrt alle Abschnitte, getroffene Entscheidungen mit Begründung und Folgen, offene Entscheidungen samt Optionen und Empfehlung, Fragenverlauf, Vorschläge und frühere KI-Analyse. Nicht übernommene KI-Inhalte und offene Punkte bleiben klar gekennzeichnet.
+- Einzeldatei-Download und lokales ZIP mit allen fünf UTF-8-Dateien über `fflate`; Vorschau und ZIP enthalten exakt denselben Stand. Keine Änderung am Projektformat (weiter Schema v3).
+- Verständliche Fehlermeldungen für Download, Laden und Zwischenablage; bei Kopierfehlern steht der markierte Start-Prompt zur manuellen Übernahme bereit.
+- Snapshot-, Vollständigkeits-, Reife-, ZIP- und Komponententests; E2E-Abnahme inklusive sofortigem Wechsel nach Bearbeitung, ZIP-Inhalten, Einzeldatei, Zwischenablage, Neuladen und importiertem Altprojekt. ADR 0008 und Übergabe für Phase 8.
+
+### Behoben
+
+- Der bestehende Fragenmotor-E2E-Test wartet vor dem Neuladen auf die tatsächlich gerenderte Projektseite. Der Vorher/Nachher-Vergleich auf der vorherigen Seite hat denselben Artikelnamen und konnte sonst zu früh als Projektansicht gelten.
+
 ## [0.6.0] – 2026-10-11 – Phase 6: Ideenfindung von Null
 
 ### Hinzugefügt

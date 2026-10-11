@@ -1,4 +1,4 @@
-import { ArrowLeft, MessageCircleQuestion, Redo2, Scale, Undo2 } from 'lucide-react'
+import { ArrowLeft, FileDown, MessageCircleQuestion, Redo2, Scale, Undo2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import {
@@ -99,6 +99,12 @@ export function BlueprintOverview({
                     {contradictionCount}
                   </span>
                 )}
+              </Link>
+            </Button>
+            <Button asChild size="sm">
+              <Link to={`/projekte/${project.id}/export`}>
+                <FileDown className="size-4" aria-hidden />
+                {t('export.open')}
               </Link>
             </Button>
           </div>

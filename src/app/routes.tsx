@@ -1,4 +1,5 @@
 import type { RouteObject } from 'react-router'
+import { ExportPage } from '@/features/export/ExportPage'
 import { Layout } from '@/app/Layout'
 import { NotFoundPage } from '@/app/NotFoundPage'
 import { HomePage } from '@/features/home/HomePage'
@@ -15,6 +16,7 @@ export const routes: RouteObject[] = [
       { index: true, element: <HomePage /> },
       { path: 'neu/:entryPoint', element: <EntryPage /> },
       { path: 'projekte/:projectId', element: <ProjectPage /> },
+      { path: 'projekte/:projectId/export', element: <ExportPage /> },
       { path: 'projekte/:projectId/fragen', element: <InterviewPage /> },
       { path: 'projekte/:projectId/entscheidungen', element: <DecisionsPage /> },
       { path: 'einstellungen', element: <SettingsPage /> },

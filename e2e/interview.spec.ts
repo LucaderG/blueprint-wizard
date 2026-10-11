@@ -203,7 +203,12 @@ test('Fragenmotor: automatische Analyse, Antworten übernehmen, Änderungen, Ver
   // Zurück zur Projektseite: der Abschnitt enthält den neuen Text, auch nach dem Neuladen.
   await page.getByRole('link', { name: 'Zurück zum Projekt' }).click()
   await expect(page).toHaveURL(/\/projekte\/[\w-]+$/)
-  const section = page.getByRole('article', { name: TECH_SECTION })
+  // Die URL wechselt vor dem React-Render. Der Vorher/Nachher-Vergleich auf der
+  // Fragenseite hat denselben Artikelnamen und darf nicht als Projektseite zählen.
+  await expect(page.getByRole('link', { name: 'Alle Projekte', exact: true })).toBeVisible()
+  const section = page
+    .getByRole('region', { name: 'Abschnitte', exact: true })
+    .getByRole('article', { name: TECH_SECTION })
   await expect(section.getByText(TECH_TEXT)).toBeVisible()
 
   await page.reload()
