@@ -33,5 +33,91 @@
   "notFound": {
     "title": "Seite nicht gefunden",
     "back": "Zur Startseite"
+  },
+  "projects": {
+    "title": "Deine Projekte",
+    "new": "Neues Projekt",
+    "import": "Projekt importieren",
+    "importInputLabel": "Projektdatei auswählen",
+    "loading": "Projekte werden geladen …",
+    "loadError": "Deine Projekte konnten nicht geladen werden. Lade die Seite neu, um es noch einmal zu versuchen.",
+    "empty": "Du hast noch keine Projekte. Leg ein neues an oder importiere eine Projektdatei.",
+    "listLabel": "Projektliste",
+    "lastChanged": "Zuletzt geändert: {{date}}",
+    "completenessLabel": "Vollständigkeit von {{name}}",
+    "actions": {
+      "rename": "Umbenennen",
+      "renameLabel": "{{name}} umbenennen",
+      "duplicate": "Duplizieren",
+      "duplicateLabel": "{{name}} duplizieren",
+      "export": "Exportieren",
+      "exportLabel": "{{name}} exportieren",
+      "delete": "Löschen",
+      "deleteLabel": "{{name}} löschen"
+    },
+    "nameDialog": {
+      "createTitle": "Neues Projekt",
+      "createDescription": "Wie soll dein Projekt heißen? Den Namen kannst du später jederzeit ändern.",
+      "createSubmit": "Anlegen",
+      "renameTitle": "Projekt umbenennen",
+      "renameSubmit": "Speichern",
+      "nameLabel": "Projektname",
+      "cancel": "Abbrechen"
+    },
+    "validation": {
+      "required": "Bitte gib einen Namen ein.",
+      "tooLong": "Der Name darf höchstens {{max}} Zeichen lang sein."
+    },
+    "deleteDialog": {
+      "title": "Projekt löschen?",
+      "description": "„{{name}}“ wird endgültig gelöscht. Das lässt sich nicht rückgängig machen.",
+      "confirm": "Löschen",
+      "cancel": "Abbrechen"
+    },
+    "notice": {
+      "renamed": "Das Projekt heißt jetzt „{{name}}“.",
+      "duplicated": "„{{name}}“ wurde angelegt.",
+      "deleted": "„{{name}}“ wurde gelöscht.",
+      "imported": "„{{name}}“ wurde importiert."
+    },
+    "errors": {
+      "import": {
+        "invalidJson": "Die Datei konnte nicht gelesen werden: Sie enthält kein gültiges JSON.",
+        "invalidFormat": "Die Datei ist keine gültige Projektdatei des Blueprint-Wizards.",
+        "unsupportedVersion": "Die Projektdatei stammt aus einer neueren Version des Blueprint-Wizards. Bitte aktualisiere die App und versuch es dann noch einmal."
+      },
+      "notFound": "Dieses Projekt gibt es nicht mehr. Die Liste wurde aktualisiert.",
+      "generic": "Das hat leider nicht geklappt. Bitte versuch es noch einmal."
+    },
+    "page": {
+      "back": "Alle Projekte",
+      "loading": "Projekt wird geladen …",
+      "loadError": "Das Projekt konnte nicht geladen werden. Lade die Seite neu, um es noch einmal zu versuchen.",
+      "completenessLabel": "Vollständigkeit",
+      "completenessValue": "{{value}} vollständig",
+      "sectionsTitle": "Abschnitte",
+      "maturityLabel": "Reifegrad: {{maturity}}",
+      "editingHint": "Die Abschnitte bearbeitest du in einer der nächsten Ausbaustufen. Bis dahin siehst du hier den aktuellen Stand.",
+      "notFoundTitle": "Projekt nicht gefunden",
+      "notFoundText": "Dieses Projekt gibt es nicht (mehr). Vielleicht wurde es gelöscht.",
+      "home": "Zur Startseite"
+    }
+  },
+  "sections": {
+    "problem": "Problem & Vision",
+    "audience": "Zielgruppe & Nutzer",
+    "features": "Kernfunktionen (MVP)",
+    "nonGoals": "Nicht-Ziele",
+    "flows": "Nutzerabläufe & Screens",
+    "dataModel": "Datenmodell",
+    "techStack": "Tech-Stack & Plattform",
+    "integrations": "Integrationen & externe Dienste",
+    "risks": "Risiken & offene Punkte",
+    "roadmap": "Umsetzungs-Roadmap"
+  },
+  "maturity": {
+    "empty": "leer",
+    "vague": "vage",
+    "decided": "entschieden"
   }
 }

@@ -4,7 +4,7 @@ Eine KI-gestützte Web-App, die dich von jedem Ausgangspunkt – keine Idee, hal
 
 Die App läuft komplett im Browser: kein eigener Server, kein Konto. Projekte bleiben lokal auf deinem Gerät, die KI wird über deinen eigenen OpenRouter-Key angesprochen (ab Phase 2).
 
-**Projektstatus:** Phase 0 – Fundament. Das Projektgerüst steht; die Startseite zeigt die drei Einstiegspunkte, der Wizard selbst folgt in den nächsten Phasen. Details: [Implementierungsplan](docs/implementierungsplan.md).
+**Projektstatus:** Phase 1 – Datenmodell & Speicherung abgeschlossen (v0.1.0). Projekte lassen sich anlegen, umbenennen, duplizieren, löschen sowie als JSON exportieren und importieren; sie werden lokal in IndexedDB gespeichert. Der Wizard selbst folgt ab Phase 2. Details: [Implementierungsplan](docs/implementierungsplan.md).
 
 ## Quickstart
 

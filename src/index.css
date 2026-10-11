@@ -13,6 +13,8 @@
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-ring: var(--ring);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --radius-lg: 0.75rem;
 }
 
@@ -27,6 +29,8 @@
   --primary: oklch(0.5 0.2 275);
   --primary-foreground: oklch(0.99 0 0);
   --ring: oklch(0.6 0.18 275);
+  --destructive: oklch(0.55 0.21 25);
+  --destructive-foreground: oklch(0.99 0 0);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -41,6 +45,8 @@
     --primary: oklch(0.68 0.17 275);
     --primary-foreground: oklch(0.15 0.02 265);
     --ring: oklch(0.68 0.17 275);
+    --destructive: oklch(0.68 0.19 25);
+    --destructive-foreground: oklch(0.15 0.02 265);
   }
 }
 

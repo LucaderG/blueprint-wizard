@@ -13,10 +13,17 @@ export default mergeConfig(
       coverage: {
         provider: 'v8',
         include: ['src/**/*.{ts,tsx}'],
-        exclude: ['src/**/*.test.{ts,tsx}', 'src/test/**', 'src/main.tsx'],
+        exclude: [
+          'src/**/*.test.{ts,tsx}',
+          'src/**/*.contract.ts',
+          'src/**/testing.ts',
+          'src/test/**',
+          'src/main.tsx',
+        ],
         thresholds: {
-          // Ab Phase 1 gilt für src/core/** zusätzlich ≥ 80 % (siehe Plan, Abschnitt 5).
           lines: 70,
+          // Kernlogik muss besonders gut getestet sein (siehe Plan, Abschnitt 5).
+          'src/core/**': { lines: 80, branches: 80 },
         },
       },
     },

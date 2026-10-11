@@ -1,15 +1,16 @@
 # CLAUDE.md – Arbeitsregeln für KI-Coding-Tools
 
-Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Projekt-Blueprint führt. Ziele, Architektur und Phasen stehen im [Implementierungsplan](docs/implementierungsplan.md). Aktueller Stand: **Phase 0 – Fundament**.
+Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Projekt-Blueprint führt. Ziele, Architektur und Phasen stehen im [Implementierungsplan](docs/implementierungsplan.md). Aktueller Stand: **Phase 1 abgeschlossen**, nächste Phase: 2 – Einstellungen & OpenRouter-Anbindung.
 
 ## Stack
 
 - Vite 8, React 19, TypeScript strict (inkl. `noUncheckedIndexedAccess`)
 - Tailwind CSS v4, Komponenten im shadcn/ui-Stil in `src/shared/ui`, Icons von `lucide-react`
-- React Router, i18next (Deutsch zuerst), Zustand für State (geplant)
+- React Router, i18next (Deutsch zuerst); State bisher über einfache Hooks, Zustand ist installiert und kommt bei Bedarf
 - Vitest + Testing Library + MSW, Playwright für E2E
 - ESLint + Prettier, Husky + lint-staged
-- Geplant laut Plan: Zod (Validierung), Dexie/IndexedDB (Speicherung), OpenRouter (KI) – erst einführen, wenn die jeweilige Phase dran ist.
+- Zod 4 für alle Datenschemas (`src/core/blueprint/schema.ts`), Dexie 4 für IndexedDB (`src/core/storage`)
+- Geplant: OpenRouter (KI) ab Phase 2.
 - Pfad-Alias: `@/` zeigt auf `src/`.
 
 ## Architekturregeln
@@ -20,14 +21,23 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 - **`src/app/`**: Routing, Layout, App-weite Provider.
 - **Keine hart codierten UI-Texte.** Alle Texte als i18n-Keys in `src/shared/i18n/locales/de.json` und im Code über `t('...')`. Keys sind über `i18next.d.ts` typisiert.
 - Typ-Importe mit `import type` (ESLint-Regel `consistent-type-imports`).
+- **Bezeichner im Code sind Englisch**, Kommentare, Doku und UI-Texte Deutsch (ADR 0002).
+
+## Datenmodell und Speicherung
+
+- Das Zod-Schema in `src/core/blueprint/schema.ts` ist die Quelle der Wahrheit; Typen werden daraus abgeleitet.
+- **Schemaänderung = Migration:** `CURRENT_SCHEMA_VERSION` erhöhen, Eintrag in `PROJECT_MIGRATIONS` (`migrations.ts`) ergänzen, Test mit echten Altdaten schreiben.
+- Komponenten greifen nur über `useProjectRepository()` auf Projekte zu, nie direkt auf Dexie.
+- Neue Repository-Logik gehört in `projectOperations.ts`, damit IndexedDB- und Memory-Variante gleich bleiben; die Vertrags-Testsuite `projectRepository.contract.ts` prüft beide.
 
 ## Tests
 
 - **Tests rufen nie echte APIs auf.** MSW läuft in jedem Test mit `onUnhandledRequest: 'error'` (`src/test/setup.ts`); nicht gemockte Requests lassen den Test fehlschlagen. Handler kommen in `src/test/msw/handlers.ts` oder per `server.use(...)` im Test.
 - Unit- und Komponententests liegen neben dem Code als `*.test.ts` / `*.test.tsx`.
 - E2E-Tests liegen in `e2e/` (Playwright, Chromium).
-- Seiten testen mit `renderRoute('/pfad')` aus `src/test/render.tsx`.
-- Neue Logik bekommt Tests. Abdeckung für `src/core/` ≥ 80 % (ab Phase 1).
+- Seiten testen mit `renderRoute('/pfad', { repository })` aus `src/test/render.tsx` (Standard: frisches `MemoryProjectRepository`).
+- Testdaten für Projekte: `makeProject()` und `withMaturity()` aus `src/core/blueprint/testing.ts`.
+- Neue Logik bekommt Tests. Abdeckung für `src/core/` ≥ 80 % Zeilen und Zweige (in `vitest.config.ts` erzwungen).
 
 ## Vor jedem Commit
 

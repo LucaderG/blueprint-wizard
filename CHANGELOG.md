@@ -6,6 +6,26 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 
 ## [Unreleased]
 
+## [0.1.0] – Phase 1: Datenmodell & Speicherung
+
+### Hinzugefügt
+
+- Blueprint-Datenmodell als Zod-Schemas: Projekt, Blueprint mit 10 festen Abschnitten, Reifegrad (leer/vage/entschieden), Entscheidungen mit Optionen und Hebel, Fragen.
+- Gewichteter Vollständigkeits-Score pro Abschnitt und gesamt.
+- Versioniertes Projektformat mit Migrationssystem (`schemaVersion`, `migrateProject`).
+- JSON-Exportformat mit Formatkennung; Import migriert ältere Dateien und vergibt immer eine neue ID.
+- `ProjectRepository`-Schnittstelle mit IndexedDB-Implementierung (Dexie) und Memory-Implementierung für Tests, geprüft durch eine gemeinsame Vertrags-Testsuite.
+- Projektliste auf der Startseite: anlegen, umbenennen, duplizieren, löschen (mit Bestätigung), exportieren, importieren.
+- Projektseite mit allen Abschnitten, Reifegrad und Fortschrittsbalken.
+- Barrierearmer Dialog, Download-Helfer, Slugify- und Format-Helfer.
+- E2E-Abnahmetest: Projekt anlegen, Seite neu laden, Projekt ist noch da; dazu Tests für Umbenennen, Duplizieren, Löschen und Export/Import.
+- ADR 0002 zu Datenmodell und Speicherung.
+
+### Geändert
+
+- Abdeckungs-Mindestwert für `src/core/**`: 80 % Zeilen und Zweige.
+- Build teilt Bibliotheken in eigene Chunks (`react`, `vendor`), damit keine Datei über 500 kB liegt.
+
 ## [0.0.1] – Phase 0: Fundament
 
 ### Hinzugefügt
