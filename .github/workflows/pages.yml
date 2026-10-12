@@ -21,7 +21,14 @@ concurrency:
 jobs:
   build:
     name: Für GitHub Pages bauen
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    # Nur grüne CI-Läufe eines Pushs auf main in diesem Repository. Ohne die Prüfung auf `push` und
+    # das eigene Repository würde auch ein Pull Request aus einem Fork mit Branch `main` passen.
+    # Von Hand nur vom Branch main.
+    if: >-
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

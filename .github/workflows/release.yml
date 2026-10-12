@@ -1,7 +1,8 @@
 name: Release
 
 # Ein Versions-Tag (z. B. v1.0.0) legt das GitHub-Release mit dem passenden CHANGELOG-Abschnitt an.
-# Wer das Release lieber in der GitHub-Oberfläche anlegt, kann das tun; dann passiert hier nichts.
+# Wer das Release lieber in der GitHub-Oberfläche anlegt, kann das tun; der Workflow prüft dann nur
+# noch die Version und lässt das vorhandene Release unverändert.
 # Ablauf: docs/release-prozess.md.
 on:
   push:
