@@ -287,6 +287,12 @@
       "title": "Empty the trash?",
       "description_one": "{{count}} entry will be deleted permanently. This cannot be undone.",
       "description_other": "{{count}} entries will be deleted permanently. This cannot be undone."
+    },
+    "trashedNotice": {
+      "text": "This entry is in the trash ({{remaining}}). Save it to keep it in your library.",
+      "textNoDate": "This entry is in the trash. Save it to keep it in your library.",
+      "save": "Save to library",
+      "saved": "Saved. The entry is now in your library."
     }
   },
   "sections": {
@@ -837,5 +843,58 @@
     "rationaleLabel": "Rationale (optional)",
     "choose": "Please choose",
     "cancel": "Cancel"
+  },
+  "profile": {
+    "title": "Profile",
+    "edit": "Edit profile",
+    "apply": "Apply",
+    "cancel": "Cancel",
+    "fields": {
+      "pitch": "Pitch",
+      "problem": "Problem",
+      "audience": "Target audience",
+      "platform": "Platform",
+      "features": "Core features",
+      "featuresHint": "One feature per line.",
+      "monetizationModel": "Model",
+      "priceRange": "Price range",
+      "reason": "Reasoning",
+      "effort": "Effort",
+      "risks": "Risks",
+      "risksHint": "One risk per line."
+    },
+    "monetization": "Monetization",
+    "priceAssumption": "Prices are an assumption, not market data.",
+    "effort": {
+      "small": "small",
+      "medium": "medium",
+      "large": "large"
+    }
+  },
+  "variants": {
+    "title": "Your variants",
+    "intro": "Each variant stays in the trash until you save it. The app saves expanded variants automatically.",
+    "none": "Variants appear here once you generate them from an idea.",
+    "enterIdea": "Enter an idea",
+    "countLabel": "Number of variants",
+    "generate": "Generate variants",
+    "regenerate": "Generate again",
+    "running": "The AI is generating variants …",
+    "loading": "Loading variants …",
+    "gone": "These variants no longer exist. Generate new ones or look in your library.",
+    "listLabel": "Variants",
+    "status": {
+      "saved": "Saved in the library",
+      "trashed": "In the trash, {{remaining}}",
+      "trashedNoDate": "In the trash"
+    },
+    "save": "Save",
+    "saveLabel": "Save {{name}}",
+    "savedButton": "Saved",
+    "expand": "Expand fully",
+    "expandLabel": "Expand {{name}} fully",
+    "expanding": "The AI is expanding the profile …",
+    "open": "Open",
+    "openLabel": "Open {{name}}"
   }
 }

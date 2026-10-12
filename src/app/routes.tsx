@@ -17,6 +17,11 @@ export const routes: RouteObject[] = [
         lazy: () => import('@/features/wizard/EntryPage').then((m) => ({ Component: m.EntryPage })),
       },
       {
+        path: 'varianten',
+        lazy: () =>
+          import('@/features/variants/VariantsPage').then((m) => ({ Component: m.VariantsPage })),
+      },
+      {
         path: 'projekte/:projectId',
         lazy: () =>
           import('@/features/projects/ProjectPage').then((m) => ({ Component: m.ProjectPage })),

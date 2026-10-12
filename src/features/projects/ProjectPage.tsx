@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { Link, useParams } from 'react-router'
 import { BlueprintOverview } from '@/features/blueprint/BlueprintOverview'
 import { Button } from '@/shared/ui/button'
+import { TrashedNotice } from './TrashedNotice'
 import { useProjectEditor } from './useProjectEditor'
 
 /** Projektseite: lädt das Projekt und zeigt die bearbeitbare Blueprint-Übersicht. */
@@ -34,5 +35,10 @@ export function ProjectPage() {
     )
   }
 
-  return <BlueprintOverview {...state} />
+  return (
+    <div className="space-y-6">
+      <TrashedNotice project={state.project} />
+      <BlueprintOverview {...state} />
+    </div>
+  )
 }

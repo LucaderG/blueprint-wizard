@@ -1,4 +1,4 @@
-import type { EntryPoint, Project, Section } from './schema'
+import type { EntryPoint, Project, ProjectProfile, Section } from './schema'
 import type { SectionId } from './sections'
 
 export type SectionPatch = Partial<Pick<Section, 'content' | 'maturity' | 'source'>>
@@ -35,4 +35,31 @@ export function acceptSuggestion(project: Project, id: SectionId): Project {
 
 export function setEntryPoint(project: Project, entryPoint: EntryPoint): Project {
   return { ...project, entryPoint }
+}
+
+/**
+ * Ersetzt den Steckbrief nach einer Bearbeitung von Hand. Texte werden getrimmt, leere Einträge in
+ * Funktionen und Risiken entfallen. Ohne Pitch gibt es keinen gültigen Steckbrief.
+ */
+export function updateProfile(project: Project, profile: ProjectProfile): Project {
+  const pitch = profile.pitch.trim()
+  if (!pitch) throw new RangeError('Ein Steckbrief braucht einen Pitch')
+  const cleanList = (items: string[]) => items.map((item) => item.trim()).filter(Boolean)
+  return {
+    ...project,
+    profile: {
+      pitch,
+      problem: profile.problem.trim(),
+      audience: profile.audience.trim(),
+      features: cleanList(profile.features),
+      platform: profile.platform.trim(),
+      monetization: {
+        model: profile.monetization.model.trim(),
+        priceRange: profile.monetization.priceRange.trim(),
+        reason: profile.monetization.reason.trim(),
+      },
+      effort: profile.effort,
+      risks: cleanList(profile.risks),
+    },
+  }
 }

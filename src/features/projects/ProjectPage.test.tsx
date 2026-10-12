@@ -1,7 +1,7 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { decisionsResultSchema } from '@/core/ai/prompts'
-import { updateSection, type Project, type SectionId } from '@/core/blueprint'
+import { updateSection, type Project, type ProjectProfile, type SectionId } from '@/core/blueprint'
 import { applyDecisionCandidates, decide } from '@/core/engine'
 import { MemoryProjectRepository } from '@/core/storage'
 import { renderRoute } from '@/test/render'
@@ -441,5 +441,90 @@ describe('Projektseite', () => {
     expect(
       screen.queryByRole('heading', { level: 2, name: 'Entscheidungsprotokoll' }),
     ).not.toBeInTheDocument()
+  })
+})
+
+describe('Steckbrief auf der Projektseite', () => {
+  const PROFILE: ProjectProfile = {
+    pitch: 'Ein erster Pitch',
+    problem: '',
+    audience: 'Studierende',
+    features: ['Erinnerungen'],
+    platform: 'Web',
+    monetization: { model: '', priceRange: '', reason: '' },
+    effort: 'small',
+    risks: [],
+  }
+
+  it('zeigt den Steckbrief über den Abschnitten', async () => {
+    const { repository, id } = await seedProject((project) => ({ ...project, profile: PROFILE }))
+
+    await openProject(repository, id)
+
+    const card = screen.getByRole('region', { name: 'Steckbrief' })
+    expect(within(card).getByText('Ein erster Pitch')).toBeVisible()
+    const firstArticle = screen.getAllByRole('article')[0]
+    expect(firstArticle).toBeDefined()
+    expect(
+      card.compareDocumentPosition(firstArticle!) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy()
+  })
+
+  it('zeigt ohne Profil keine Karte', async () => {
+    const { repository, id } = await seedProject()
+
+    await openProject(repository, id)
+
+    expect(screen.queryByRole('region', { name: 'Steckbrief' })).not.toBeInTheDocument()
+  })
+
+  it('speichert einen bearbeiteten Steckbrief automatisch', async () => {
+    const user = userEvent.setup()
+    const { repository, id } = await seedProject((project) => ({ ...project, profile: PROFILE }))
+
+    await openProject(repository, id)
+    const card = screen.getByRole('region', { name: 'Steckbrief' })
+    await user.click(within(card).getByRole('button', { name: 'Steckbrief bearbeiten' }))
+    const pitch = within(card).getByLabelText('Pitch')
+    await user.clear(pitch)
+    await user.type(pitch, 'Neuer Pitch')
+    await user.click(within(card).getByRole('button', { name: 'Übernehmen' }))
+
+    expect(within(card).getByText('Neuer Pitch')).toBeVisible()
+    await expectStored(repository, id, (project) => {
+      expect(project.profile?.pitch).toBe('Neuer Pitch')
+      expect(project.profile?.features).toEqual(['Erinnerungen'])
+    })
+  })
+})
+
+describe('Eintrag im Papierkorb auf der Projektseite', () => {
+  it('zeigt einen Hinweis und speichert den Eintrag in der Bibliothek', async () => {
+    const user = userEvent.setup()
+    const repository = new MemoryProjectRepository()
+    const project = await repository.create('Variante')
+    await repository.trash(project.id)
+
+    renderRoute(`/projekte/${project.id}`, { repository })
+
+    expect(
+      await screen.findByText(/Dieser Eintrag liegt im Papierkorb \(noch 24 Std\.\)/),
+    ).toBeVisible()
+    await user.click(screen.getByRole('button', { name: 'In der Bibliothek speichern' }))
+
+    expect(
+      await screen.findByText('Gespeichert. Der Eintrag steht jetzt in der Bibliothek.'),
+    ).toBeVisible()
+    expect((await repository.get(project.id))?.library.status).toBe('saved')
+  })
+
+  it('zeigt bei gespeicherten Einträgen keinen Hinweis', async () => {
+    const repository = new MemoryProjectRepository()
+    const project = await repository.create('Gespeichert')
+
+    renderRoute(`/projekte/${project.id}`, { repository })
+
+    expect(await screen.findByRole('heading', { level: 1, name: 'Gespeichert' })).toBeVisible()
+    expect(screen.queryByText(/liegt im Papierkorb/)).not.toBeInTheDocument()
   })
 })

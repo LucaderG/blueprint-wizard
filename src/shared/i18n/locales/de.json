@@ -287,6 +287,12 @@
       "title": "Papierkorb leeren?",
       "description_one": "{{count}} Eintrag wird endgültig gelöscht. Das lässt sich nicht rückgängig machen.",
       "description_other": "{{count}} Einträge werden endgültig gelöscht. Das lässt sich nicht rückgängig machen."
+    },
+    "trashedNotice": {
+      "text": "Dieser Eintrag liegt im Papierkorb ({{remaining}}). Speichere ihn, damit er in der Bibliothek bleibt.",
+      "textNoDate": "Dieser Eintrag liegt im Papierkorb. Speichere ihn, damit er in der Bibliothek bleibt.",
+      "save": "In der Bibliothek speichern",
+      "saved": "Gespeichert. Der Eintrag steht jetzt in der Bibliothek."
     }
   },
   "sections": {
@@ -837,5 +843,58 @@
     "rationaleLabel": "Begründung (optional)",
     "choose": "Bitte wählen",
     "cancel": "Abbrechen"
+  },
+  "profile": {
+    "title": "Steckbrief",
+    "edit": "Steckbrief bearbeiten",
+    "apply": "Übernehmen",
+    "cancel": "Abbrechen",
+    "fields": {
+      "pitch": "Pitch",
+      "problem": "Problem",
+      "audience": "Zielgruppe",
+      "platform": "Plattform",
+      "features": "Kernfunktionen",
+      "featuresHint": "Eine Funktion pro Zeile.",
+      "monetizationModel": "Modell",
+      "priceRange": "Preisrahmen",
+      "reason": "Begründung",
+      "effort": "Aufwand",
+      "risks": "Risiken",
+      "risksHint": "Ein Risiko pro Zeile."
+    },
+    "monetization": "Monetarisierung",
+    "priceAssumption": "Preise sind eine Annahme, keine Marktdaten.",
+    "effort": {
+      "small": "klein",
+      "medium": "mittel",
+      "large": "groß"
+    }
+  },
+  "variants": {
+    "title": "Deine Varianten",
+    "intro": "Jede Variante liegt im Papierkorb, bis du sie speicherst. Ausgearbeitete Varianten speichert die App automatisch.",
+    "none": "Hier erscheinen Varianten, sobald du sie aus einer Idee erzeugst.",
+    "enterIdea": "Idee eingeben",
+    "countLabel": "Anzahl Varianten",
+    "generate": "Varianten erzeugen",
+    "regenerate": "Neu erzeugen",
+    "running": "Die KI erzeugt Varianten …",
+    "loading": "Varianten werden geladen …",
+    "gone": "Diese Varianten gibt es nicht mehr. Erzeuge neue oder schau in der Bibliothek nach.",
+    "listLabel": "Varianten",
+    "status": {
+      "saved": "In der Bibliothek gespeichert",
+      "trashed": "Im Papierkorb, {{remaining}}",
+      "trashedNoDate": "Im Papierkorb"
+    },
+    "save": "Speichern",
+    "saveLabel": "{{name}} speichern",
+    "savedButton": "Gespeichert",
+    "expand": "Voll ausarbeiten",
+    "expandLabel": "{{name}} voll ausarbeiten",
+    "expanding": "Die KI arbeitet den Steckbrief aus …",
+    "open": "Öffnen",
+    "openLabel": "{{name}} öffnen"
   }
 }

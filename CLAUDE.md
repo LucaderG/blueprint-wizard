@@ -69,6 +69,7 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 
 - Bibliothek und Papierkorb: Jeder Eintrag ist ein `Project` mit `library.status` (`saved`/`trashed`). Löschen heißt `repository.trash`, „Speichern“ und „Wiederherstellen“ heißen `repository.restore`; `save` ändert den Status nie. Endgültig löscht nur `deleteForever` oder `purgeExpired` (nur abgelaufene Einträge im Papierkorb, Frist `trashRetentionDays` 1/7/30). Hilfen in `src/core/blueprint/library.ts`.
 - Varianten: `generateVariants` (Prompt `generate-variants`, 1–3 Steckbriefe) → `applyVariantCandidates` bereinigt (höchstens 8 Funktionen, 3 Risiken) → `applyProfile` macht daraus einen Eintrag. „Voll ausarbeiten“: `expandProfile` (Prompt `expand-profile`, Antwort im Schema der Einordnung) → `expandEntry` über `applyClassification`. Alles in `src/core/engine/variants.ts`.
+- UI: `useVariantGeneration` (`src/features/variants`) erzeugt Einträge über `createVariantEntries` (anlegen, Steckbrief setzen, in den Papierkorb) und merkt Idee, Anzahl und IDs im `sessionStorage` (`variantsSession.ts`) für die Seite `/varianten`. Den Steckbrief zeigt `ProfileView`, bearbeitet wird er über `ProfileCard` und `updateProfile` (`editing.ts`).
 
 ## Blueprint-Export
 
