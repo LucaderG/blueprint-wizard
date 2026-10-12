@@ -6,6 +6,72 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 
 ## [Unreleased]
 
+### Hinzugefügt
+
+- Versionsanzeige: Unten auf jeder Seite steht die Version mit Kanal, z. B. „Version v1.0.0 · stable“ für ein Release oder „Version v1.0.0 · nightly · abc1234“ für Pull Requests und ungetaggte Stände. Nach einem neuen Release baut der Release-Workflow die öffentliche Seite neu, damit sie „stable“ zeigt.
+- Monetarisierung: Neue Seite `/projekte/:projectId/monetarisierung`, erreichbar über den Knopf „Monetarisierung“ auf der Projektseite. Empfohlen ist sie ab 60 % Vollständigkeit und mit Inhalt in Problem, Zielgruppe und Kernfunktionen. Fehlt etwas, zeigt sie, was fehlt, und bietet „Trotzdem starten“ an.
+- Schritt 1 „Monetarisierungsmodelle“: Die KI schlägt 4 bis 6 Modelle aus einer festen Liste vor und bewertet sie nach sechs Kriterien von 1 bis 5 Punkten. Eine Vergleichstabelle zeigt alle Bewertungen. Man wählt ein Modell oder kombiniert bis zu drei. „Nicht monetarisieren“ lässt sich nicht kombinieren. Modelle lassen sich auch ohne KI von Hand ergänzen.
+- Schritt 2 „Preisstrategie“: Erscheint, sobald ein Modell außer „Nicht monetarisieren“ gewählt ist. Die KI schlägt 3 bis 5 Preisstrategien vor. Beispielpreise stehen als Spannen in Euro und ausdrücklich als Annahme, nicht als Marktdaten. Bis zu zwei Strategien sind wählbar, auch von Hand ergänzbar. Ändert man die Modellauswahl, werden die Preisstrategien verworfen.
+- Schritt 3 „Abschließen“: „Monetarisierung abschließen“ und „Wieder öffnen“. Regelbasierte Auswirkungen auf andere Abschnitte (z. B. Zahlungsanbieter, Nutzerkonten, Datenschutz bei Werbung) lassen sich per Klick als Stichpunkt übernehmen. Vorhandener Text wird nie überschrieben.
+- Export: `BLUEPRINT.md` bekommt ein Kapitel „Monetarisierung“, sobald ein Modell gewählt ist. `CLAUDE.md` und `AGENTS.md` enthalten eine kurze Fassung davon. Hat man ein Modell außer „Nicht monetarisieren“ gewählt, ergänzt `TASKS.md` die optionale Aufgabe „Bezahlfunktion umsetzen“. Ohne gewähltes Modell bleibt der Export unverändert. Die Monetarisierung blockiert den Export nie.
+- Prompts `suggest-monetization-models` und `suggest-pricing-strategies` (Version 1) mit Golden Files. ADR 0011.
+- Nutzerhandbuch und Architektur-Überblick um die Monetarisierung ergänzt.
+
+### Geändert
+
+- Datenformat auf Version 4: Neues Feld `project.monetization`, solange nicht begonnen `null`. Projekte im bisherigen Format (Version 3) werden beim Laden automatisch migriert. Der Reife-Check und das Exportformat (`EXPORT_VERSION` 1) bleiben unverändert.
+- Entwicklungsabhängigkeiten aktualisiert: Playwright 1.64, jsdom 30, lint-staged 17, @types/node 26; GitHub Actions auf aktuelle Hauptversionen (checkout 7, upload-artifact 7, Pages-Actions). Ein vorinstalliertes Chromium lässt sich für E2E-Tests über `PLAYWRIGHT_CHROMIUM_EXECUTABLE` angeben.
+- Der Release-Workflow lässt sich von Hand oder per API mit einer Version starten und legt Tag und GitHub-Release selbst an, auch für ältere Versionen. So kann Claude Releases aus dem Chat erstellen (`docs/release-prozess.md`).
+
+## [1.0.0] – 2026-10-11 – Phase 9: Release & Wartung
+
+### Hinzugefügt
+
+- Öffentliche Adresse: <https://lucaderg.github.io/blueprint-wizard/>. Nach jeder grünen CI auf `main` wird die App automatisch auf GitHub Pages veröffentlicht. Die App funktioniert dafür auch in einem Unterordner (`BASE_PATH`), inklusive Direktaufruf von Unterseiten, installierbarer App und Offline-Start.
+- Release-Workflow: Ein Versions-Tag legt das GitHub-Release mit dem passenden CHANGELOG-Abschnitt an und prüft, ob die Version zu `package.json` passt.
+- Dependabot hält npm-Pakete (wöchentlich, kleine Updates gebündelt) und GitHub Actions (monatlich) aktuell.
+- Dokumentation: Nutzerhandbuch, Architektur-Überblick, Anleitung „Neuen Blueprint-Abschnitt hinzufügen“ und Release-/Update-Prozess. ADR 0010.
+
+### Behoben
+
+- Schlägt das Speichern fehl und man wechselt die Seite (z. B. zum Export), zeigt die nächste Seite jetzt den ungespeicherten Stand samt Fehlermeldung statt des älteren gespeicherten Stands. Gelingt das Speichern später, verschwindet der Hinweis.
+
+## [0.8.0] – 2026-10-11 – Phase 8: Qualität & Politur
+
+### Hinzugefügt
+
+- Englische Oberfläche und Dunkelmodus, wählbar unter Einstellungen → Darstellung (Hell, Dunkel oder wie das System). Zahlen, Daten und Beträge folgen der gewählten Sprache. Die Einstellung greift schon vor dem ersten Rendern, ohne Aufflackern.
+- Kostenanzeige: Oben rechts stehen die KI-Kosten der aktuellen Sitzung. Ein Klick zeigt die letzte Anfrage (Aufgabe, Tokens, Kosten, Modell) und die Summe; zurücksetzbar. Grundlage sind die Verbrauchsangaben von OpenRouter.
+- Installierbar als App (PWA) mit eigenem Symbol; nach dem ersten Laden läuft die App auch offline. KI-Funktionen brauchen weiterhin Internet.
+- Ladeanzeige und verständliche Fehlerseite, falls eine Seite nicht geladen werden kann.
+- Automatische Barrierefreiheitsprüfung (axe) aller Seiten in hell und dunkel, Lighthouse-Prüfung in der CI (Mindestwert 90 in allen Kategorien), Test auf vollständige englische Übersetzung. ADR 0009.
+
+### Geändert
+
+- Seiten werden erst bei Bedarf geladen; der Start lädt deutlich weniger Code.
+- Neues App-Symbol statt des Vite-Logos.
+
+### Behoben
+
+- Export: Antworten aus alten v1-Projekten (ohne Verlauf) fehlten in `BLUEPRINT.md`. Sie erscheinen jetzt, ohne Doppelungen.
+- Export: Klappt das Kopieren des Start-Prompts nicht (auch ohne Zwischenablage-Zugriff), ist der Start-Prompt jetzt zuverlässig markiert.
+- Startseite: Die Beschreibungen der Einstiegskacheln werden Screenreadern vorgelesen.
+
+## [0.7.0] – 2026-10-11 – Phase 7: Blueprint-Generierung & Export
+
+### Hinzugefügt
+
+- „Blueprint fertigstellen“ auf der Projektseite mit Reife-Check, Dateivorschau und Download unter `/projekte/:projectId/export`. Offene Punkte werden angezeigt; Export ist trotzdem möglich, ohne Bestätigungsdialog und ohne API-Key.
+- Reine Generatoren für `BLUEPRINT.md`, identische Kontextdateien `CLAUDE.md` und `AGENTS.md`, `TASKS.md` mit vorhandener Roadmap und Phasenvorlage samt Abnahmekriterien sowie `START-PROMPT.md` zum Kopieren.
+- Blueprint bewahrt alle Abschnitte, getroffene Entscheidungen mit Begründung und Folgen, offene Entscheidungen samt Optionen und Empfehlung, Fragenverlauf, Vorschläge und frühere KI-Analyse. Nicht übernommene KI-Inhalte und offene Punkte bleiben klar gekennzeichnet.
+- Einzeldatei-Download und lokales ZIP mit allen fünf UTF-8-Dateien über `fflate`; Vorschau und ZIP enthalten exakt denselben Stand. Keine Änderung am Projektformat (weiter Schema v3).
+- Verständliche Fehlermeldungen für Download, Laden und Zwischenablage; bei Kopierfehlern steht der markierte Start-Prompt zur manuellen Übernahme bereit.
+- Snapshot-, Vollständigkeits-, Reife-, ZIP- und Komponententests; E2E-Abnahme inklusive sofortigem Wechsel nach Bearbeitung, ZIP-Inhalten, Einzeldatei, Zwischenablage, Neuladen und importiertem Altprojekt. ADR 0008 und Übergabe für Phase 8.
+
+### Behoben
+
+- Der bestehende Fragenmotor-E2E-Test wartet vor dem Neuladen auf die tatsächlich gerenderte Projektseite. Der Vorher/Nachher-Vergleich auf der vorherigen Seite hat denselben Artikelnamen und konnte sonst zu früh als Projektansicht gelten.
+
 ## [0.6.0] – 2026-10-11 – Phase 6: Ideenfindung von Null
 
 ### Hinzugefügt

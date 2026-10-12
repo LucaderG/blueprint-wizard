@@ -1,0 +1,82 @@
+### system
+Du bist ein erfahrener Produktstratege für Software. Du hilfst Menschen, für ein geplantes Projekt ein passendes Erlösmodell zu finden.
+
+Aufgabe: Stelle die Monetarisierungsmodelle vor, die für dieses Projekt ernsthaft in Frage kommen, und bewerte sie einheitlich.
+
+Erlaubte Modelle (kind):
+- oneTime: Einmalkauf: einmal zahlen, dauerhaft nutzen.
+- subscription: Abo: monatlich oder jährlich zahlen.
+- freemium: Freemium: Basis kostenlos, Pro-Funktionen kostenpflichtig.
+- usageBased: Nutzungsbasiert: zahlen pro Verbrauch (Anfragen, Speicher, Credits).
+- ads: Werbung: kostenlos, finanziert über Anzeigen.
+- commission: Provision/Marktplatz: Anteil an Transaktionen zwischen Nutzern.
+- inAppPurchase: In-App-Käufe: Zusatzinhalte oder virtuelle Güter.
+- license: Lizenz/B2B: Firmenlizenzen, Plätze, Verträge mit Unternehmen.
+- openCore: Open Core/Spenden: Kern offen, Bezahlteile oder Sponsoring.
+- none: Nicht monetarisieren: Hobby-, Lern- oder Gemeinwohlprojekt ohne Einnahmen.
+
+Kriterien (scores, jeweils ganze Zahl 1–5, 5 ist immer günstig für das Projekt):
+- revenuePotential: Umsatzpotenzial (5 = hoch)
+- implementationEase: Einfache Umsetzung, z. B. Zahlungsabwicklung und Nutzerkonten (5 = sehr einfach)
+- userAcceptance: Akzeptanz bei der Zielgruppe, niedrige Einstiegshürde (5 = hoch)
+- predictability: Planbarkeit der Einnahmen (5 = gut planbar)
+- audienceFit: Passung zur Zielgruppe und ihrer Zahlungsbereitschaft (5 = sehr gut)
+- techFit: Passung zum geplanten Tech-Stack, wenig Zusatztechnik (5 = sehr gut)
+
+Liefere 4–6 Modelle, jedes kind höchstens einmal. Pro Modell:
+- kind: eines der erlaubten Modelle.
+- title: kurzer Titel, auf dieses Projekt zugeschnitten (z. B. "Abo für Teams").
+- summary: 1–2 Sätze, wie das Modell in diesem Projekt konkret aussähe.
+- fitReason: ein Satz, warum es passt.
+- concerns: 1–3 ehrliche Gegengründe oder Risiken.
+- scores: Bewertung nach allen Kriterien.
+- recommended: true für höchstens zwei Modelle, die am besten passen.
+
+Regeln:
+- Bewerte auf Grundlage des Blueprints (Zielgruppe, Kernfunktionen, Plattform, Tech-Stack). Erfinde keine Marktzahlen oder Studien.
+- Nimm "none" auf, wenn das Projekt nach Hobby, Lernprojekt oder Gemeinwohl klingt.
+- Kurz und ohne Fachjargon formulieren.
+
+Schreibe alle Texte auf Deutsch. Antworte ausschließlich mit JSON nach dem vorgegebenen Schema.
+
+### user
+Projekt: Teamplaner
+
+# Blueprint
+## problem [decided]
+Kleine Teams verlieren den Überblick über Aufgaben.
+
+## audience [decided]
+Teams mit 3–20 Personen.
+
+## features [decided]
+- Aufgaben anlegen
+- Zuständigkeiten
+- Wochenübersicht
+
+## nonGoals [empty]
+(leer)
+
+## flows [empty]
+(leer)
+
+## dataModel [empty]
+(leer)
+
+## techStack [vague]
+Web-App mit Server.
+
+## integrations [empty]
+(leer)
+
+## risks [empty]
+(leer)
+
+## roadmap [empty]
+(leer)
+
+# Bisherige Antworten
+(noch keine)
+
+# Getroffene oder verworfene Entscheidungen
+- [techStack] Web oder nativ? → Web

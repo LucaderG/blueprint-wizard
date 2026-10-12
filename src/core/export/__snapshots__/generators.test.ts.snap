@@ -1,0 +1,583 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Blueprint-Generator > bewahrt den Projektinhalt und kennzeichnet leere Abschnitte als offen 1`] = `
+"# Koch-Leihbörse
+
+Projektstand: 2026-01-01T00:00:00.000Z · Exportformat: 1
+
+## Problem & Vision
+
+_Reifegrad: vage_
+
+Leih dir Küchengeräte.
+Rezepte inklusive.
+
+## Zielgruppe & Nutzer
+
+_Reifegrad: leer_
+
+Noch offen.
+
+## Kernfunktionen (MVP)
+
+_Reifegrad: leer_
+
+Noch offen.
+
+## Nicht-Ziele
+
+_Reifegrad: leer_
+
+Noch offen.
+
+## Nutzerabläufe & Screens
+
+_Reifegrad: leer_
+
+Noch offen.
+
+## Datenmodell
+
+_Reifegrad: leer_
+
+Noch offen.
+
+## Tech-Stack & Plattform
+
+_Reifegrad: leer_
+
+Noch offen.
+
+## Integrationen & externe Dienste
+
+_Reifegrad: leer_
+
+Noch offen.
+
+## Risiken & offene Punkte
+
+_Reifegrad: leer_
+
+Noch offen.
+
+## Umsetzungs-Roadmap
+
+_Reifegrad: leer_
+
+Noch offen.
+
+## Offene Punkte
+
+- Leere Abschnitte: Zielgruppe & Nutzer, Kernfunktionen (MVP), Nicht-Ziele, Nutzerabläufe & Screens, Datenmodell, Tech-Stack & Plattform, Integrationen & externe Dienste, Risiken & offene Punkte, Umsetzungs-Roadmap
+- Noch nicht entschiedene Abschnitte: Problem & Vision
+"
+`;
+
+exports[`Coding-Paket > liefert alle Startdateien mit verbindlichem Umfang und überprüfbaren Aufgaben 1`] = `
+[
+  {
+    "content": "# Koch-Leihbörse
+
+Projektstand: 2026-01-01T00:00:00.000Z · Exportformat: 1
+
+## Problem & Vision
+
+_Reifegrad: entschieden_
+
+Küchengeräte in der Nachbarschaft leihen.
+
+## Zielgruppe & Nutzer
+
+_Reifegrad: entschieden_
+
+Nachbarn, die selten kochen.
+
+## Kernfunktionen (MVP)
+
+_Reifegrad: entschieden_
+
+- Geräte anbieten
+- Leihen mit Rückgabedatum
+- Rezepte pro Gerät
+
+## Nicht-Ziele
+
+_Reifegrad: entschieden_
+
+- Keine Bezahlung
+
+## Nutzerabläufe & Screens
+
+_Reifegrad: entschieden_
+
+Gerät suchen → Details öffnen → Leihe eintragen.
+
+## Datenmodell
+
+_Reifegrad: entschieden_
+
+Gerät: Name, Besitzer. Leihe: Gerät, Rückgabedatum.
+
+## Tech-Stack & Plattform
+
+_Reifegrad: entschieden_
+
+React-Web-App im Browser.
+
+## Integrationen & externe Dienste
+
+_Reifegrad: entschieden_
+
+Keine externen Dienste.
+
+## Risiken & offene Punkte
+
+_Reifegrad: entschieden_
+
+Beschädigte Geräte und verspätete Rückgaben.
+
+## Umsetzungs-Roadmap
+
+_Reifegrad: entschieden_
+
+Phase 1: Geräte erfassen. Abnahme: Gerät erscheint in der Liste.
+Phase 2: Leihen verwalten.
+
+## Offene Punkte
+
+Keine offenen Punkte im Reife-Check.
+",
+    "name": "BLUEPRINT.md",
+  },
+  {
+    "content": "# Koch-Leihbörse – Kontext & Arbeitsregeln
+
+Dieses Repository setzt das folgende Projekt um. BLUEPRINT.md enthält die vollständigen Anforderungen, TASKS.md die Aufgaben. CLAUDE.md und AGENTS.md enthalten dieselben Regeln.
+
+## Problem & Vision
+
+_Reifegrad: entschieden_
+
+Küchengeräte in der Nachbarschaft leihen.
+
+## Zielgruppe & Nutzer
+
+_Reifegrad: entschieden_
+
+Nachbarn, die selten kochen.
+
+## Kernfunktionen (MVP)
+
+_Reifegrad: entschieden_
+
+- Geräte anbieten
+- Leihen mit Rückgabedatum
+- Rezepte pro Gerät
+
+## Nicht-Ziele
+
+_Reifegrad: entschieden_
+
+- Keine Bezahlung
+
+## Tech-Stack & Plattform
+
+_Reifegrad: entschieden_
+
+React-Web-App im Browser.
+
+## Arbeitsregeln
+
+1. Lies zuerst BLUEPRINT.md und TASKS.md. Behalte den vereinbarten MVP-Umfang und die Nicht-Ziele bei.
+2. Behandle leere oder vage Abschnitte, offene Entscheidungen und nicht übernommene KI-Vorschläge als ungeklärt. Stelle vor betroffenen Umsetzungsschritten gezielte Fragen. Empfehlungen sind keine getroffenen Entscheidungen.
+3. Prüfe die Projekt-Roadmap gegen den vorgeschlagenen Ablauf in TASKS.md. Die Projekt-Roadmap hat Vorrang; stimme fehlende Phasen und Abnahmekriterien ab.
+4. Verwende den festgelegten Tech-Stack und prüfe vorhandenen Code und Arbeitsregeln, bevor du Änderungen machst. Erfinde keine noch nicht festgelegten Bibliotheken, Dienste oder Zugangsdaten.
+5. Arbeite in kleinen, überprüfbaren Schritten. Prüfe die Abnahmekriterien der aktuellen Phase und berichte, was umgesetzt und geprüft wurde und was noch offen ist.
+6. Bewahre vorhandene Nutzeränderungen. Halte Geheimnisse und Zugangsdaten aus Quellcode, Exportdateien und Commits heraus.
+7. Dokumentiere neue Entscheidungen und passe Aufgaben und Blueprint bei abgestimmten Änderungen an.
+
+## Offene Punkte
+
+Keine offenen Punkte im Reife-Check.
+",
+    "name": "CLAUDE.md",
+  },
+  {
+    "content": "# Koch-Leihbörse – Kontext & Arbeitsregeln
+
+Dieses Repository setzt das folgende Projekt um. BLUEPRINT.md enthält die vollständigen Anforderungen, TASKS.md die Aufgaben. CLAUDE.md und AGENTS.md enthalten dieselben Regeln.
+
+## Problem & Vision
+
+_Reifegrad: entschieden_
+
+Küchengeräte in der Nachbarschaft leihen.
+
+## Zielgruppe & Nutzer
+
+_Reifegrad: entschieden_
+
+Nachbarn, die selten kochen.
+
+## Kernfunktionen (MVP)
+
+_Reifegrad: entschieden_
+
+- Geräte anbieten
+- Leihen mit Rückgabedatum
+- Rezepte pro Gerät
+
+## Nicht-Ziele
+
+_Reifegrad: entschieden_
+
+- Keine Bezahlung
+
+## Tech-Stack & Plattform
+
+_Reifegrad: entschieden_
+
+React-Web-App im Browser.
+
+## Arbeitsregeln
+
+1. Lies zuerst BLUEPRINT.md und TASKS.md. Behalte den vereinbarten MVP-Umfang und die Nicht-Ziele bei.
+2. Behandle leere oder vage Abschnitte, offene Entscheidungen und nicht übernommene KI-Vorschläge als ungeklärt. Stelle vor betroffenen Umsetzungsschritten gezielte Fragen. Empfehlungen sind keine getroffenen Entscheidungen.
+3. Prüfe die Projekt-Roadmap gegen den vorgeschlagenen Ablauf in TASKS.md. Die Projekt-Roadmap hat Vorrang; stimme fehlende Phasen und Abnahmekriterien ab.
+4. Verwende den festgelegten Tech-Stack und prüfe vorhandenen Code und Arbeitsregeln, bevor du Änderungen machst. Erfinde keine noch nicht festgelegten Bibliotheken, Dienste oder Zugangsdaten.
+5. Arbeite in kleinen, überprüfbaren Schritten. Prüfe die Abnahmekriterien der aktuellen Phase und berichte, was umgesetzt und geprüft wurde und was noch offen ist.
+6. Bewahre vorhandene Nutzeränderungen. Halte Geheimnisse und Zugangsdaten aus Quellcode, Exportdateien und Commits heraus.
+7. Dokumentiere neue Entscheidungen und passe Aufgaben und Blueprint bei abgestimmten Änderungen an.
+
+## Offene Punkte
+
+Keine offenen Punkte im Reife-Check.
+",
+    "name": "AGENTS.md",
+  },
+  {
+    "content": "# Koch-Leihbörse – Umsetzungsschritte & Abnahme
+
+## Umsetzungs-Roadmap
+
+_Reifegrad: entschieden_
+
+Phase 1: Geräte erfassen. Abnahme: Gerät erscheint in der Liste.
+Phase 2: Leihen verwalten.
+
+Der folgende Ablauf ist eine Vorlage, kein bereits abgestimmter Projektplan. Gleiche ihn mit der Projekt-Roadmap ab. Leite konkrete Aufgaben und Abnahmekriterien aus BLUEPRINT.md ab und kläre fehlende Angaben.
+
+## Phase 0 – Umfang und offene Punkte klären
+
+- [ ] Offene Punkte in BLUEPRINT.md mit dem Nutzer klären; notwendige Entscheidungen protokollieren.
+- [ ] MVP, Nicht-Ziele, Roadmap und Abnahmekriterien gemeinsam festlegen.
+
+**Abnahme:** Die für den nächsten Schritt benötigten Anforderungen sind geklärt; verbleibende Annahmen sind sichtbar.
+
+## Phase 1 – Fundament und Datenmodell
+
+- [ ] Projekt mit dem vereinbarten Tech-Stack aufsetzen; Start und Prüfungen dokumentieren.
+- [ ] Das vereinbarte Datenmodell und die notwendigen Integrationen vorbereiten.
+
+**Abnahme:** Das Projekt startet mit den dokumentierten Schritten; Datenmodell und Integrationen entsprechen BLUEPRINT.md.
+
+## Phase 2 – MVP und Nutzerabläufe
+
+- [ ] Kernfunktionen im festgelegten MVP-Umfang umsetzen.
+- [ ] Nutzerabläufe einschließlich Fehlerfällen umsetzen und mit passenden Tests prüfen.
+
+**Abnahme:** Die in BLUEPRINT.md beschriebenen Kernfunktionen und Nutzerabläufe funktionieren; Nicht-Ziele wurden eingehalten.
+
+## Phase 3 – Qualität und Übergabe
+
+- [ ] Risiken und offene Punkte prüfen; wichtige Fehlerfälle und Datenspeicherung absichern.
+- [ ] Installation, Nutzung und Betrieb dokumentieren; vereinbarte Veröffentlichung vorbereiten.
+
+**Abnahme:** Die abgestimmten Prüfungen bestehen; Nutzung und verbleibende Einschränkungen sind dokumentiert.
+
+## Kernfunktionen (MVP)
+
+_Reifegrad: entschieden_
+
+- Geräte anbieten
+- Leihen mit Rückgabedatum
+- Rezepte pro Gerät
+
+## Nutzerabläufe & Screens
+
+_Reifegrad: entschieden_
+
+Gerät suchen → Details öffnen → Leihe eintragen.
+
+## Nicht-Ziele
+
+_Reifegrad: entschieden_
+
+- Keine Bezahlung
+",
+    "name": "TASKS.md",
+  },
+  {
+    "content": "# Start-Prompt
+
+Setze das Projekt „Koch-Leihbörse“ in diesem Repository um.
+
+Lies zuerst BLUEPRINT.md, CLAUDE.md oder AGENTS.md und TASKS.md vollständig. Fasse Ziel, MVP, Nicht-Ziele und Tech-Stack kurz zusammen. Prüfe den vorhandenen Code und die offenen Punkte. Kläre nur die Fragen, die den nächsten Umsetzungsschritt blockieren; behandle vage Inhalte und KI-Vorschläge nicht als bestätigte Anforderungen. Gleiche den vorgeschlagenen Ablauf mit der Projekt-Roadmap ab. Beginne dann mit der ersten geklärten, noch nicht erledigten Phase, prüfe ihre Abnahmekriterien und berichte das Ergebnis. Erfinde keine fehlenden Anforderungen oder Zugangsdaten.
+",
+    "name": "START-PROMPT.md",
+  },
+]
+`;
+
+exports[`Monetarisierung im Export > schreibt Modell, Preisstrategie und Beispielpreise als Annahme in BLUEPRINT.md 1`] = `
+"# Koch-Leihbörse
+
+Projektstand: 2026-01-01T00:00:00.000Z · Exportformat: 1
+
+## Problem & Vision
+
+_Reifegrad: entschieden_
+
+Küchengeräte in der Nachbarschaft leihen.
+
+## Zielgruppe & Nutzer
+
+_Reifegrad: entschieden_
+
+Nachbarn, die selten kochen.
+
+## Kernfunktionen (MVP)
+
+_Reifegrad: entschieden_
+
+- Geräte anbieten
+- Leihen mit Rückgabedatum
+- Rezepte pro Gerät
+
+## Nicht-Ziele
+
+_Reifegrad: entschieden_
+
+- Keine Bezahlung
+
+## Nutzerabläufe & Screens
+
+_Reifegrad: entschieden_
+
+Gerät suchen → Details öffnen → Leihe eintragen.
+
+## Datenmodell
+
+_Reifegrad: entschieden_
+
+Gerät: Name, Besitzer. Leihe: Gerät, Rückgabedatum.
+
+## Tech-Stack & Plattform
+
+_Reifegrad: entschieden_
+
+React-Web-App im Browser.
+
+## Integrationen & externe Dienste
+
+_Reifegrad: entschieden_
+
+Keine externen Dienste.
+
+## Risiken & offene Punkte
+
+_Reifegrad: entschieden_
+
+Beschädigte Geräte und verspätete Rückgaben.
+
+## Umsetzungs-Roadmap
+
+_Reifegrad: entschieden_
+
+Phase 1: Geräte erfassen. Abnahme: Gerät erscheint in der Liste.
+Phase 2: Leihen verwalten.
+
+## Monetarisierung
+
+_Abgeschlossen_
+
+### Modell: Kostenlos für kleine Teams (Freemium)
+
+Bis 3 Personen kostenlos.
+
+Niedrige Einstiegshürde.
+
+Begründung: Teams zahlen für Zusammenarbeit.
+
+### Preisstrategie: Free, Pro, Team (Staffelpreise)
+
+Drei Pakete.
+
+Beispielpreise (Annahme, keine Marktdaten): Pro: 4–8 € pro Monat
+
+Leicht verständlich.
+
+Begründung: Einfach zu erklären.
+
+## Offene Punkte
+
+Keine offenen Punkte im Reife-Check.
+"
+`;
+
+exports[`Ungeklärter und entschiedener Kontext > bewahrt Antworten und Entscheidungsfolgen und trennt Empfehlungen von Entscheidungen 1`] = `
+"# Rezeptplaner
+
+Projektstand: 2026-03-10T12:00:00.000Z · Exportformat: 1
+
+## Problem & Vision
+
+_Reifegrad: entschieden_
+
+Wochenplanung mit Rezepten kostet Zeit und endet oft ohne Einkaufsliste.
+
+## Zielgruppe & Nutzer
+
+_Reifegrad: vage_
+
+Berufstätige, die für die Familie kochen.
+
+## Kernfunktionen (MVP)
+
+_Reifegrad: vage_
+
+- Rezepte für die Woche planen
+- Einkaufsliste erzeugen
+
+## Nicht-Ziele
+
+_Reifegrad: leer_
+
+Noch offen.
+
+## Nutzerabläufe & Screens
+
+_Reifegrad: leer_
+
+Noch offen.
+
+## Datenmodell
+
+_Reifegrad: vage_
+
+**KI-Vorschlag – noch nicht übernommen**
+
+Rezepte und Wochenpläne.
+
+## Tech-Stack & Plattform
+
+_Reifegrad: entschieden_
+
+Web-App mit React.
+
+## Integrationen & externe Dienste
+
+_Reifegrad: leer_
+
+Noch offen.
+
+## Risiken & offene Punkte
+
+_Reifegrad: vage_
+
+Rezeptquellen können sich ändern.
+
+## Umsetzungs-Roadmap
+
+_Reifegrad: leer_
+
+Noch offen.
+
+## Offene Punkte
+
+- Leere Abschnitte: Nicht-Ziele, Nutzerabläufe & Screens, Integrationen & externe Dienste, Umsetzungs-Roadmap
+- Noch nicht entschiedene Abschnitte: Zielgruppe & Nutzer, Kernfunktionen (MVP), Datenmodell, Risiken & offene Punkte
+- Noch nicht übernommene KI-Inhalte: Datenmodell
+- Offene und zurückgestellte Fragen: 2
+- Offene Entscheidungen: 1
+- Offene Ergänzungsvorschläge: 1
+- Lücken aus der letzten KI-Analyse (Stand prüfen) (Kernfunktionen (MVP)): Fehlerfälle fehlen
+- Widersprüche aus der letzten KI-Analyse (Stand prüfen) (Kernfunktionen (MVP), Nicht-Ziele): Teilen prüfen
+
+### Offene und zurückgestellte Fragen: Sollen Rezepte mit anderen geteilt werden können?
+
+Nicht-Ziele
+
+Warum wichtig: Bestimmt den MVP
+
+- Teilen
+
+### Offene und zurückgestellte Fragen: Sollen Rezepte mit anderen geteilt werden können?
+
+Nicht-Ziele · Zurückgestellt
+
+Warum wichtig: Bestimmt den MVP
+
+- Teilen
+
+### Offene Entscheidungen: Wo werden die Rezepte gespeichert?
+
+#### Nur auf dem Gerät
+
+_Empfehlung, noch keine Entscheidung_
+
+Vorteile:
+- Keine Serverkosten
+
+Nachteile:
+- Kein Abgleich
+
+Folge: Keine Konten nötig, aber kein Abgleich zwischen Geräten
+
+#### Auf einem Server
+
+### Vorschlag, noch nicht angenommen: Kernfunktionen (MVP)
+
+Erinnerungen
+
+Rückgaben nicht vergessen
+
+## Entscheidungsprotokoll
+
+### Web-App oder native App?
+
+Tech-Stack & Plattform
+
+Gewählt: Web-App
+
+Folge: Läuft im Browser auf allen Geräten, ohne App-Store
+
+Begründung: Der Browser reicht für die erste Version.
+
+Projektstand: 2026-03-10T12:00:00.000Z
+
+## Letzte KI-Analyse (kann inzwischen überholt sein)
+
+Projektstand: 2026-03-10T12:00:00.000Z
+
+Umfang klären
+
+### Gemeldete Lücken
+
+- Kernfunktionen (MVP): Fehlerfälle fehlen
+
+## Fragenverlauf
+
+### Für wen ist die App gedacht?
+
+Zielgruppe & Nutzer · 2026-02-02T10:00:00.000Z
+
+Antwort: Familien – Vor allem für mich
+
+### Teilen?
+
+Kernfunktionen (MVP) · 2026-03-10T12:00:00.000Z
+
+Zurückgestellt
+"
+`;

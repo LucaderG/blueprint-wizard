@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react'
-import { createMemoryRouter, RouterProvider } from 'react-router'
+import { createMemoryRouter, RouterProvider, type RouteObject } from 'react-router'
 import type { AiProviderFactory } from '@/app/ai'
 import { ProjectRepositoryProvider } from '@/app/ProjectRepositoryContext'
 import { routes } from '@/app/routes'
@@ -8,6 +8,25 @@ import { MockAiProvider } from '@/core/ai'
 import { SettingsStore, type Settings } from '@/core/settings'
 import { MemoryProjectRepository, type ProjectRepository } from '@/core/storage'
 import { MemoryStorage } from './memoryStorage'
+
+/**
+ * Die App lädt Seiten per `lazy`. In Tests werden sie vorab aufgelöst, damit Seiten sofort nach dem
+ * Rendern abfragbar sind wie bisher. Das Laden selbst prüfen die E2E-Tests im echten Build.
+ */
+async function resolveLazyRoutes(list: RouteObject[]): Promise<RouteObject[]> {
+  return Promise.all(
+    list.map(async (route): Promise<RouteObject> => {
+      const { lazy, children, ...rest } = route
+      const loaded = typeof lazy === 'function' ? await lazy() : {}
+      const resolved = { ...rest, ...loaded } as RouteObject
+      return children
+        ? ({ ...resolved, children: await resolveLazyRoutes(children) } as RouteObject)
+        : resolved
+    }),
+  )
+}
+
+const testRoutes = await resolveLazyRoutes(routes)
 
 interface RenderRouteOptions {
   /** Repository für den Test; Standard ist ein frisches, leeres `MemoryProjectRepository`. */
@@ -30,7 +49,7 @@ export function renderRoute(
   const settingsStore = new SettingsStore(new MemoryStorage())
   if (settings) settingsStore.update(settings)
   const createAiProvider: AiProviderFactory = () => aiProvider
-  const router = createMemoryRouter(routes, { initialEntries: [path] })
+  const router = createMemoryRouter(testRoutes, { initialEntries: [path] })
   return {
     router,
     repository,

@@ -2,6 +2,8 @@ import { Settings, Sparkles } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Link, NavLink, Outlet } from 'react-router'
 import { cn } from '@/shared/lib/utils'
+import { UsageIndicator } from './UsageIndicator'
+import { VersionFooter } from './VersionFooter'
 
 export function Layout() {
   const { t } = useTranslation()
@@ -14,7 +16,8 @@ export function Layout() {
             <Sparkles className="size-5 text-primary" aria-hidden />
             {t('app.name')}
           </Link>
-          <nav aria-label={t('nav.label')}>
+          <nav aria-label={t('nav.label')} className="flex items-center gap-1">
+            <UsageIndicator />
             <NavLink
               to="/einstellungen"
               className={({ isActive }) =>
@@ -33,6 +36,7 @@ export function Layout() {
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">
         <Outlet />
       </main>
+      <VersionFooter />
     </div>
   )
 }

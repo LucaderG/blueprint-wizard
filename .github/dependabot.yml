@@ -1,0 +1,22 @@
+# Wöchentliche Updates der Abhängigkeiten. Kleine Updates kommen gebündelt in einem PR, große
+# Versionssprünge einzeln, damit sie bewusst geprüft werden. Ablauf: docs/release-prozess.md.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      minor-und-patch:
+        update-types: [minor, patch]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: ci

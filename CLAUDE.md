@@ -1,6 +1,6 @@
 # CLAUDE.md – Arbeitsregeln für KI-Coding-Tools
 
-Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Projekt-Blueprint führt. Ziele, Architektur und Phasen stehen im [Implementierungsplan](docs/implementierungsplan.md). Aktueller Stand: **Phase 6 abgeschlossen** (v0.6.0), nächste Phase: 7 – Blueprint-Generierung & Export.
+Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Projekt-Blueprint führt. Ziele, Architektur und Phasen stehen im [Implementierungsplan](docs/implementierungsplan.md). Aktueller Stand: **v1.0.0, Implementierungsplan vollständig umgesetzt** (Phasen 0–9). Öffentlich unter https://lucaderg.github.io/blueprint-wizard/. Weiterentwicklung nach [Release-Prozess](docs/release-prozess.md); Ideen für später stehen im Plan unter „Spätere Ideen“.
 
 ## Stack
 
@@ -29,6 +29,7 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 - **Schemaänderung = Migration:** `CURRENT_SCHEMA_VERSION` erhöhen, Eintrag in `PROJECT_MIGRATIONS` (`migrations.ts`) ergänzen, Test mit echten Altdaten schreiben.
 - Der Zustand des Fragenmotors liegt projektweit in `project.interview` (`questions`, `log`, `analysis`); Schemaversion 2 (Migration v1 → v2 in `migrations.ts`).
 - Entscheidungen liegen projektweit in `project.decisions`, Ergänzungsvorschläge in `project.additions`; Schemaversion 3 (Migration v2 → v3 in `migrations.ts`).
+- Monetarisierung liegt in `project.monetization`; Schemaversion 4 (Migration v3 → v4 in `migrations.ts`). Die Logik liegt in `src/core/engine/monetization.ts`. Sie ist kein Abschnitt in `SECTION_IDS` (ADR 0011).
 - Komponenten greifen nur über `useProjectRepository()` auf Projekte zu, nie direkt auf Dexie.
 - Neue Repository-Logik gehört in `projectOperations.ts`, damit IndexedDB- und Memory-Variante gleich bleiben; die Vertrags-Testsuite `projectRepository.contract.ts` prüft beide.
 
@@ -63,6 +64,14 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 - Die gewählte Idee wird mit `applyChosenIdea` zum Projekt (Abschnitte als `aiAccepted`).
 - Die UI nutzt das Feature ausschließlich über `useIdeation()` (`src/features/ideation/useIdeation.ts`).
 
+## Blueprint-Export
+
+- Generatoren in `src/core/export/generators.ts` sind reine Funktionen. Texte werden über `ExportLabels` übergeben; der Kern importiert weder i18next noch die UI. Snapshot-Tests halten die Exportversion (`EXPORT_VERSION`, unabhängig vom Projektschema) fest.
+- `checkReadiness` meldet leere/vage Abschnitte, nicht übernommene KI-Vorschläge, offene/zurückgestellte Fragen, Entscheidungen, Ergänzungen und Widersprüche. Alte KI-Analysen bleiben als „Stand prüfen“ gekennzeichnet. Hinweise verhindern den Export nicht.
+- `generateExportFiles` erzeugt genau fünf Dateien: `BLUEPRINT.md`, `CLAUDE.md`, `AGENTS.md`, `TASKS.md`, `START-PROMPT.md`. Die Kontextdateien sind identisch. Bestehende Inhalte und die Projekt-Roadmap bleiben erhalten; die ergänzte Aufgabenliste ist als Vorlage gekennzeichnet.
+- ZIPs erzeugt `createExportZip` in `archive.ts` über `fflate`, UTF-8 und feste Dateinamen/Zeitstempel. Keine App-Einstellungen und kein Netzwerkzugriff. Die Exportseite liest Projekte über `useProjectEditor`; das Projektschema bleibt v3.
+- Die Vorschau ist ein schreibgeschütztes Textfeld, kein HTML-/Markdown-Renderer. Neue Exportinhalte oder Regeln brauchen Snapshot-Diff-Prüfung und Tests für vollständige Dateien und ZIP-Inhalte.
+
 ## KI-Aufrufe
 
 - Features holen den Anbieter über `useAiProvider()` (`null` ohne Key → `ApiKeyNotice` bzw. Link zu den Einstellungen zeigen). Nie direkt `fetch` auf OpenRouter.
@@ -70,16 +79,28 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 - Fehler sind `AiError`; Meldungen kommen über `aiErrorKey()` aus `src/features/settings/aiErrors.ts` (`ai.errors.*`).
 - Prompts liegen als Dateien `src/core/ai/prompts/<name>.ts`. Jede Datei exportiert eine ID- und eine VERSION-Konstante (`<NAME>_PROMPT_ID`, `<NAME>_PROMPT_VERSION`) sowie eine `build<Name>Messages(...)`-Funktion. Bei inhaltlichen Änderungen am Prompt die VERSION erhöhen.
 
+## Darstellung, Sprache, Kosten, PWA
+
+- Oberflächensprache (`uiLanguage`) und Farbschema (`theme`) liegen in den Einstellungen; `useAppearance` (`src/app/useAppearance.ts`) setzt `lang`, i18n-Sprache und die Klasse `dark`. Ein Inline-Skript in `index.html` setzt beides schon vor dem ersten Rendern.
+- **Jeder neue i18n-Key gehört in `de.json` und `en.json`**; `src/shared/i18n/locales.test.ts` prüft gleiche Keys und Platzhalter.
+- Zahlen, Daten und Beträge nur über `src/shared/lib/format.ts` formatieren (richtet sich nach der UI-Sprache), nie mit fest eingetragenem `'de-DE'`.
+- KI-Kosten: `UsageTrackingProvider` (`src/core/ai/usage.ts`) umschließt den Anbieter im `SettingsProvider`; die UI liest den Verbrauch über `useAiUsage()`. Ein neues Antwortschema bekommt den Text `usage.tasks.<schemaName>`.
+- Seiten außer Start und 404 werden per Route-`lazy` geladen. `renderRoute` löst sie vorab auf, Tests können also direkt abfragen.
+- Die App kann in einem Unterordner laufen (GitHub Pages, `BASE_PATH` beim Build, Router-`basename` aus `import.meta.env.BASE_URL`). **Keine absoluten Pfade** wie `href="/…"` oder `window.location = '/…'`: Links über den Router, Dateien über Vite.
+- Speichert `useProjectEditor` erfolglos, merkt `pendingSaves.ts` den ungespeicherten Stand (`rememberUnsaved`); die nächste Seite übernimmt ihn samt Fehler.
+- Versionsanzeige: `vite.config.ts` bestimmt beim Build `__BUILD_INFO__` über `resolveBuildInfo` (`src/core/build/buildInfo.ts`): „stable“ nur, wenn der Commit den Tag `v<package.json-Version>` trägt, sonst „nightly“. Angezeigt in `VersionFooter`.
+- PWA über `vite-plugin-pwa`. In E2E ist der Service Worker blockiert (`serviceWorkers: 'block'`), nur `e2e/pwa.spec.ts` erlaubt ihn. `e2e/a11y.spec.ts` prüft alle Seiten mit axe (hell und dunkel); Lighthouse läuft in der CI (`lighthouserc.json`, Mindestwert 0,9).
+
 ## Tests
 
 - **Tests rufen nie echte APIs auf.** MSW läuft in jedem Test mit `onUnhandledRequest: 'error'` (`src/test/setup.ts`); nicht gemockte Requests lassen den Test fehlschlagen. Handler kommen in `src/test/msw/handlers.ts` oder per `server.use(...)` im Test.
 - Unit- und Komponententests liegen neben dem Code als `*.test.ts` / `*.test.tsx`.
-- E2E-Tests liegen in `e2e/` (Playwright, Chromium).
+- E2E-Tests liegen in `e2e/` (Playwright, Chromium). Passt das vorinstallierte Chromium nicht zur Playwright-Version (Cloud-Sitzungen: `/opt/pw-browsers/chromium`), es mit `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/opt/pw-browsers/chromium npm run test:e2e` angeben.
 - Seiten testen mit `renderRoute('/pfad', { repository })` aus `src/test/render.tsx` (Standard: frisches `MemoryProjectRepository`).
 - KI in Tests: `renderRoute(path, { settings: { apiKey: 'x' }, aiProvider: new MockAiProvider([...]) })`; OpenRouter-HTTP-Mocks in `src/test/msw/openrouter.ts`, in E2E per `page.route('https://openrouter.ai/api/v1/**')`.
 - Testdaten für Projekte: `makeProject()` und `withMaturity()` aus `src/core/blueprint/testing.ts`.
 - Neue Logik bekommt Tests. Abdeckung für `src/core/` ≥ 80 % Zeilen und Zweige (in `vitest.config.ts` erzwungen).
-- Prompts haben Golden Files in `src/core/ai/prompts/__golden__`. Bei einer bewussten Prompt-Änderung die VERSION erhöhen, mit `npx vitest run -u src/core/ai/prompts` neu erzeugen und die Diffs prüfen.
+- Prompts haben Golden Files in `src/core/ai/prompts/__golden__`. Bei einer bewussten Prompt-Änderung die VERSION erhöhen, mit `npx vitest run src/core/ai/prompts -u` (Pfad vor dem Flag, sonst läuft die ganze Suite) neu erzeugen und die Diffs prüfen.
 - Abnahmetest des Fragenmotors: `src/core/engine/acceptance.test.ts` mit Fixture (gespeicherte KI-Antwort, ohne Netzwerk).
 
 ## Vor jedem Commit
@@ -104,6 +125,13 @@ Am Ende jeder Phase abarbeiten:
 7. **Release-Tag:** z. B. `v0.3.0` nach Phase 3.
 8. **Übergabe-Notiz:** Was wurde gebaut, was ist offen, erster Schritt der nächsten Phase.
 9. **Kurzes Review mit Luca:** Demo/Screenshots, Freigabe für die nächste Phase.
+
+## Release & Wartung
+
+- Versionen nach SemVer; Ablauf, Pages-Veröffentlichung und Dependabot-Umgang stehen in `docs/release-prozess.md` (ADR 0010).
+- Veröffentlicht wird automatisch nach grüner CI auf `main` (`.github/workflows/pages.yml`); `release.yml` legt bei einem `v*.*.*`-Tag oder per `workflow_dispatch` (Eingabe `version`) Tag und GitHub-Release aus dem CHANGELOG an.
+- Aus der Cloud sind Tag-Pushes blockiert: Releases legt Claude an, indem es `release.yml` per GitHub-MCP (`actions_run_trigger`, `run_workflow`) mit der Version startet. Releases sind öffentlich, also nur auf Lucas ausdrückliche Bitte.
+- Ein neuer Blueprint-Abschnitt: Anleitung in `docs/neuer-abschnitt.md`.
 
 ## Konventionen
 

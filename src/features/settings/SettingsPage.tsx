@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { ApiKeySection } from './ApiKeySection'
+import { AppearanceSection } from './AppearanceSection'
 import { ModelSection } from './ModelSection'
 import { ResponseSection } from './ResponseSection'
 
@@ -12,6 +13,7 @@ export function SettingsPage() {
       <ApiKeySection />
       <ModelSection />
       <ResponseSection />
+      <AppearanceSection />
     </div>
   )
 }

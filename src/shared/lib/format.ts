@@ -1,21 +1,65 @@
-const LOCALE = 'de-DE'
+import i18n from '@/shared/i18n'
 
-const dateTimeFormat = new Intl.DateTimeFormat(LOCALE, { dateStyle: 'medium', timeStyle: 'short' })
-const percentFormat = new Intl.NumberFormat(LOCALE, { style: 'percent', maximumFractionDigits: 0 })
+const LOCALES = { de: 'de-DE', en: 'en-US' } as const
 
-/** Formatiert einen ISO-Zeitstempel als deutsches Datum mit Uhrzeit, z. B. „11.10.2026, 14:05“. */
+/** Gebietsschema der aktuellen Oberflächensprache. */
+function locale(): string {
+  return i18n.language === 'en' ? LOCALES.en : LOCALES.de
+}
+
+// Intl-Formatierer sind teuer; je Sprache und Optionen nur einmal anlegen.
+const cache = new Map<string, Intl.NumberFormat | Intl.DateTimeFormat>()
+
+function numberFormat(options: Intl.NumberFormatOptions = {}): Intl.NumberFormat {
+  const key = `n|${locale()}|${JSON.stringify(options)}`
+  let format = cache.get(key) as Intl.NumberFormat | undefined
+  if (!format) cache.set(key, (format = new Intl.NumberFormat(locale(), options)))
+  return format
+}
+
+function dateFormat(options: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
+  const key = `d|${locale()}|${JSON.stringify(options)}`
+  let format = cache.get(key) as Intl.DateTimeFormat | undefined
+  if (!format) cache.set(key, (format = new Intl.DateTimeFormat(locale(), options)))
+  return format
+}
+
+/** Datum mit Uhrzeit, z. B. „11.10.2026, 14:05“ bzw. „Oct 11, 2026, 2:05 PM“. */
 export function formatDateTime(iso: string): string {
-  return dateTimeFormat.format(new Date(iso))
+  return dateFormat({ dateStyle: 'medium', timeStyle: 'short' }).format(new Date(iso))
 }
 
-/** Formatiert einen Prozentwert (0–100) deutsch, z. B. „40 %“. */
+/** Kurzes Datum mit Uhrzeit, z. B. „11.10.26, 14:05“. */
+export function formatShortDateTime(iso: string): string {
+  return dateFormat({ dateStyle: 'short', timeStyle: 'short' }).format(new Date(iso))
+}
+
+/** Kurzes Datum, z. B. „11.10.26“. */
+export function formatDate(iso: string): string {
+  return dateFormat({ dateStyle: 'short' }).format(new Date(iso))
+}
+
+/** Prozentwert (0–100), z. B. „40 %“. */
 export function formatPercent(value: number): string {
-  return percentFormat.format(value / 100)
+  return numberFormat({ style: 'percent', maximumFractionDigits: 0 }).format(value / 100)
 }
 
-const usdFormat = new Intl.NumberFormat(LOCALE, { style: 'currency', currency: 'USD' })
+/** Ganze Zahl mit Tausendertrennzeichen, z. B. „20.000“. */
+export function formatNumber(value: number): string {
+  return numberFormat().format(value)
+}
 
-/** Formatiert einen Dollarbetrag deutsch, z. B. „1,25 $“. */
+/** Zahl mit genau einer Nachkommastelle, z. B. „0,7“. */
+export function formatDecimal(value: number): string {
+  return numberFormat({ minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(value)
+}
+
+/** Dollarbetrag, z. B. „1,25 $“. Kleine Beträge bekommen mehr Nachkommastellen. */
 export function formatUsd(value: number): string {
-  return usdFormat.format(value)
+  const small = value !== 0 && Math.abs(value) < 0.01
+  return numberFormat({
+    style: 'currency',
+    currency: 'USD',
+    ...(small ? { minimumFractionDigits: 4, maximumFractionDigits: 4 } : {}),
+  }).format(value)
 }

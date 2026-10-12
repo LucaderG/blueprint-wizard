@@ -5,6 +5,7 @@ import {
   SETTINGS_STORAGE_KEY,
   SettingsStore,
   hasApiKey,
+  resolveTheme,
   type Settings,
 } from './settings'
 
@@ -13,6 +14,8 @@ const custom: Settings = {
   model: 'openai/gpt-x',
   temperature: 1.2,
   outputLanguage: 'en',
+  uiLanguage: 'en',
+  theme: 'dark',
 }
 
 function setup() {
@@ -38,6 +41,8 @@ describe('SettingsStore', () => {
       model: DEFAULT_MODEL,
       temperature: 0.7,
       outputLanguage: 'de',
+      uiLanguage: 'de',
+      theme: 'system',
     })
     expect(store.load()).toEqual(DEFAULT_SETTINGS)
   })
@@ -79,6 +84,8 @@ describe('SettingsStore', () => {
       model: 'openai/gpt-x',
       temperature: DEFAULT_SETTINGS.temperature,
       outputLanguage: DEFAULT_SETTINGS.outputLanguage,
+      uiLanguage: DEFAULT_SETTINGS.uiLanguage,
+      theme: DEFAULT_SETTINGS.theme,
     })
   })
 
@@ -182,5 +189,27 @@ describe('SettingsStore – gespeicherter Key nur aus Leerzeichen', () => {
     storage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify({ apiKey: '   ' }))
 
     expect(new SettingsStore(storage).load().apiKey).toBeNull()
+  })
+})
+
+describe('resolveTheme', () => {
+  it.each([
+    ['system', false, 'light'],
+    ['system', true, 'dark'],
+    ['light', true, 'light'],
+    ['dark', false, 'dark'],
+  ] as const)('%s bei Systemwunsch dunkel=%s ergibt %s', (theme, prefersDark, expected) => {
+    expect(resolveTheme(theme, prefersDark)).toBe(expected)
+  })
+})
+
+describe('Darstellung', () => {
+  it('fällt bei alten oder ungültigen Daten auf Deutsch und das Systemschema zurück', () => {
+    const { storage, store } = setup()
+    storage.setItem(
+      SETTINGS_STORAGE_KEY,
+      JSON.stringify({ apiKey: null, model: 'x/y', uiLanguage: 'fr', theme: 'neon' }),
+    )
+    expect(store.load()).toMatchObject({ uiLanguage: 'de', theme: 'system' })
   })
 })

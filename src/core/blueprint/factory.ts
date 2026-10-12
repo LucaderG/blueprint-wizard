@@ -39,5 +39,6 @@ export function createEmptyProject({ id, name, now }: CreateProjectOptions): Pro
     interview: createEmptyInterview(),
     decisions: [],
     additions: [],
+    monetization: null,
   }
 }

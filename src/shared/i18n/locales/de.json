@@ -6,6 +6,31 @@
     "label": "Hauptnavigation",
     "settings": "Einstellungen"
   },
+  "footer": {
+    "version": "Version {{version}}"
+  },
+  "usage": {
+    "summaryLabel": "KI-Kosten dieser Sitzung: {{cost}}",
+    "lastTitle": "Letzte KI-Anfrage",
+    "sessionTitle": "Diese Sitzung",
+    "tokens": "Tokens",
+    "tokensInOut": "{{input}} ein / {{output}} aus",
+    "cost": "Kosten",
+    "calls": "Anfragen",
+    "costUnknown": "unbekannt",
+    "incomplete": "Für manche Anfragen hat OpenRouter keine Kosten gemeldet; die Summe ist eine Untergrenze.",
+    "source": "Kosten laut OpenRouter",
+    "reset": "Zurücksetzen",
+    "tasks": {
+      "idea_classification": "Idee einordnen",
+      "blueprint_analysis": "Blueprint analysieren",
+      "answer_integration": "Antworten einarbeiten",
+      "core_decisions": "Entscheidungen finden",
+      "blueprint_additions": "Vorschläge holen",
+      "project_ideas": "Ideen finden",
+      "other": "Sonstige Anfrage"
+    }
+  },
   "home": {
     "title": "Von der Idee zum Blueprint",
     "subtitle": "Egal wo du stehst: Wir arbeiten gemeinsam einen Projekt-Scope aus, mit dem du direkt loslegen kannst.",
@@ -32,6 +57,17 @@
   "settings": {
     "title": "Einstellungen",
     "saved": "Gespeichert",
+    "appearance": {
+      "title": "Darstellung",
+      "intro": "Sprache der Oberfläche und der exportierten Dateien sowie das Farbschema. Die Sprache der KI-Antworten stellst du weiter unten ein.",
+      "languageLabel": "Sprache der Oberfläche",
+      "themeLabel": "Farbschema",
+      "themes": {
+        "system": "Wie das System",
+        "light": "Hell",
+        "dark": "Dunkel"
+      }
+    },
     "apiKey": {
       "title": "OpenRouter-API-Key",
       "intro": "Der Blueprint-Wizard nutzt OpenRouter für seine KI-Funktionen. Dafür brauchst du einen eigenen API-Key von OpenRouter.",
@@ -131,6 +167,12 @@
     "title": "Seite nicht gefunden",
     "back": "Zur Startseite"
   },
+  "routeError": {
+    "loading": "Seite wird geladen …",
+    "title": "Diese Seite konnte nicht geladen werden",
+    "text": "Vielleicht bist du gerade offline oder die App wurde aktualisiert. Deine Projekte sind sicher gespeichert.",
+    "reload": "Neu laden"
+  },
   "projects": {
     "title": "Deine Projekte",
     "new": "Neues Projekt",
@@ -221,7 +263,8 @@
       "askQuestions": "Fragen beantworten",
       "decisions": "Entscheidungen & Vorschläge",
       "contradictions_one": "{{count}} Widerspruch",
-      "contradictions_other": "{{count}} Widersprüche"
+      "contradictions_other": "{{count}} Widersprüche",
+      "monetization": "Monetarisierung"
     },
     "saveStatus": {
       "saved": "Gespeichert",
@@ -512,5 +555,237 @@
       "errorIntro": "Das hat nicht geklappt.",
       "nothingNew": "Die KI hat keine neue Idee geliefert. Versuch es noch einmal oder ändere deine Antworten."
     }
+  },
+  "export": {
+    "document": {
+      "maturityLabel": "Reifegrad",
+      "missing": "Noch offen.",
+      "updatedAt": "Projektstand",
+      "formatVersion": "Exportformat",
+      "unaccepted": "KI-Vorschlag – noch nicht übernommen",
+      "openPoints": "Offene Punkte",
+      "noOpenPoints": "Keine offenen Punkte im Reife-Check.",
+      "emptySections": "Leere Abschnitte",
+      "vagueSections": "Noch nicht entschiedene Abschnitte",
+      "unacceptedSections": "Noch nicht übernommene KI-Inhalte",
+      "questions": "Offene und zurückgestellte Fragen",
+      "decisions": "Offene Entscheidungen",
+      "additions": "Offene Ergänzungsvorschläge",
+      "contradictions": "Mögliche Widersprüche",
+      "analysisContradictions": "Widersprüche aus der letzten KI-Analyse (Stand prüfen)",
+      "decisionLog": "Entscheidungsprotokoll",
+      "chosen": "Gewählt",
+      "recommended": "Empfehlung, noch keine Entscheidung",
+      "rationale": "Begründung",
+      "context": "Kontext",
+      "pros": "Vorteile",
+      "cons": "Nachteile",
+      "consequence": "Folge",
+      "questionWhy": "Warum wichtig",
+      "deferred": "Zurückgestellt",
+      "suggestedAddition": "Vorschlag, noch nicht angenommen",
+      "analysis": "Letzte KI-Analyse (kann inzwischen überholt sein)",
+      "gaps": "Gemeldete Lücken",
+      "interviewLog": "Fragenverlauf",
+      "answer": "Antwort",
+      "agentTitle": "Kontext & Arbeitsregeln",
+      "agentIntro": "Dieses Repository setzt das folgende Projekt um. BLUEPRINT.md enthält die vollständigen Anforderungen, TASKS.md die Aufgaben. CLAUDE.md und AGENTS.md enthalten dieselben Regeln.",
+      "rulesTitle": "Arbeitsregeln",
+      "rules": [
+        "Lies zuerst BLUEPRINT.md und TASKS.md. Behalte den vereinbarten MVP-Umfang und die Nicht-Ziele bei.",
+        "Behandle leere oder vage Abschnitte, offene Entscheidungen und nicht übernommene KI-Vorschläge als ungeklärt. Stelle vor betroffenen Umsetzungsschritten gezielte Fragen. Empfehlungen sind keine getroffenen Entscheidungen.",
+        "Prüfe die Projekt-Roadmap gegen den vorgeschlagenen Ablauf in TASKS.md. Die Projekt-Roadmap hat Vorrang; stimme fehlende Phasen und Abnahmekriterien ab.",
+        "Verwende den festgelegten Tech-Stack und prüfe vorhandenen Code und Arbeitsregeln, bevor du Änderungen machst. Erfinde keine noch nicht festgelegten Bibliotheken, Dienste oder Zugangsdaten.",
+        "Arbeite in kleinen, überprüfbaren Schritten. Prüfe die Abnahmekriterien der aktuellen Phase und berichte, was umgesetzt und geprüft wurde und was noch offen ist.",
+        "Bewahre vorhandene Nutzeränderungen. Halte Geheimnisse und Zugangsdaten aus Quellcode, Exportdateien und Commits heraus.",
+        "Dokumentiere neue Entscheidungen und passe Aufgaben und Blueprint bei abgestimmten Änderungen an."
+      ],
+      "tasksTitle": "Umsetzungsschritte & Abnahme",
+      "roadmapMissing": "Noch keine Projekt-Roadmap festgelegt. Kläre die Reihenfolge vor dem Implementieren.",
+      "planNote": "Der folgende Ablauf ist eine Vorlage, kein bereits abgestimmter Projektplan. Gleiche ihn mit der Projekt-Roadmap ab. Leite konkrete Aufgaben und Abnahmekriterien aus BLUEPRINT.md ab und kläre fehlende Angaben.",
+      "acceptance": "Abnahme",
+      "phases": [
+        {
+          "title": "Phase 0 – Umfang und offene Punkte klären",
+          "tasks": [
+            "Offene Punkte in BLUEPRINT.md mit dem Nutzer klären; notwendige Entscheidungen protokollieren.",
+            "MVP, Nicht-Ziele, Roadmap und Abnahmekriterien gemeinsam festlegen."
+          ],
+          "acceptance": "Die für den nächsten Schritt benötigten Anforderungen sind geklärt; verbleibende Annahmen sind sichtbar."
+        },
+        {
+          "title": "Phase 1 – Fundament und Datenmodell",
+          "tasks": [
+            "Projekt mit dem vereinbarten Tech-Stack aufsetzen; Start und Prüfungen dokumentieren.",
+            "Das vereinbarte Datenmodell und die notwendigen Integrationen vorbereiten."
+          ],
+          "acceptance": "Das Projekt startet mit den dokumentierten Schritten; Datenmodell und Integrationen entsprechen BLUEPRINT.md."
+        },
+        {
+          "title": "Phase 2 – MVP und Nutzerabläufe",
+          "tasks": [
+            "Kernfunktionen im festgelegten MVP-Umfang umsetzen.",
+            "Nutzerabläufe einschließlich Fehlerfällen umsetzen und mit passenden Tests prüfen."
+          ],
+          "acceptance": "Die in BLUEPRINT.md beschriebenen Kernfunktionen und Nutzerabläufe funktionieren; Nicht-Ziele wurden eingehalten."
+        },
+        {
+          "title": "Phase 3 – Qualität und Übergabe",
+          "tasks": [
+            "Risiken und offene Punkte prüfen; wichtige Fehlerfälle und Datenspeicherung absichern.",
+            "Installation, Nutzung und Betrieb dokumentieren; vereinbarte Veröffentlichung vorbereiten."
+          ],
+          "acceptance": "Die abgestimmten Prüfungen bestehen; Nutzung und verbleibende Einschränkungen sind dokumentiert."
+        }
+      ],
+      "startTitle": "Start-Prompt",
+      "startIntro": "Setze das Projekt „{{name}}“ in diesem Repository um.",
+      "startBody": "Lies zuerst BLUEPRINT.md, CLAUDE.md oder AGENTS.md und TASKS.md vollständig. Fasse Ziel, MVP, Nicht-Ziele und Tech-Stack kurz zusammen. Prüfe den vorhandenen Code und die offenen Punkte. Kläre nur die Fragen, die den nächsten Umsetzungsschritt blockieren; behandle vage Inhalte und KI-Vorschläge nicht als bestätigte Anforderungen. Gleiche den vorgeschlagenen Ablauf mit der Projekt-Roadmap ab. Beginne dann mit der ersten geklärten, noch nicht erledigten Phase, prüfe ihre Abnahmekriterien und berichte das Ergebnis. Erfinde keine fehlenden Anforderungen oder Zugangsdaten.",
+      "analysisGaps": "Lücken aus der letzten KI-Analyse (Stand prüfen)",
+      "monetizationTitle": "Monetarisierung",
+      "monetizationStatus": {
+        "open": "Noch nicht abgeschlossen",
+        "decided": "Abgeschlossen"
+      },
+      "monetizationModel": "Modell",
+      "monetizationPricing": "Preisstrategie",
+      "examplePrices": "Beispielpreise (Annahme, keine Marktdaten)",
+      "monetizationTask": "Optional: Bezahlfunktion nach dem Kapitel „Monetarisierung“ in BLUEPRINT.md umsetzen (Zahlungsanbieter, Pakete, Preise)."
+    },
+    "open": "Blueprint fertigstellen",
+    "title": "Blueprint fertigstellen",
+    "lead": "Prüfe den Stand, sieh dir die Dateien an und lade dein Paket für den Start mit einem KI-Coding-Tool herunter.",
+    "back": "Zurück zum Projekt",
+    "checkTitle": "Reife-Check",
+    "ready": "Dein Blueprint ist ausgearbeitet.",
+    "warning": "Es gibt noch offene Punkte. Du kannst trotzdem exportieren; die Hinweise bleiben im Blueprint erhalten.",
+    "percentage": "Vollständigkeit",
+    "preview": "Dateivorschau",
+    "files": "Datei auswählen",
+    "downloadZip": "Alles als ZIP herunterladen",
+    "downloadFile": "Datei herunterladen",
+    "copy": "Start-Prompt kopieren",
+    "copied": "Start-Prompt kopiert.",
+    "copyError": "Kopieren hat nicht geklappt. Markiere den Start-Prompt in der Vorschau und kopiere ihn selbst.",
+    "downloadError": "Der Download hat nicht geklappt. Bitte versuch es erneut.",
+    "downloaded": "Download gestartet.",
+    "howToTitle": "So startest du damit",
+    "howTo": "Entpacke das ZIP in einen leeren Projektordner. Öffne den Ordner mit deinem KI-Coding-Tool und füge den Start-Prompt ein. Das Tool liest BLUEPRINT.md, CLAUDE.md oder AGENTS.md und TASKS.md.",
+    "localHint": "Der Export entsteht lokal aus deinem Projekt. Dafür brauchst du keinen API-Key."
+  },
+  "monetization": {
+    "kinds": {
+      "oneTime": "Einmalkauf",
+      "subscription": "Abo",
+      "freemium": "Freemium",
+      "usageBased": "Nutzungsbasiert",
+      "ads": "Werbung",
+      "commission": "Provision / Marktplatz",
+      "inAppPurchase": "In-App-Käufe",
+      "license": "Lizenz / B2B",
+      "openCore": "Open Core / Spenden",
+      "none": "Nicht monetarisieren"
+    },
+    "strategies": {
+      "tiers": "Staffelpreise",
+      "valueBased": "Wertbasiert",
+      "competitive": "Wettbewerbsorientiert",
+      "penetration": "Penetrationspreis",
+      "skimming": "Skimming",
+      "perSeat": "Pro Nutzer",
+      "anchor": "Ankerpreis",
+      "trialDiscount": "Testphase & Rabatte"
+    },
+    "page": {
+      "back": "Zurück zum Blueprint",
+      "lead": "Finde heraus, wie sich dein Vorhaben am besten finanzieren lässt: Modelle vergleichen, eines oder eine Kombination wählen und dazu eine Preisstrategie festlegen.",
+      "disclaimer": "Die Vorschläge sind eine Orientierung, keine Rechts-, Steuer- oder Finanzberatung. Preise sind Annahmen, keine Marktdaten.",
+      "reset": "Neu beginnen"
+    },
+    "availability": {
+      "title": "Dein Blueprint ist noch nicht weit genug",
+      "text": "Fundierte Vorschläge brauchen einen weitgehend ausgearbeiteten Blueprint. Es fehlt noch:",
+      "completeness": "Vollständigkeit {{value}} % (empfohlen ab 60 %)",
+      "missing": "Inhalt in: {{sections}}",
+      "start": "Trotzdem starten"
+    },
+    "models": {
+      "title": "1. Monetarisierungsmodelle",
+      "intro": "Lass dir passende Modelle vorstellen und vergleiche sie. Wähle eines oder kombiniere bis zu drei.",
+      "suggest": "Modelle vorschlagen",
+      "rerun": "Neu vorschlagen",
+      "running": "Modelle werden bewertet …",
+      "empty": "Noch keine Modelle. Lass dir welche vorschlagen oder füge unten eines von Hand hinzu.",
+      "compareCaption": "Vergleich (5 Punkte = günstig für dein Projekt)",
+      "criterion": "Kriterium",
+      "score": "{{score}} von 5 Punkten",
+      "selectLegend": "Modell wählen (höchstens {{max}})",
+      "fit": "Passt, weil: {{text}}",
+      "concerns": "Dagegen spricht",
+      "unscored": "Von Hand ergänzt, ohne Bewertung.",
+      "addLabel": "Modell von Hand ergänzen",
+      "apply": "Auswahl übernehmen",
+      "saved": "Auswahl gespeichert.",
+      "add": "Modell hinzufügen"
+    },
+    "criteria": {
+      "revenuePotential": "Umsatzpotenzial",
+      "implementationEase": "Einfache Umsetzung",
+      "userAcceptance": "Akzeptanz bei Nutzern",
+      "predictability": "Planbare Einnahmen",
+      "audienceFit": "Passung zur Zielgruppe",
+      "techFit": "Passung zum Tech-Stack"
+    },
+    "warnings": {
+      "noneCombined": "„Nicht monetarisieren“ lässt sich nicht mit anderen Modellen kombinieren.",
+      "adsWithLicense": "Werbung passt selten zu Firmenlizenzen: Unternehmen zahlen meist, um keine Werbung zu sehen.",
+      "oneTimeWithSubscription": "Einmalkauf und Abo für dasselbe Angebot verwirren oft. Grenze klar ab, was wofür gilt.",
+      "inAppWithLicense": "In-App-Käufe und Firmenlizenzen sprechen meist verschiedene Zielgruppen an."
+    },
+    "pricing": {
+      "title": "2. Preisstrategie",
+      "intro": "Passend zu deinem Modell: Wie sollen die Preise aufgebaut sein? Wähle eine Strategie oder kombiniere zwei.",
+      "suggest": "Preisstrategien vorschlagen",
+      "rerun": "Neu vorschlagen",
+      "running": "Preisstrategien werden erstellt …",
+      "empty": "Noch keine Preisstrategien. Lass dir welche vorschlagen oder füge unten eine von Hand hinzu.",
+      "selectLegend": "Preisstrategie wählen (höchstens {{max}})",
+      "examplePrices": "Beispielpreise (Annahme):",
+      "addLabel": "Preisstrategie von Hand ergänzen",
+      "apply": "Preisstrategie übernehmen",
+      "saved": "Preisstrategie gespeichert.",
+      "add": "Strategie hinzufügen"
+    },
+    "finish": {
+      "title": "3. Abschließen",
+      "intro": "Abgeschlossen erscheint die Monetarisierung als eigenes Kapitel im Export.",
+      "ready": "Alles gewählt. Du kannst die Monetarisierung abschließen.",
+      "incomplete": "Wähle noch eine Preisstrategie, um abzuschließen.",
+      "finalize": "Monetarisierung abschließen",
+      "decided": "Abgeschlossen am {{date}}",
+      "reopen": "Wieder öffnen"
+    },
+    "impacts": {
+      "title": "Auswirkungen auf deinen Blueprint",
+      "intro": "Deine Wahl berührt andere Abschnitte. Übernimm die Hinweise mit einem Klick als Stichpunkt.",
+      "apply": "Übernehmen",
+      "applyTo": "In „{{section}}“ übernehmen: {{text}}",
+      "applied": "Übernommen",
+      "items": {
+        "payments": "Zahlungsanbieter anbinden (z. B. Stripe oder Paddle)",
+        "accounts": "Nutzerkonten mit Tarif bzw. Abostatus speichern",
+        "usageMetering": "Verbrauch je Nutzer messen und speichern",
+        "adNetwork": "Werbenetzwerk einbinden",
+        "adPrivacy": "Einwilligung und Datenschutz bei Werbung (Cookie-Banner, DSGVO)",
+        "payouts": "Auszahlungen an Anbieter abwickeln",
+        "storeFees": "App-Store-Gebühren und Store-Regeln für In-App-Käufe",
+        "licenseKeys": "Lizenzschlüssel bzw. Freischaltung von Käufen",
+        "openSourceLicense": "Passende Open-Source-Lizenz für den offenen Kern wählen"
+      }
+    },
+    "recommended": "Empfohlen",
+    "rationaleLabel": "Begründung (optional)",
+    "choose": "Bitte wählen",
+    "cancel": "Abbrechen"
   }
 }

@@ -2,9 +2,22 @@
 
 Eine KI-gestützte Web-App, die dich von jedem Ausgangspunkt – keine Idee, halbe Idee oder fast fertiges Konzept – zu einem fertigen Projekt-Blueprint führt. Am Ende stehen ein Blueprint als Markdown und vibe-coding-fertige Dateien (z. B. `CLAUDE.md`, Aufgabenliste, Start-Prompt).
 
-Die App läuft komplett im Browser: kein eigener Server, kein Konto. Projekte bleiben lokal auf deinem Gerät, die KI wird über deinen eigenen OpenRouter-Key angesprochen (ab Phase 2).
+Die App läuft komplett im Browser: kein eigener Server, kein Konto. Projekte bleiben lokal auf deinem Gerät, die KI wird über deinen eigenen OpenRouter-Key angesprochen
 
-**Projektstatus:** Phase 6 – Ideenfindung von Null abgeschlossen (v0.6.0). Wer ohne Idee startet, beantwortet einen kurzen Fragebogen (Interessen, Ärgernisse, Fähigkeiten, Lernziel, Zeit, Plattform) und bekommt passende Projektideen mit Aufwand, Neuheit und Lernwert. Ideen lassen sich abwandeln, kombinieren und neu würfeln; die gewählte Idee wird direkt zum Start-Blueprint. Bei Teil-Idee oder fast fertigem Konzept ordnet die KI deinen Text den Blueprint-Abschnitten zu. Im Blueprint bearbeitest du Abschnitte und Reifegrad, gespeichert wird automatisch. „Fragen beantworten“ zeigt alle offenen Fragen auf einmal und arbeitet die Antworten mit einem Klick ein. „Entscheidungen & Vorschläge“ zeigt die wichtigsten Entscheidungen mit Optionen und Empfehlung, schlägt Ergänzungen vor und warnt vor Widersprüchen. Details: [Implementierungsplan](docs/implementierungsplan.md).
+**Jetzt ausprobieren:** <https://lucaderg.github.io/blueprint-wizard/>. Du brauchst nur einen eigenen [OpenRouter](https://openrouter.ai/)-Key; der Export klappt auch ohne.
+
+**Projektstatus:** Version 1.0, alle Phasen des [Implementierungsplans](docs/implementierungsplan.md) sind umgesetzt. Drei Einstiege (keine Idee, halbe Idee, fertiges Konzept), Fragenmotor, Entscheidungen und Vorschläge führen zum bearbeitbaren Blueprint, den du als Coding-Paket exportierst. Ist der Blueprint weit genug, hilft die Monetarisierung beim Vergleich von Bezahlmodellen und bei der Wahl einer Preisstrategie. Die App gibt es auf Deutsch und Englisch, hell und dunkel, und sie lässt sich als App installieren und offline öffnen. Wie alles funktioniert, steht im [Nutzerhandbuch](docs/benutzerhandbuch.md).
+
+## Blueprint fürs Coding exportieren
+
+1. Öffne ein Projekt und wähle **Blueprint fertigstellen**.
+2. Prüfe den Reife-Check. Leere/vage Abschnitte, nicht übernommene KI-Inhalte, offene Fragen, Entscheidungen, Vorschläge und mögliche Widersprüche bleiben als Hinweise im Paket. Frühere KI-Analysen sind ausdrücklich als zu prüfender Stand markiert.
+3. Sieh dir jede Datei in der Vorschau an und lade **Alles als ZIP** herunter.
+4. Entpacke die fünf Dateien in einen leeren Projektordner, öffne diesen mit deinem KI-Coding-Tool und füge den kopierten **Start-Prompt** ein.
+
+`BLUEPRINT.md` enthält die zehn Abschnitte, offene Punkte, Entscheidungsprotokoll und Fragenverlauf, nach gewählter Monetarisierung auch ein Kapitel dazu. `CLAUDE.md` und `AGENTS.md` enthalten denselben Kontext und dieselben Arbeitsregeln. `TASKS.md` bewahrt die vorhandene Roadmap und ergänzt eine ausdrücklich als Vorlage gekennzeichnete Phasenliste mit Aufgaben und Abnahmekriterien. Die Projekt-Roadmap hat Vorrang; fehlende Anforderungen muss das Coding-Tool vor dem betroffenen Schritt klären.
+
+Der Export erzeugt Dateien lokal aus dem gespeicherten Projekt und verändert es nicht. Er enthält keine App-Einstellungen oder API-Keys. Die JSON-Sicherung über die Projektliste bleibt für Import und Wiederherstellung verfügbar; das Markdown-Paket dient zum Coding-Start.
 
 ## Quickstart
 
@@ -25,21 +38,21 @@ npx playwright install chromium
 
 ## npm-Skripte
 
-| Skript                  | Zweck                                                                        |
-| ----------------------- | ---------------------------------------------------------------------------- |
-| `npm run dev`           | Startet den Vite-Entwicklungsserver mit Hot Reload.                          |
-| `npm run build`         | Typcheck (`tsc -b`) und Produktions-Build nach `dist/`.                      |
-| `npm run preview`       | Liefert den Build aus `dist/` lokal aus.                                     |
-| `npm run lint`          | Prüft den Code mit ESLint.                                                   |
-| `npm run format`        | Formatiert alle Dateien mit Prettier.                                        |
-| `npm run format:check`  | Prüft, ob alle Dateien Prettier-konform formatiert sind.                     |
-| `npm run typecheck`     | TypeScript-Typcheck ohne Build.                                              |
-| `npm run test`          | Führt alle Unit- und Komponententests einmal aus (Vitest).                   |
-| `npm run test:watch`    | Vitest im Watch-Modus.                                                       |
-| `npm run test:coverage` | Tests mit Abdeckungsbericht (Mindestabdeckung: 70 % Zeilen).                 |
-| `npm run test:e2e`      | E2E-Tests mit Playwright (baut die App und startet `preview` auf Port 4173). |
-| `npm run check`         | Alles vor dem Commit: Lint, Formatprüfung, Typcheck, Tests mit Abdeckung.    |
-| `npm run prepare`       | Richtet Husky ein (läuft automatisch bei `npm install`).                     |
+| Skript                  | Zweck                                                                                           |
+| ----------------------- | ----------------------------------------------------------------------------------------------- |
+| `npm run dev`           | Startet den Vite-Entwicklungsserver mit Hot Reload.                                             |
+| `npm run build`         | Typcheck (`tsc -b`) und Produktions-Build nach `dist/`.                                         |
+| `npm run preview`       | Liefert den Build aus `dist/` lokal aus.                                                        |
+| `npm run lint`          | Prüft den Code mit ESLint.                                                                      |
+| `npm run format`        | Formatiert alle Dateien mit Prettier.                                                           |
+| `npm run format:check`  | Prüft, ob alle Dateien Prettier-konform formatiert sind.                                        |
+| `npm run typecheck`     | TypeScript-Typcheck ohne Build.                                                                 |
+| `npm run test`          | Führt alle Unit- und Komponententests einmal aus (Vitest).                                      |
+| `npm run test:watch`    | Vitest im Watch-Modus.                                                                          |
+| `npm run test:coverage` | Tests mit Abdeckungsbericht (Mindestabdeckung: 70 % insgesamt, 80 % Zeilen und Zweige im Kern). |
+| `npm run test:e2e`      | E2E-Tests mit Playwright (baut die App und startet `preview` auf Port 4173).                    |
+| `npm run check`         | Alles vor dem Commit: Lint, Formatprüfung, Typcheck, Tests mit Abdeckung.                       |
+| `npm run prepare`       | Richtet Husky ein (läuft automatisch bei `npm install`).                                        |
 
 Beim Commit führt ein Husky-Hook `lint-staged` aus: ESLint und Prettier auf den geänderten Dateien.
 
@@ -48,7 +61,7 @@ Beim Commit führt ein Husky-Hook `lint-staged` aus: ESLint und Prettier auf den
 ```
 src/
   app/          Routing, Layout, 404-Seite
-  features/     Ein Ordner pro Feature (aktuell: home, settings, wizard, projects, blueprint, interview, decisions, ai)
+  features/     Ein Ordner pro Feature (aktuell: home, settings, wizard, projects, blueprint, interview, decisions, ideation, export, ai)
   core/         Reine TypeScript-Logik ohne React (ab Phase 1: Datenmodell, Engine, KI, Speicherung)
   shared/
     ui/         UI-Komponenten im shadcn/ui-Stil
@@ -73,3 +86,7 @@ Vite 8, React 19, TypeScript (strict), Tailwind CSS v4, shadcn/ui-Komponenten, R
 - [CLAUDE.md](CLAUDE.md) – Arbeitsregeln für KI-Coding-Tools
 - [CHANGELOG.md](CHANGELOG.md) – Änderungen pro Version
 - [docs/adr/](docs/adr/) – Architekturentscheidungen
+- [Nutzerhandbuch](docs/benutzerhandbuch.md) – die App Schritt für Schritt
+- [Architektur-Überblick](docs/architektur.md) – Schichten, Datenfluss, Tests
+- [Neuen Blueprint-Abschnitt hinzufügen](docs/neuer-abschnitt.md) – Anleitung für Entwickler
+- [Release- und Update-Prozess](docs/release-prozess.md) – Versionen, Veröffentlichung, Abhängigkeiten

@@ -1,13 +1,9 @@
 import { useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSettings } from '@/app/useSettings'
+import { formatDecimal } from '@/shared/lib/format'
 import { Select } from '@/shared/ui/select'
 import { SettingsSection } from './SettingsSection'
-
-const temperatureFormat = new Intl.NumberFormat('de-DE', {
-  minimumFractionDigits: 1,
-  maximumFractionDigits: 1,
-})
 
 /** Rundet auf eine Nachkommastelle, damit der Schieberegler keine Rundungsreste speichert. */
 function toTenth(value: number): number {
@@ -42,7 +38,7 @@ export function ResponseSection() {
             {t('settings.response.temperatureLabel')}
           </label>
           <output htmlFor={temperatureId} className="font-mono text-sm tabular-nums">
-            {temperatureFormat.format(settings.temperature)}
+            {formatDecimal(settings.temperature)}
           </output>
         </div>
         <input
