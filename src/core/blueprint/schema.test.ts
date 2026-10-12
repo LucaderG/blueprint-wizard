@@ -1,5 +1,13 @@
 import { createEmptyProject } from './factory'
-import { additionSchema, decisionSchema, PROJECT_NAME_MAX_LENGTH, projectSchema } from './schema'
+import {
+  additionSchema,
+  decisionSchema,
+  monetizationSchema,
+  PROJECT_NAME_MAX_LENGTH,
+  projectSchema,
+  type Monetization,
+  type MonetizationModel,
+} from './schema'
 import { SECTION_IDS } from './sections'
 import { makeProject } from './testing'
 
@@ -209,4 +217,70 @@ describe('Eindeutige IDs', () => {
 
     expect(projectSchema.safeParse(project).success).toBe(true)
   })
+})
+
+describe('monetizationSchema', () => {
+  const model = (id: string, overrides: Partial<MonetizationModel> = {}): MonetizationModel => ({
+    id,
+    kind: 'subscription',
+    title: '',
+    summary: '',
+    fitReason: '',
+    concerns: [],
+    scores: null,
+    recommended: false,
+    ...overrides,
+  })
+  const valid: Monetization = {
+    models: [model('m1'), model('m2', { kind: 'none' })],
+    chosenModelIds: ['m1'],
+    modelRationale: '',
+    pricingOptions: [
+      {
+        id: 'p1',
+        strategy: 'tiers',
+        title: '',
+        summary: '',
+        examplePrices: '',
+        reason: '',
+        recommended: false,
+      },
+    ],
+    chosenPricingIds: ['p1'],
+    pricingRationale: '',
+    status: 'decided',
+    decidedAt: '2026-10-12T10:00:00.000Z',
+  }
+
+  it('akzeptiert eine abgeschlossene Monetarisierung', () => {
+    expect(monetizationSchema.parse(valid)).toEqual(valid)
+    expect(projectSchema.safeParse({ ...makeProject(), monetization: valid }).success).toBe(true)
+  })
+
+  it.each([
+    ['doppelte Modell-ID', { models: [model('m1'), model('m1', { kind: 'ads' })] }],
+    ['doppeltes Modell', { models: [model('m1'), model('m2')] }],
+    ['unbekanntes gewähltes Modell', { chosenModelIds: ['x'] }],
+    ['doppelt gewähltes Modell', { chosenModelIds: ['m1', 'm1'] }],
+    ['unbekannte Preisstrategie', { chosenPricingIds: ['x'] }],
+    ['„nicht monetarisieren“ kombiniert', { chosenModelIds: ['m1', 'm2'] }],
+    ['abgeschlossen ohne Zeitpunkt', { decidedAt: null }],
+    ['Zeitpunkt ohne Abschluss', { status: 'open' as const }],
+    ['abgeschlossen ohne Modell', { chosenModelIds: [], chosenPricingIds: [] }],
+    ['Bewertung außerhalb 1–5', { models: [model('m1', { scores: scoresWith(6) })] }],
+    ['unbekanntes Modell', { models: [model('m1', { kind: 'barter' as 'ads' })] }],
+  ])('lehnt ab: %s', (_label, overrides) => {
+    expect(monetizationSchema.safeParse({ ...valid, ...overrides }).success).toBe(false)
+  })
+
+  function scoresWith(value: number) {
+    return {
+      revenuePotential: value,
+      implementationEase: 3,
+      userAcceptance: 3,
+      predictability: 3,
+      audienceFit: 3,
+      techFit: 3,
+    }
+  }
 })

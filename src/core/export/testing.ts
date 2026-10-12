@@ -6,6 +6,8 @@ import de from '@/shared/i18n/locales/de.json'
 export const exportLabels = {
   ...de.export.document,
   sectionTitles: de.sections,
+  modelKinds: de.monetization.kinds,
+  pricingStrategies: de.monetization.strategies,
   maturity: de.maturity,
 }
 

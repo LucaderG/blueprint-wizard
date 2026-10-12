@@ -6,6 +6,9 @@
     "label": "Hauptnavigation",
     "settings": "Einstellungen"
   },
+  "footer": {
+    "version": "Version {{version}}"
+  },
   "usage": {
     "summaryLabel": "KI-Kosten dieser Sitzung: {{cost}}",
     "lastTitle": "Letzte KI-Anfrage",
@@ -260,7 +263,8 @@
       "askQuestions": "Fragen beantworten",
       "decisions": "Entscheidungen & Vorschläge",
       "contradictions_one": "{{count}} Widerspruch",
-      "contradictions_other": "{{count}} Widersprüche"
+      "contradictions_other": "{{count}} Widersprüche",
+      "monetization": "Monetarisierung"
     },
     "saveStatus": {
       "saved": "Gespeichert",
@@ -637,7 +641,16 @@
       "startTitle": "Start-Prompt",
       "startIntro": "Setze das Projekt „{{name}}“ in diesem Repository um.",
       "startBody": "Lies zuerst BLUEPRINT.md, CLAUDE.md oder AGENTS.md und TASKS.md vollständig. Fasse Ziel, MVP, Nicht-Ziele und Tech-Stack kurz zusammen. Prüfe den vorhandenen Code und die offenen Punkte. Kläre nur die Fragen, die den nächsten Umsetzungsschritt blockieren; behandle vage Inhalte und KI-Vorschläge nicht als bestätigte Anforderungen. Gleiche den vorgeschlagenen Ablauf mit der Projekt-Roadmap ab. Beginne dann mit der ersten geklärten, noch nicht erledigten Phase, prüfe ihre Abnahmekriterien und berichte das Ergebnis. Erfinde keine fehlenden Anforderungen oder Zugangsdaten.",
-      "analysisGaps": "Lücken aus der letzten KI-Analyse (Stand prüfen)"
+      "analysisGaps": "Lücken aus der letzten KI-Analyse (Stand prüfen)",
+      "monetizationTitle": "Monetarisierung",
+      "monetizationStatus": {
+        "open": "Noch nicht abgeschlossen",
+        "decided": "Abgeschlossen"
+      },
+      "monetizationModel": "Modell",
+      "monetizationPricing": "Preisstrategie",
+      "examplePrices": "Beispielpreise (Annahme, keine Marktdaten)",
+      "monetizationTask": "Optional: Bezahlfunktion nach dem Kapitel „Monetarisierung“ in BLUEPRINT.md umsetzen (Zahlungsanbieter, Pakete, Preise)."
     },
     "open": "Blueprint fertigstellen",
     "title": "Blueprint fertigstellen",
@@ -659,5 +672,120 @@
     "howToTitle": "So startest du damit",
     "howTo": "Entpacke das ZIP in einen leeren Projektordner. Öffne den Ordner mit deinem KI-Coding-Tool und füge den Start-Prompt ein. Das Tool liest BLUEPRINT.md, CLAUDE.md oder AGENTS.md und TASKS.md.",
     "localHint": "Der Export entsteht lokal aus deinem Projekt. Dafür brauchst du keinen API-Key."
+  },
+  "monetization": {
+    "kinds": {
+      "oneTime": "Einmalkauf",
+      "subscription": "Abo",
+      "freemium": "Freemium",
+      "usageBased": "Nutzungsbasiert",
+      "ads": "Werbung",
+      "commission": "Provision / Marktplatz",
+      "inAppPurchase": "In-App-Käufe",
+      "license": "Lizenz / B2B",
+      "openCore": "Open Core / Spenden",
+      "none": "Nicht monetarisieren"
+    },
+    "strategies": {
+      "tiers": "Staffelpreise",
+      "valueBased": "Wertbasiert",
+      "competitive": "Wettbewerbsorientiert",
+      "penetration": "Penetrationspreis",
+      "skimming": "Skimming",
+      "perSeat": "Pro Nutzer",
+      "anchor": "Ankerpreis",
+      "trialDiscount": "Testphase & Rabatte"
+    },
+    "page": {
+      "back": "Zurück zum Blueprint",
+      "lead": "Finde heraus, wie sich dein Vorhaben am besten finanzieren lässt: Modelle vergleichen, eines oder eine Kombination wählen und dazu eine Preisstrategie festlegen.",
+      "disclaimer": "Die Vorschläge sind eine Orientierung, keine Rechts-, Steuer- oder Finanzberatung. Preise sind Annahmen, keine Marktdaten.",
+      "reset": "Neu beginnen"
+    },
+    "availability": {
+      "title": "Dein Blueprint ist noch nicht weit genug",
+      "text": "Fundierte Vorschläge brauchen einen weitgehend ausgearbeiteten Blueprint. Es fehlt noch:",
+      "completeness": "Vollständigkeit {{value}} % (empfohlen ab 60 %)",
+      "missing": "Inhalt in: {{sections}}",
+      "start": "Trotzdem starten"
+    },
+    "models": {
+      "title": "1. Monetarisierungsmodelle",
+      "intro": "Lass dir passende Modelle vorstellen und vergleiche sie. Wähle eines oder kombiniere bis zu drei.",
+      "suggest": "Modelle vorschlagen",
+      "rerun": "Neu vorschlagen",
+      "running": "Modelle werden bewertet …",
+      "empty": "Noch keine Modelle. Lass dir welche vorschlagen oder füge unten eines von Hand hinzu.",
+      "compareCaption": "Vergleich (5 Punkte = günstig für dein Projekt)",
+      "criterion": "Kriterium",
+      "score": "{{score}} von 5 Punkten",
+      "selectLegend": "Modell wählen (höchstens {{max}})",
+      "fit": "Passt, weil: {{text}}",
+      "concerns": "Dagegen spricht",
+      "unscored": "Von Hand ergänzt, ohne Bewertung.",
+      "addLabel": "Modell von Hand ergänzen",
+      "apply": "Auswahl übernehmen",
+      "saved": "Auswahl gespeichert.",
+      "add": "Modell hinzufügen"
+    },
+    "criteria": {
+      "revenuePotential": "Umsatzpotenzial",
+      "implementationEase": "Einfache Umsetzung",
+      "userAcceptance": "Akzeptanz bei Nutzern",
+      "predictability": "Planbare Einnahmen",
+      "audienceFit": "Passung zur Zielgruppe",
+      "techFit": "Passung zum Tech-Stack"
+    },
+    "warnings": {
+      "noneCombined": "„Nicht monetarisieren“ lässt sich nicht mit anderen Modellen kombinieren.",
+      "adsWithLicense": "Werbung passt selten zu Firmenlizenzen: Unternehmen zahlen meist, um keine Werbung zu sehen.",
+      "oneTimeWithSubscription": "Einmalkauf und Abo für dasselbe Angebot verwirren oft. Grenze klar ab, was wofür gilt.",
+      "inAppWithLicense": "In-App-Käufe und Firmenlizenzen sprechen meist verschiedene Zielgruppen an."
+    },
+    "pricing": {
+      "title": "2. Preisstrategie",
+      "intro": "Passend zu deinem Modell: Wie sollen die Preise aufgebaut sein? Wähle eine Strategie oder kombiniere zwei.",
+      "suggest": "Preisstrategien vorschlagen",
+      "rerun": "Neu vorschlagen",
+      "running": "Preisstrategien werden erstellt …",
+      "empty": "Noch keine Preisstrategien. Lass dir welche vorschlagen oder füge unten eine von Hand hinzu.",
+      "selectLegend": "Preisstrategie wählen (höchstens {{max}})",
+      "examplePrices": "Beispielpreise (Annahme):",
+      "addLabel": "Preisstrategie von Hand ergänzen",
+      "apply": "Preisstrategie übernehmen",
+      "saved": "Preisstrategie gespeichert.",
+      "add": "Strategie hinzufügen"
+    },
+    "finish": {
+      "title": "3. Abschließen",
+      "intro": "Abgeschlossen erscheint die Monetarisierung als eigenes Kapitel im Export.",
+      "ready": "Alles gewählt. Du kannst die Monetarisierung abschließen.",
+      "incomplete": "Wähle noch eine Preisstrategie, um abzuschließen.",
+      "finalize": "Monetarisierung abschließen",
+      "decided": "Abgeschlossen am {{date}}",
+      "reopen": "Wieder öffnen"
+    },
+    "impacts": {
+      "title": "Auswirkungen auf deinen Blueprint",
+      "intro": "Deine Wahl berührt andere Abschnitte. Übernimm die Hinweise mit einem Klick als Stichpunkt.",
+      "apply": "Übernehmen",
+      "applyTo": "In „{{section}}“ übernehmen: {{text}}",
+      "applied": "Übernommen",
+      "items": {
+        "payments": "Zahlungsanbieter anbinden (z. B. Stripe oder Paddle)",
+        "accounts": "Nutzerkonten mit Tarif bzw. Abostatus speichern",
+        "usageMetering": "Verbrauch je Nutzer messen und speichern",
+        "adNetwork": "Werbenetzwerk einbinden",
+        "adPrivacy": "Einwilligung und Datenschutz bei Werbung (Cookie-Banner, DSGVO)",
+        "payouts": "Auszahlungen an Anbieter abwickeln",
+        "storeFees": "App-Store-Gebühren und Store-Regeln für In-App-Käufe",
+        "licenseKeys": "Lizenzschlüssel bzw. Freischaltung von Käufen",
+        "openSourceLicense": "Passende Open-Source-Lizenz für den offenen Kern wählen"
+      }
+    },
+    "recommended": "Empfohlen",
+    "rationaleLabel": "Begründung (optional)",
+    "choose": "Bitte wählen",
+    "cancel": "Abbrechen"
   }
 }

@@ -5,6 +5,7 @@ import { SECTION_IDS, type SectionId } from './sections'
 import { makeProject } from './testing'
 import projectV1 from './__fixtures__/project-v1.json'
 import projectV2 from './__fixtures__/project-v2.json'
+import projectV3 from './__fixtures__/project-v3.json'
 
 function formatError(fn: () => unknown) {
   try {
@@ -319,8 +320,8 @@ describe('Migration v2 → v3', () => {
   })
 })
 
-describe('Migration v1 → v3 (Kette)', () => {
-  it('läuft die v1-Fixture über beide Migrationen bis v3', () => {
+describe('Migration v1 → aktuell (Kette)', () => {
+  it('läuft die v1-Fixture über alle Migrationen bis zur aktuellen Version', () => {
     const project = migrateProject(JSON.parse(JSON.stringify(projectV1)))
 
     expect(project.schemaVersion).toBe(CURRENT_SCHEMA_VERSION)
@@ -328,5 +329,32 @@ describe('Migration v1 → v3 (Kette)', () => {
     expect(project.interview.questions).toHaveLength(4)
     expect(project.decisions).toEqual([])
     expect(project.additions).toEqual([])
+    expect(project.monetization).toBeNull()
+  })
+})
+
+describe('Migration v3 → v4', () => {
+  // v3-Daten: die echte v2-Sicherung, mit dem Migrationscode von v1.0.0 nach v3 gehoben und um
+  // Entscheidungen, Vorschläge und Abschnittsinhalt ergänzt (__fixtures__/project-v3.json).
+  const migrated = () => migrateProject(JSON.parse(JSON.stringify(projectV3)))
+
+  it('ergänzt eine noch nicht begonnene Monetarisierung', () => {
+    const project = migrated()
+
+    expect(project.schemaVersion).toBe(4)
+    expect(project.monetization).toBeNull()
+  })
+
+  it('lässt alle übrigen Daten unverändert', () => {
+    const { schemaVersion: _old, ...rest } = projectV3
+    const { schemaVersion: _new, monetization: _m, ...migratedRest } = migrated()
+
+    expect(migratedRest).toEqual(rest)
+  })
+
+  it('lässt bereits migrierte Daten unverändert', () => {
+    const once = migrated()
+
+    expect(migrateProject(JSON.parse(JSON.stringify(once)))).toEqual(once)
   })
 })

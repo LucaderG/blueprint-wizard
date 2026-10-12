@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { SECTION_IDS, type SectionId } from './sections'
 
 /** Aktuelle Version des gespeicherten Projektformats. Bei jeder Schemaänderung erhöhen und eine Migration ergänzen. */
-export const CURRENT_SCHEMA_VERSION = 3
+export const CURRENT_SCHEMA_VERSION = 4
 
 export const sectionIdSchema = z.enum(SECTION_IDS)
 
@@ -202,6 +202,136 @@ export type Addition = z.infer<typeof additionSchema>
 const uniqueIds = (items: readonly { id: string }[]) =>
   new Set(items.map((item) => item.id)).size === items.length
 
+/** Monetarisierungsmodelle, aus denen die KI und der Nutzer wählen. `none` = bewusst nicht monetarisieren. */
+export const MONETIZATION_MODEL_KINDS = [
+  'oneTime',
+  'subscription',
+  'freemium',
+  'usageBased',
+  'ads',
+  'commission',
+  'inAppPurchase',
+  'license',
+  'openCore',
+  'none',
+] as const
+export const monetizationModelKindSchema = z.enum(MONETIZATION_MODEL_KINDS)
+export type MonetizationModelKind = z.infer<typeof monetizationModelKindSchema>
+
+/** Vergleichskriterien. Jede Bewertung läuft von 1 bis 5; 5 ist immer günstig für das Projekt. */
+export const MONETIZATION_CRITERIA = [
+  'revenuePotential',
+  'implementationEase',
+  'userAcceptance',
+  'predictability',
+  'audienceFit',
+  'techFit',
+] as const
+export type MonetizationCriterion = (typeof MONETIZATION_CRITERIA)[number]
+
+const scoreSchema = z.number().int().min(1).max(5)
+export const monetizationScoresSchema = z.object(
+  Object.fromEntries(MONETIZATION_CRITERIA.map((c) => [c, scoreSchema])) as Record<
+    MonetizationCriterion,
+    typeof scoreSchema
+  >,
+)
+export type MonetizationScores = z.infer<typeof monetizationScoresSchema>
+
+/** Höchstzahl gleichzeitig gewählter Modelle (eine sinnvolle Kombination). */
+export const MAX_CHOSEN_MODELS = 3
+/** Höchstzahl gleichzeitig gewählter Preisstrategien. */
+export const MAX_CHOSEN_PRICING = 2
+
+export const monetizationModelSchema = z.object({
+  id: z.string().min(1),
+  kind: monetizationModelKindSchema,
+  /** Eigener Titel der KI; leer = Anzeigename des Modells. */
+  title: z.string(),
+  summary: z.string(),
+  /** Warum das Modell zu diesem Projekt passt. */
+  fitReason: z.string(),
+  /** Gegengründe und Risiken. */
+  concerns: z.array(z.string().min(1)),
+  /** Bewertung nach `MONETIZATION_CRITERIA`; `null` bei von Hand ergänzten Modellen. */
+  scores: monetizationScoresSchema.nullable(),
+  recommended: z.boolean(),
+})
+export type MonetizationModel = z.infer<typeof monetizationModelSchema>
+
+export const PRICING_STRATEGY_KINDS = [
+  'tiers',
+  'valueBased',
+  'competitive',
+  'penetration',
+  'skimming',
+  'perSeat',
+  'anchor',
+  'trialDiscount',
+] as const
+export const pricingStrategyKindSchema = z.enum(PRICING_STRATEGY_KINDS)
+export type PricingStrategyKind = z.infer<typeof pricingStrategyKindSchema>
+
+export const pricingOptionSchema = z.object({
+  id: z.string().min(1),
+  strategy: pricingStrategyKindSchema,
+  title: z.string(),
+  summary: z.string(),
+  /** Beispielpreise als Spannen in Euro; immer eine Annahme, keine Marktdaten. */
+  examplePrices: z.string(),
+  reason: z.string(),
+  recommended: z.boolean(),
+})
+export type PricingOption = z.infer<typeof pricingOptionSchema>
+
+/** Stand der Monetarisierungs-Sektion eines Projekts. */
+export const monetizationSchema = z
+  .object({
+    models: z.array(monetizationModelSchema),
+    chosenModelIds: z.array(z.string().min(1)).max(MAX_CHOSEN_MODELS),
+    modelRationale: z.string(),
+    pricingOptions: z.array(pricingOptionSchema),
+    chosenPricingIds: z.array(z.string().min(1)).max(MAX_CHOSEN_PRICING),
+    pricingRationale: z.string(),
+    status: z.enum(['open', 'decided']),
+    decidedAt: z.iso.datetime().nullable(),
+  })
+  .refine((m) => uniqueIds(m.models) && uniqueIds(m.pricingOptions), {
+    message: 'IDs müssen eindeutig sein',
+    path: ['models'],
+  })
+  .refine((m) => new Set(m.models.map((model) => model.kind)).size === m.models.length, {
+    message: 'Jedes Modell darf nur einmal vorkommen',
+    path: ['models'],
+  })
+  .refine(
+    (m) =>
+      m.chosenModelIds.every((id) => m.models.some((model) => model.id === id)) &&
+      new Set(m.chosenModelIds).size === m.chosenModelIds.length,
+    { message: 'Gewählte Modelle müssen vorhanden sein', path: ['chosenModelIds'] },
+  )
+  .refine(
+    (m) =>
+      m.chosenPricingIds.every((id) => m.pricingOptions.some((option) => option.id === id)) &&
+      new Set(m.chosenPricingIds).size === m.chosenPricingIds.length,
+    { message: 'Gewählte Preisstrategien müssen vorhanden sein', path: ['chosenPricingIds'] },
+  )
+  .refine(
+    (m) =>
+      m.chosenModelIds.length <= 1 ||
+      !m.models.some((model) => model.kind === 'none' && m.chosenModelIds.includes(model.id)),
+    { message: '„Nicht monetarisieren“ lässt sich nicht kombinieren', path: ['chosenModelIds'] },
+  )
+  .refine((m) => (m.status === 'decided') === (m.decidedAt !== null), {
+    message: 'Nur abgeschlossene Monetarisierung hat einen Zeitpunkt',
+    path: ['decidedAt'],
+  })
+  .refine((m) => m.status === 'open' || m.chosenModelIds.length > 0, {
+    message: 'Abgeschlossen nur mit gewähltem Modell',
+    path: ['status'],
+  })
+export type Monetization = z.infer<typeof monetizationSchema>
+
 export const projectSchema = z.object({
   schemaVersion: z.literal(CURRENT_SCHEMA_VERSION),
   id: z.string().min(1),
@@ -213,5 +343,7 @@ export const projectSchema = z.object({
   interview: interviewSchema,
   decisions: z.array(decisionSchema).refine(uniqueIds, 'Entscheidungs-IDs müssen eindeutig sein'),
   additions: z.array(additionSchema).refine(uniqueIds, 'Vorschlags-IDs müssen eindeutig sein'),
+  /** Monetarisierung (seit Schema 4); `null`, solange die Sektion nicht begonnen wurde. */
+  monetization: monetizationSchema.nullable(),
 })
 export type Project = z.infer<typeof projectSchema>

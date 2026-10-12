@@ -1,6 +1,6 @@
 # Architektur-Überblick
 
-Dieser Text zeigt, wie der Blueprint-Wizard aufgebaut ist und wo welche Logik liegt. Stand: Phase 9, Version 1.0.0.
+Dieser Text zeigt, wie der Blueprint-Wizard aufgebaut ist und wo welche Logik liegt. Stand: Version 1.0.0. Die Monetarisierung (Version 1.1.0, noch nicht veröffentlicht) ist ergänzt.
 Die verbindlichen Arbeitsregeln stehen in [CLAUDE.md](../CLAUDE.md), die Begründung einzelner Entscheidungen in den [ADRs](adr/) (Liste am Ende).
 
 ## 1. Schichten
@@ -18,8 +18,8 @@ flowchart TD
   app --> core
 ```
 
-- **`src/core`**: reine TypeScript-Logik ohne React. Unterordner: `blueprint/` (Schema, Abschnitte, Migrationen, Bearbeiten), `engine/` (Fragenmotor, Entscheidungen, Vorschläge, Widersprüche, Ideenfindung, Einordnung), `ai/` (Anbieter, strukturierte Antworten, Prompts, Kosten), `storage/` (Repositories), `settings/`, `ideation/` (Sitzung der Ideenfindung), `export/` (Generatoren, Reife-Check, ZIP).
-- **`src/features/<feature>`**: Seiten, Komponenten und Hooks je Feature (`wizard`, `ideation`, `projects`, `blueprint`, `interview`, `decisions`, `export`, `settings`, `home`, `ai`). Jedes Feature hat einen Einstieg über einen Hook, etwa `useInterview(editor)`.
+- **`src/core`**: reine TypeScript-Logik ohne React. Unterordner: `blueprint/` (Schema, Abschnitte, Migrationen, Bearbeiten), `engine/` (Fragenmotor, Entscheidungen, Vorschläge, Widersprüche, Ideenfindung, Einordnung, Monetarisierung), `ai/` (Anbieter, strukturierte Antworten, Prompts, Kosten), `storage/` (Repositories), `settings/`, `ideation/` (Sitzung der Ideenfindung), `export/` (Generatoren, Reife-Check, ZIP).
+- **`src/features/<feature>`**: Seiten, Komponenten und Hooks je Feature (`wizard`, `ideation`, `projects`, `blueprint`, `interview`, `decisions`, `monetization`, `export`, `settings`, `home`, `ai`). Jedes Feature hat einen Einstieg über einen Hook, etwa `useInterview(editor)`.
 - **`src/shared`**: `ui/` (Button, Dialog, Input, Select im shadcn-Stil), `lib/` (Formatierung, Download, Slugs), `i18n/` (Setup und Sprachdateien).
 - **`src/app`**: Routing (`routes.tsx`), Layout, `SettingsProvider`, `ProjectRepositoryContext`, Darstellung (`useAppearance`), Kostenanzeige.
 - **`src/test`**: Testhilfen: MSW-Server und Handler, `renderRoute`, Speicher-Attrappen.
@@ -33,7 +33,7 @@ Abhängigkeitsregeln:
 ## 2. Datenfluss vom Schema zur Oberfläche
 
 1. **Schema.** `core/blueprint/schema.ts` ist mit Zod die einzige Quelle der Wahrheit; die Typen werden daraus abgeleitet. Die Abschnittsliste steht in `sections.ts` (`SECTION_IDS`).
-2. **Migration.** `migrateProject()` (`migrations.ts`) hebt Altdaten Schritt für Schritt auf `CURRENT_SCHEMA_VERSION` (aktuell 3) und validiert danach. Neuere Versionen werden abgelehnt. Der JSON-Import (`exchange.ts`) läuft ebenfalls hier durch.
+2. **Migration.** `migrateProject()` (`migrations.ts`) hebt Altdaten Schritt für Schritt auf `CURRENT_SCHEMA_VERSION` (aktuell 4) und validiert danach. Neuere Versionen werden abgelehnt. Der JSON-Import (`exchange.ts`) läuft ebenfalls hier durch.
 3. **Speicher.** Seiten sprechen nur das Interface `ProjectRepository` an (`core/storage/projectRepository.ts`). `DexieProjectRepository` speichert in IndexedDB (Datenbank `blueprint-wizard`, Tabelle `projects`) und schreibt migrierte Datensätze zurück. `MemoryProjectRepository` ist die Variante für Tests. Gemeinsame Logik liegt in `projectOperations.ts`; `projectRepository.contract.ts` prüft beide Varianten gleich.
 4. **Bearbeiten.** `useProjectEditor(id)` (`features/projects/useProjectEditor.ts`) liefert das Projekt, Rückgängig und Wiederholen (Verlauf im Speicher, höchstens 50 Schritte) und das automatische Speichern (600 ms nach der letzten Änderung, sofortiges Speichern beim Verlassen). Schlägt ein Speichervorgang fehl und wechselt man die Seite, zeigt die nächste Seite den ungespeicherten Stand samt Fehlermeldung (`features/projects/pendingSaves.ts`).
 5. **Reine Änderungen.** Jede Änderung ist eine Funktion aus `core`, die ein neues Projekt zurückgibt, etwa `updateSection` (`blueprint/editing.ts`), `applyClassification` (`engine/classification.ts`), `answerQuestion` (`engine/interview.ts`) oder `decide` (`engine/decisions.ts`). Die Feature-Hooks rufen sie über den Editor auf.
@@ -47,7 +47,7 @@ Zustand außerhalb des Projekts:
 | Ideenfindung (Fragebogen, Ideen)                  | `sessionStorage` | `blueprint-wizard:ideation` |
 | KI-Verbrauch der Sitzung (höchstens 200 Einträge) | `sessionStorage` | `blueprint-wizard:usage`    |
 
-Das Projektschema steht bei Version 3: Version 1 zu 2 verschob die Fragen in den Fragenmotor (`interview`), Version 2 zu 3 die Entscheidungen (`decisions`) und die Vorschläge (`additions`). Jede Schemaänderung braucht eine Migration (siehe [neuer-abschnitt.md](neuer-abschnitt.md) als Beispiel).
+Das Projektschema steht bei Version 4: Version 1 zu 2 verschob die Fragen in den Fragenmotor (`interview`), Version 2 zu 3 die Entscheidungen (`decisions`) und die Vorschläge (`additions`), Version 3 zu 4 ergänzt die Monetarisierung (`monetization`). Jede Schemaänderung braucht eine Migration (siehe [neuer-abschnitt.md](neuer-abschnitt.md) als Beispiel).
 
 ## 3. KI-Schicht
 
@@ -55,8 +55,8 @@ Das Projektschema steht bei Version 3: Version 1 zu 2 verschob die Fragen in den
 - **Bereitstellung.** `SettingsProvider` baut den Anbieter nur, wenn ein Key hinterlegt ist, und umschließt ihn mit `UsageTrackingProvider`. Ohne Key liefert `useAiProvider()` den Wert `null`, und die UI zeigt `ApiKeyNotice`.
 - **Strukturierte Antworten.** `generateStructured()` (`structured.ts`) wandelt ein Zod-Schema in JSON-Schema um, validiert die Antwort mit Zod und bittet bei Fehlern genau einmal um Korrektur. Schemas für KI-Antworten nutzen `.nullable()` statt `.optional()`. Lehnt der Anbieter das Schema ab (Status 400 oder 404), wiederholt `OpenRouterProvider` die Anfrage mit dem Schema im Prompt.
 - **Fehler.** Jeder Fehler wird zu `AiError` mit festem `code` (z. B. `invalidKey`, `insufficientCredits`, `rateLimited`, `timeout`, `invalidResponse`). Die Meldung holt die UI über `aiErrorKey()` (`features/settings/aiErrors.ts`).
-- **Prompts.** Jeder Prompt liegt in `core/ai/prompts/<name>.ts` mit `*_PROMPT_ID`, `*_PROMPT_VERSION` und einer `build…Messages()`-Funktion. Alle sechs Prompts stehen aktuell auf Version 1: `classify-idea`, `analyze-blueprint`, `identify-decisions`, `integrate-answers`, `suggest-additions` und `generate-ideas`.
-- **Golden Files.** `prompts/__golden__` enthält 13 Dateien, die die erzeugten Nachrichten festhalten (`toMatchFileSnapshot`). Für `classify-idea` gibt es keine Golden Files; dort prüfen Tests gezielt Inhalte. Bei inhaltlichen Änderungen die Version erhöhen und die Golden Files neu erzeugen.
+- **Prompts.** Jeder Prompt liegt in `core/ai/prompts/<name>.ts` mit `*_PROMPT_ID`, `*_PROMPT_VERSION` und einer `build…Messages()`-Funktion. Alle acht Prompts stehen aktuell auf Version 1: `classify-idea`, `analyze-blueprint`, `identify-decisions`, `integrate-answers`, `suggest-additions`, `generate-ideas`, `suggest-monetization-models` und `suggest-pricing-strategies`.
+- **Golden Files.** `prompts/__golden__` enthält 15 Dateien, die die erzeugten Nachrichten festhalten (`toMatchFileSnapshot`). Für `classify-idea` gibt es keine Golden Files; dort prüfen Tests gezielt Inhalte. Bei inhaltlichen Änderungen die Version erhöhen und die Golden Files neu erzeugen.
 - **Kosten.** OpenRouter meldet Tokens und Kosten in jeder Antwort (`usage: { include: true }`). `UsageTrackingProvider` (`core/ai/usage.ts`) meldet jeden erfolgreichen Aufruf. Die Anzeige liest `useAiUsage()`; den Aufgabennamen übersetzt sie über `usage.tasks.<schemaName>`. Eine eigene Preistabelle gibt es nicht (ADR 0009).
 - **Aufgaben in der UI.** `useAiTask` (`features/ai/useAiTask.ts`) hält je Aufgabe höchstens eine Anfrage und bricht sie ab, wenn eine neue startet oder die Seite verlassen wird.
 
@@ -75,22 +75,33 @@ Das Projektschema steht bei Version 3: Version 1 zu 2 verschob die Fragen in den
 - `detectContradictions()` (`engine/contradictions.ts`) prüft feste Regeln (`CONTRADICTION_RULES`) und die Strukturregel `featureIsNonGoal`. Die Texte dazu liegen unter `decisions.contradictions.rules.<id>`.
 - UI: ausschließlich über `useDecisions(editor)`.
 
-## 6. Ideenfindung (ADR 0007)
+## 6. Monetarisierung (ADR 0011)
+
+- **Eigene Struktur, kein Abschnitt.** Die Monetarisierung steht nicht in `SECTION_IDS`. Der Reife-Check bleibt unverändert. Die Monetarisierung blockiert den Export nie.
+- **Zustand im Projekt:** `project.monetization` ist `null`, solange nicht begonnen. Sonst stehen dort die Bewertungen je Modell (`models`), die Auswahl (`chosenModelIds`, `chosenPricingIds`), die Begründungen (`modelRationale`, `pricingRationale`), die Preisstrategien (`pricingOptions`), der Status (`open` oder `decided`) und der Zeitpunkt (`decidedAt`). Das Feld gehört zu Schemaversion 4.
+- **Migration:** v3 → v4 in `migrations.ts` setzt `monetization: null`. Der Test nutzt die echte v3-Fixture `src/core/blueprint/__fixtures__/project-v3.json`.
+- **Kernlogik:** `core/engine/monetization.ts` ohne React. Dazu gehören `monetizationAvailability` (Freischaltung), `applyModelCandidates` und `applyPricingCandidates` (bereinigen KI-Ergebnisse), `chooseModels` und `choosePricing` (Auswahl), `finalizeMonetization` (Abschluss) sowie `monetizationImpacts` und `appendImpactNote` (Auswirkungen als Stichpunkt im Abschnitt).
+- **KI:** Die Prompts `suggest-monetization-models` und `suggest-pricing-strategies` (jeweils Version 1) haben Golden Files. Modelle und Preisstrategien kommen nur aus festen Listen. Preise sind Spannen in Euro und als Annahme gekennzeichnet.
+- **UI:** `features/monetization/` mit `MonetizationPage` (Route `/projekte/:projectId/monetarisierung`), dem Hook `useMonetization` und den Schritten `ModelsStep`, `PricingStep` und `FinishStep`. Alle Änderungen laufen über den Projekteditor.
+- **Export:** siehe Abschnitt 8.
+
+## 7. Ideenfindung (ADR 0007)
 
 - Der Einstieg „keine Idee“ führt zur `IdeationPage` (`features/wizard/EntryPage.tsx`).
 - Fragebogen und Ideen liegen nur in der Sitzung, nicht im Projekt. Erst die gewählte Idee wird ein Projekt; ihre Abschnitte gelten als `aiAccepted`.
 - `core/ideation/` (Profil und Sitzungsschema, `parseIdeationSession` verwirft Ungültiges) und `core/engine/ideation.ts` (`generateIdeas`, `applyIdeas`, `applyChosenIdea`).
 - UI: `useIdeation()`.
 
-## 7. Export (ADR 0008)
+## 8. Export (ADR 0008)
 
 - `core/export/generators.ts` erzeugt rein funktional genau fünf Dateien (`EXPORT_FILE_NAMES`): `BLUEPRINT.md`, `CLAUDE.md`, `AGENTS.md` (beide identisch), `TASKS.md` und `START-PROMPT.md`. Die Texte kommen als `ExportLabels` von außen.
 - `readiness.ts` (`checkReadiness`) liefert Hinweise. Sie verhindern den Export nicht.
 - `archive.ts` erzeugt das ZIP mit `fflate` (UTF-8, feste Dateinamen und Zeitstempel).
 - `EXPORT_VERSION` kennzeichnet das Dateiformat und ist unabhängig von `CURRENT_SCHEMA_VERSION`.
 - UI: `features/export/ExportPage.tsx` liest Projekte über `useProjectEditor`. Es gibt keinen KI-Aufruf, und App-Einstellungen gehören nicht ins Paket.
+- Die Monetarisierung ergänzt `BLUEPRINT.md`, `CLAUDE.md`, `AGENTS.md` und `TASKS.md`, sobald ein Modell gewählt ist (siehe Abschnitt 6).
 
-## 8. Einstellungen, Darstellung und Sprache
+## 9. Einstellungen, Darstellung und Sprache
 
 - `core/settings/settings.ts`: `settingsSchema` (API-Key, Modell, Temperatur, KI-Ausgabesprache, Oberflächensprache, Farbschema) im `localStorage`. Ungültige Felder fallen einzeln auf Standardwerte zurück.
 - `app/useAppearance.ts` setzt `lang`, die i18next-Sprache und die Klasse `dark` am `<html>`-Element. Ein Inline-Skript in `index.html` setzt beides vor dem ersten Rendern, damit nichts flackert.
@@ -98,7 +109,7 @@ Das Projektschema steht bei Version 3: Version 1 zu 2 verschob die Fragen in den
 - Zahlen, Daten und Beträge formatiert nur `shared/lib/format.ts`, und zwar nach der Oberflächensprache.
 - **Routing:** `app/routes.tsx`. Start und 404 laden sofort, alle anderen Seiten per `lazy`. `renderRoute` in den Tests löst die Lazy-Routen vorab auf.
 
-## 9. PWA und Auslieferung
+## 10. PWA und Auslieferung
 
 - `vite-plugin-pwa` (`vite.config.ts`) mit `registerType: 'autoUpdate'`. Der Service Worker cacht nur die App-Dateien. KI-Anfragen laufen immer übers Netz; Projekte liegen ohnehin in IndexedDB.
 - `e2e/pwa.spec.ts` prüft Manifest, Service Worker und Start ohne Netz. Nur dieser Test erlaubt den Service Worker ausdrücklich.
@@ -107,7 +118,7 @@ Das Projektschema steht bei Version 3: Version 1 zu 2 verschob die Fragen in den
 - **Speicher pro Adresse:** Jede Origin hat eigenen Browser-Speicher. Projekte von `localhost` erscheinen nicht automatisch auf der Pages-Adresse; dafür dienen Export und Import.
 - Abhängigkeiten: Dependabot hält npm-Pakete und GitHub Actions aktuell (ADR 0010).
 
-## 10. Tests und Prüfungen (ADR 0009)
+## 11. Tests und Prüfungen (ADR 0009)
 
 - **Unit und Komponenten:** Vitest mit jsdom und Testing Library, neben dem Code (`*.test.ts` bzw. `*.test.tsx`). `fake-indexeddb` ersetzt IndexedDB.
 - **Netzwerk:** MSW läuft in jedem Test mit `onUnhandledRequest: 'error'` (`src/test/setup.ts`). Nicht gemockte Anfragen lassen den Test fehlschlagen. OpenRouter-Mocks liegen in `src/test/msw/openrouter.ts`.
@@ -118,7 +129,7 @@ Das Projektschema steht bei Version 3: Version 1 zu 2 verschob die Fragen in den
 - **Lighthouse CI:** `lighthouserc.json` prüft `/` und `/einstellungen` mit einem Mindestwert von 0,9 je Kategorie.
 - **CI:** `.github/workflows/ci.yml` mit drei Jobs: `check` (Lint, Format, Typen, Tests mit Abdeckung, Build), `e2e` und `lighthouse`. Lokal reichen `npm run check` und `npm run test:e2e`.
 
-## 11. Architekturentscheidungen (ADRs)
+## 12. Architekturentscheidungen (ADRs)
 
 | ADR                                                | Thema                                                  |
 | -------------------------------------------------- | ------------------------------------------------------ |
@@ -132,3 +143,4 @@ Das Projektschema steht bei Version 3: Version 1 zu 2 verschob die Fragen in den
 | [0008](adr/0008-blueprint-export.md)               | Deterministischer Blueprint-Export ohne KI-Aufruf      |
 | [0009](adr/0009-qualitaet-und-politur.md)          | Darstellung, Kostenanzeige, PWA und Qualitätsprüfungen |
 | [0010](adr/0010-hosting-und-release.md)            | Hosting auf GitHub Pages, Release-Ablauf, Updates      |
+| [0011](adr/0011-monetarisierung.md)                | Monetarisierung als eigene Struktur                    |

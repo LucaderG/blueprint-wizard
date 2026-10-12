@@ -329,6 +329,102 @@ Lies zuerst BLUEPRINT.md, CLAUDE.md oder AGENTS.md und TASKS.md vollständig. Fa
 ]
 `;
 
+exports[`Monetarisierung im Export > schreibt Modell, Preisstrategie und Beispielpreise als Annahme in BLUEPRINT.md 1`] = `
+"# Koch-Leihbörse
+
+Projektstand: 2026-01-01T00:00:00.000Z · Exportformat: 1
+
+## Problem & Vision
+
+_Reifegrad: entschieden_
+
+Küchengeräte in der Nachbarschaft leihen.
+
+## Zielgruppe & Nutzer
+
+_Reifegrad: entschieden_
+
+Nachbarn, die selten kochen.
+
+## Kernfunktionen (MVP)
+
+_Reifegrad: entschieden_
+
+- Geräte anbieten
+- Leihen mit Rückgabedatum
+- Rezepte pro Gerät
+
+## Nicht-Ziele
+
+_Reifegrad: entschieden_
+
+- Keine Bezahlung
+
+## Nutzerabläufe & Screens
+
+_Reifegrad: entschieden_
+
+Gerät suchen → Details öffnen → Leihe eintragen.
+
+## Datenmodell
+
+_Reifegrad: entschieden_
+
+Gerät: Name, Besitzer. Leihe: Gerät, Rückgabedatum.
+
+## Tech-Stack & Plattform
+
+_Reifegrad: entschieden_
+
+React-Web-App im Browser.
+
+## Integrationen & externe Dienste
+
+_Reifegrad: entschieden_
+
+Keine externen Dienste.
+
+## Risiken & offene Punkte
+
+_Reifegrad: entschieden_
+
+Beschädigte Geräte und verspätete Rückgaben.
+
+## Umsetzungs-Roadmap
+
+_Reifegrad: entschieden_
+
+Phase 1: Geräte erfassen. Abnahme: Gerät erscheint in der Liste.
+Phase 2: Leihen verwalten.
+
+## Monetarisierung
+
+_Abgeschlossen_
+
+### Modell: Kostenlos für kleine Teams (Freemium)
+
+Bis 3 Personen kostenlos.
+
+Niedrige Einstiegshürde.
+
+Begründung: Teams zahlen für Zusammenarbeit.
+
+### Preisstrategie: Free, Pro, Team (Staffelpreise)
+
+Drei Pakete.
+
+Beispielpreise (Annahme, keine Marktdaten): Pro: 4–8 € pro Monat
+
+Leicht verständlich.
+
+Begründung: Einfach zu erklären.
+
+## Offene Punkte
+
+Keine offenen Punkte im Reife-Check.
+"
+`;
+
 exports[`Ungeklärter und entschiedener Kontext > bewahrt Antworten und Entscheidungsfolgen und trennt Empfehlungen von Entscheidungen 1`] = `
 "# Rezeptplaner
 

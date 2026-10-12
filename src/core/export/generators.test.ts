@@ -169,3 +169,112 @@ describe('Antworten aus v1-Projekten', () => {
     )
   })
 })
+
+describe('Monetarisierung im Export', () => {
+  const withMonetization = async (status: 'open' | 'decided', kind: 'freemium' | 'none') => {
+    const { makeExportProject } = await import('./testing')
+    const project = makeExportProject()
+    project.monetization = {
+      models: [
+        {
+          id: 'm1',
+          kind,
+          title: kind === 'none' ? '' : 'Kostenlos für kleine Teams',
+          summary: 'Bis 3 Personen kostenlos.',
+          fitReason: 'Niedrige Einstiegshürde.',
+          concerns: ['Wenige zahlen'],
+          scores: null,
+          recommended: true,
+        },
+        {
+          id: 'm2',
+          kind: 'ads',
+          title: 'Nicht gewählt',
+          summary: 'Werbung.',
+          fitReason: '',
+          concerns: [],
+          scores: null,
+          recommended: false,
+        },
+      ],
+      chosenModelIds: ['m1'],
+      modelRationale: 'Teams zahlen für Zusammenarbeit.',
+      pricingOptions:
+        kind === 'none'
+          ? []
+          : [
+              {
+                id: 'p1',
+                strategy: 'tiers',
+                title: 'Free, Pro, Team',
+                summary: 'Drei Pakete.',
+                examplePrices: 'Pro: 4–8 € pro Monat',
+                reason: 'Leicht verständlich.',
+                recommended: true,
+              },
+            ],
+      chosenPricingIds: kind === 'none' ? [] : ['p1'],
+      pricingRationale: kind === 'none' ? '' : 'Einfach zu erklären.',
+      status,
+      decidedAt: status === 'decided' ? '2026-10-12T10:00:00.000Z' : null,
+    }
+    return project
+  }
+
+  it('schreibt Modell, Preisstrategie und Beispielpreise als Annahme in BLUEPRINT.md', async () => {
+    const result = generateBlueprint(await withMonetization('decided', 'freemium'), exportLabels)
+
+    expect(result).toContain('## Monetarisierung\n\n_Abgeschlossen_')
+    expect(result).toContain('### Modell: Kostenlos für kleine Teams (Freemium)')
+    expect(result).toContain('Begründung: Teams zahlen für Zusammenarbeit.')
+    expect(result).toContain('### Preisstrategie: Free, Pro, Team (Staffelpreise)')
+    expect(result).toContain('Beispielpreise (Annahme, keine Marktdaten): Pro: 4–8 € pro Monat')
+    expect(result).not.toContain('Nicht gewählt')
+    expect(result.indexOf('## Monetarisierung')).toBeLessThan(result.indexOf('## Offene Punkte'))
+    expect(result).toMatchSnapshot()
+  })
+
+  it('kennzeichnet eine offene Auswahl und nimmt sie in CLAUDE.md und TASKS.md auf', async () => {
+    const { generateExportFiles } = await import('./generators')
+    const files = generateExportFiles(await withMonetization('open', 'freemium'), exportLabels)
+    const content = (name: string) => files.find((file) => file.name === name)?.content ?? ''
+
+    expect(content('BLUEPRINT.md')).toContain('_Noch nicht abgeschlossen_')
+    expect(content('CLAUDE.md')).toContain('### Modell: Kostenlos für kleine Teams (Freemium)')
+    expect(content('TASKS.md')).toContain('## Monetarisierung\n\n- [ ] Optional: Bezahlfunktion')
+  })
+
+  it('fasst das Kapitel in CLAUDE.md kürzer, Beispielpreise bleiben', async () => {
+    const { generateExportFiles } = await import('./generators')
+    const files = generateExportFiles(await withMonetization('decided', 'freemium'), exportLabels)
+    const content = (name: string) => files.find((file) => file.name === name)?.content ?? ''
+
+    expect(content('BLUEPRINT.md')).toContain('Begründung: Teams zahlen für Zusammenarbeit.')
+    expect(content('CLAUDE.md')).toContain('### Preisstrategie: Free, Pro, Team (Staffelpreise)')
+    expect(content('CLAUDE.md')).toContain('Beispielpreise (Annahme, keine Marktdaten)')
+    expect(content('CLAUDE.md')).not.toContain('Begründung: Teams zahlen')
+    expect(content('AGENTS.md')).toBe(content('CLAUDE.md'))
+  })
+
+  it('braucht bei „nicht monetarisieren“ keine Bezahlaufgabe', async () => {
+    const { generateExportFiles } = await import('./generators')
+    const files = generateExportFiles(await withMonetization('decided', 'none'), exportLabels)
+
+    expect(files[0]?.content).toContain('### Modell: Nicht monetarisieren')
+    expect(files.find((file) => file.name === 'TASKS.md')?.content).not.toContain('Bezahlfunktion')
+  })
+
+  it('exportiert ohne gewähltes Modell wie bisher', async () => {
+    const { generateExportFiles } = await import('./generators')
+    const { makeExportProject } = await import('./testing')
+    const before = generateExportFiles(makeExportProject(), exportLabels)
+    const project = makeExportProject()
+    project.monetization = {
+      ...(await withMonetization('open', 'freemium')).monetization!,
+      chosenModelIds: [],
+      chosenPricingIds: [],
+    }
+
+    expect(generateExportFiles(project, exportLabels)).toEqual(before)
+  })
+})

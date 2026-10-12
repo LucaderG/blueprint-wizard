@@ -10,11 +10,12 @@ Dieses Handbuch erklärt Schritt für Schritt, wie du mit dem Blueprint-Wizard a
 4. Die Blueprint-Übersicht
 5. Fragen beantworten
 6. Entscheidungen, Vorschläge und Widersprüche
-7. Blueprint fertigstellen und exportieren
-8. Einstellungen
-9. Als App installieren und offline nutzen
-10. Projekte sichern, exportieren und importieren
-11. Häufige Probleme
+7. Monetarisierung
+8. Blueprint fertigstellen und exportieren
+9. Einstellungen
+10. Als App installieren und offline nutzen
+11. Projekte sichern, exportieren und importieren
+12. Häufige Probleme
 
 ## 1. Was die App macht und wie deine Daten geschützt sind
 
@@ -30,7 +31,7 @@ Du kannst bei null anfangen, mit einer halben Idee oder mit einem fast fertigen 
 - Die App enthält keine Tracking-Dienste.
 - Ohne KI-Funktionen bleibt alles in deinem Browser. Der Export braucht keinen API-Key.
 
-**Wichtig:** Dein Browser ist der Speicher. Wenn du Browserdaten löschst, sind deine Projekte weg. Lies dazu Abschnitt 10 und 11.
+**Wichtig:** Dein Browser ist der Speicher. Wenn du Browserdaten löschst, sind deine Projekte weg. Lies dazu Abschnitt 11 und 12.
 
 ## 2. Erste Schritte
 
@@ -55,7 +56,7 @@ Die KI-Funktionen brauchen einen eigenen API-Key von OpenRouter. So bekommst du 
 6. Klicke auf **Speichern**. Der Key ist dann hinterlegt.
 7. Klicke auf **Verbindung testen**. Bei Erfolg erscheint „Verbindung erfolgreich“. Darunter siehst du deinen bisherigen Verbrauch und, falls es ein Limit gibt, das verbleibende Limit.
 
-Für kostenpflichtige Modelle braucht dein OpenRouter-Konto Guthaben. Ein fehlendes Guthaben zeigt die App als Fehler an (siehe Abschnitt 11).
+Für kostenpflichtige Modelle braucht dein OpenRouter-Konto Guthaben. Ein fehlendes Guthaben zeigt die App als Fehler an (siehe Abschnitt 12).
 
 ### Modell wählen
 
@@ -131,7 +132,7 @@ Auch hier darf der Text höchstens 20.000 Zeichen lang sein.
 Ein Projekt öffnest du, indem du in der Projektliste auf seinen Namen klickst. Die Projektseite zeigt alles Wichtige.
 
 - **Vollständigkeit:** Ein Balken zeigt, wie weit der Blueprint ist.
-- **Knöpfe:** **Rückgängig**, **Wiederholen**, **Fragen beantworten** (mit der Zahl offener Fragen), **Entscheidungen & Vorschläge** (mit roter Zahl bei Widersprüchen) und **Blueprint fertigstellen**.
+- **Knöpfe:** **Rückgängig**, **Wiederholen**, **Fragen beantworten** (mit der Zahl offener Fragen), **Entscheidungen & Vorschläge** (mit roter Zahl bei Widersprüchen), **Monetarisierung** und **Blueprint fertigstellen**.
 - **Speicherstatus:** Er steht rechts neben den Knöpfen.
 - **Reifegrade im Überblick:** Die App zählt, wie viele Abschnitte leer, vage oder entschieden sind.
 
@@ -288,7 +289,66 @@ Die KI schlägt Vorschläge für die Abschnitte Kernfunktionen, Nicht-Ziele und 
 
 Ohne Key sind **Entscheidungen finden** und **Vorschläge holen** nicht verfügbar.
 
-## 7. Blueprint fertigstellen und exportieren
+## 7. Monetarisierung
+
+Die Seite öffnest du mit **Monetarisierung** auf der Projektseite. Hier überlegst du, wie dein Projekt Geld einbringen kann. Die Seite gibt keine Rechts-, Steuer- oder Finanzberatung. Entscheiden musst du selbst.
+
+### Wann die Seite freigeschaltet ist
+
+Die Seite ist ab 60 % Vollständigkeit des Blueprints empfohlen. Außerdem sollten die Abschnitte Problem & Vision, Zielgruppe & Nutzer und Kernfunktionen (MVP) Inhalt haben. Fehlt etwas, zeigt die Seite, was fehlt. Mit **Trotzdem starten** arbeitest du trotzdem weiter.
+
+### Schritt 1: Modelle wählen
+
+Mit **Modelle vorschlagen** holt die KI 4 bis 6 Monetarisierungsmodelle. Sie wählt sie aus einer festen Liste: Einmalkauf, Abo, Freemium, Nutzungsbasiert, Werbung, Provision / Marktplatz, In-App-Käufe, Lizenz / B2B, Open Core / Spenden und Nicht monetarisieren. Die KI erfindet keine eigenen Modelle.
+
+Jedes Modell wird in sechs Kriterien von 1 bis 5 Punkten bewertet:
+
+- Umsatzpotenzial
+- Einfache Umsetzung
+- Akzeptanz bei Nutzern
+- Planbare Einnahmen
+- Passung zur Zielgruppe
+- Passung zum Tech-Stack
+
+Bei jedem Kriterium ist 5 die günstige Bewertung. Die Vergleichstabelle zeigt alle Modelle nebeneinander. Zu jedem Modell steht außerdem, was dafür spricht („Passt, weil“) und was dagegen spricht („Dagegen spricht“).
+
+Wähle ein Modell oder kombiniere bis zu drei. „Nicht monetarisieren“ lässt sich mit keinem anderen Modell kombinieren. Für drei Kombinationen zeigt die App einen Hinweis: Werbung und Lizenz, Einmalkauf und Abo sowie In-App-Käufe und Lizenz.
+
+Fehlt ein Modell, wähle es unter **Modell von Hand ergänzen** aus und klicke auf **Modell hinzufügen**. Das geht auch ohne KI. Ein Modell von Hand hat keine Bewertung.
+
+Optional schreibst du unter **Begründung (optional)** eine Begründung. Mit **Auswahl übernehmen** speicherst du die Auswahl.
+
+### Schritt 2: Preisstrategie
+
+Schritt 2 erscheint, sobald du ein Modell außer „Nicht monetarisieren“ gewählt hast. Mit **Preisstrategien vorschlagen** schlägt die KI 3 bis 5 Preisstrategien vor. Auch sie kommen aus einer festen Liste: Staffelpreise, Wertbasiert, Wettbewerbsorientiert, Penetrationspreis, Skimming, Pro Nutzer, Ankerpreis und Testphase & Rabatte.
+
+Zu jeder Strategie nennt die KI Beispielpreise als Spanne in Euro. Diese Preise sind eine Annahme. Sie beruhen nicht auf Marktdaten. Prüfe sie, bevor du dich festlegst.
+
+Wähle bis zu zwei Strategien und klicke auf **Preisstrategie übernehmen**. Eine weitere Strategie wählst du unter **Preisstrategie von Hand ergänzen** aus und klickst auf **Strategie hinzufügen**.
+
+Änderst du die Modellauswahl in Schritt 1, verwirft die App die Preisstrategien. Wähle danach neue Strategien.
+
+### Schritt 3: Abschließen
+
+Abschließen kannst du, wenn ein Modell gewählt ist und, falls Schritt 2 gilt, eine Preisstrategie. Mit **Monetarisierung abschließen** markierst du die Monetarisierung als abgeschlossen. Mit **Wieder öffnen** holst du sie zurück.
+
+Die Seite zeigt außerdem Auswirkungen auf andere Abschnitte, zum Beispiel:
+
+- Zahlungsanbieter unter „Integrationen & externe Dienste“,
+- Nutzerkonten im „Datenmodell“,
+- Datenschutz bei Werbung unter „Risiken & offene Punkte“.
+
+Mit einem Klick auf **Übernehmen** steht der Hinweis als Stichpunkt im genannten Abschnitt. Vorhandener Text bleibt unverändert. Wie bei jeder Änderung von Hand gilt der Abschnitt danach als eigener Inhalt, den die KI nicht mehr überschreibt.
+
+### Rückgängig und Speichern
+
+Die Monetarisierung arbeitet wie der übrige Blueprint. **Rückgängig**, **Wiederholen** und das automatische Speichern funktionieren wie in Abschnitt 4 beschrieben. Mit **Neu beginnen** verwirfst du den ganzen Stand der Monetarisierung; auch das lässt sich rückgängig machen.
+
+### Im Export
+
+Sobald du ein Modell gewählt hast, enthält **BLUEPRINT.md** ein Kapitel „Monetarisierung“. Es nennt die Modelle, die Begründung, die Preisstrategie, die Beispielpreise als Annahme und den Status. `CLAUDE.md` und `AGENTS.md` enthalten eine kurze Fassung: Modelle, Preisstrategien und Beispielpreise ohne Beschreibungen und Begründungen. Hast du ein Modell außer „Nicht monetarisieren“ gewählt, steht in `TASKS.md` die optionale Aufgabe „Bezahlfunktion umsetzen“. Ohne gewähltes Modell bleibt der Export unverändert. Der Reife-Check ist unverändert. Die Monetarisierung blockiert den Export nie. Die Dateien siehst du in Abschnitt 8.
+
+## 8. Blueprint fertigstellen und exportieren
 
 Ist dein Blueprint bereit, lädst du ihn herunter. Der Export braucht keinen API-Key und läuft komplett in deinem Browser.
 
@@ -305,13 +365,13 @@ Die Hinweise nennen zum Beispiel leere Abschnitte, Abschnitte ohne Entscheidung,
 
 Unter **Dateivorschau** wählst du über **Datei auswählen** eine der fünf Dateien. Die Vorschau zeigt den Inhalt nur zum Lesen. Mit **Datei herunterladen** lädst du nur die gewählte Datei herunter.
 
-| Datei             | Inhalt                                                                                                                                            |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `BLUEPRINT.md`    | Alle zehn Abschnitte, offene Punkte, das Entscheidungsprotokoll und der Fragenverlauf.                                                            |
-| `CLAUDE.md`       | Kontext und Arbeitsregeln für ein KI-Coding-Tool.                                                                                                 |
-| `AGENTS.md`       | Derselbe Kontext und dieselben Arbeitsregeln wie `CLAUDE.md`.                                                                                     |
-| `TASKS.md`        | Deine Projekt-Roadmap, falls du eine hast, und eine Vorlage mit Phasen, Aufgaben und Abnahmekriterien. Die Vorlage ist als solche gekennzeichnet. |
-| `START-PROMPT.md` | Der Text, den du in das KI-Coding-Tool einfügst.                                                                                                  |
+| Datei             | Inhalt                                                                                                                                                |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `BLUEPRINT.md`    | Alle zehn Abschnitte, offene Punkte, das Entscheidungsprotokoll, der Fragenverlauf und, sobald ein Modell gewählt ist, das Kapitel „Monetarisierung“. |
+| `CLAUDE.md`       | Kontext und Arbeitsregeln für ein KI-Coding-Tool.                                                                                                     |
+| `AGENTS.md`       | Derselbe Kontext und dieselben Arbeitsregeln wie `CLAUDE.md`.                                                                                         |
+| `TASKS.md`        | Deine Projekt-Roadmap, falls du eine hast, und eine Vorlage mit Phasen, Aufgaben und Abnahmekriterien. Die Vorlage ist als solche gekennzeichnet.     |
+| `START-PROMPT.md` | Der Text, den du in das KI-Coding-Tool einfügst.                                                                                                      |
 
 ### Schritt 3: Herunterladen
 
@@ -330,7 +390,7 @@ Das KI-Coding-Tool ist nicht Teil dieser App. Du brauchst dafür eigene Zugänge
 
 Das Tool liest dann `BLUEPRINT.md`, `CLAUDE.md` oder `AGENTS.md` sowie `TASKS.md`. Der Start-Prompt bittet es, zuerst die Punkte zu klären, die den nächsten Schritt blockieren. Beantworte seine Rückfragen, bevor es mit der Umsetzung beginnt.
 
-## 8. Einstellungen
+## 9. Einstellungen
 
 Die Einstellungen öffnest du oben rechts über **Einstellungen**. Die Einstellungen sind in vier Bereiche gegliedert.
 
@@ -367,7 +427,7 @@ Sobald du die erste KI-Anfrage gestellt hast, erscheint oben rechts ein Betrag m
 - Die Kosten stammen aus den Angaben von OpenRouter. Meldet OpenRouter für eine Anfrage keine Kosten, steht dort „unbekannt“. Dann zeigt die App ein Zeichen ≥. Die Summe ist dann eine Untergrenze.
 - Die Zählung gilt nur für diesen Tab. Schließt du den Tab, ist sie weg.
 
-## 9. Als App installieren und offline nutzen
+## 10. Als App installieren und offline nutzen
 
 Der Blueprint-Wizard kann wie eine App auf deinem Gerät installiert werden.
 
@@ -377,7 +437,7 @@ Der Blueprint-Wizard kann wie eine App auf deinem Gerät installiert werden.
 
 **Nach Updates:** Wenn eine neue Version erscheint, übernimmt die App sie automatisch. Erscheint die Meldung „Diese Seite konnte nicht geladen werden“, hilft der Knopf **Neu laden**. Die Meldung nennt zwei mögliche Gründe: Du bist gerade offline, oder die App wurde aktualisiert.
 
-## 10. Projekte sichern, exportieren und importieren
+## 11. Projekte sichern, exportieren und importieren
 
 Die Projektliste auf der Startseite zeigt alle deine Projekte. Zu jedem Projekt gibt es vier Knöpfe:
 
@@ -390,9 +450,9 @@ Oben auf der Startseite steht der Knopf **Projekt importieren**. Er öffnet die 
 
 Die App meldet einen Fehler, wenn die Datei kein gültiges JSON ist, keine Projektdatei des Blueprint-Wizards ist oder aus einer neueren Version stammt. In diesem Fall aktualisierst du die App und versuchst den Import erneut.
 
-**Sicherung:** Es gibt keine Sicherung aller Projekte auf einmal. Exportiere wichtige Projekte deshalb regelmäßig als `.blueprint.json`-Datei. Das ZIP aus dem Export (Abschnitt 7) ist keine Sicherung. Es ist für den Start mit einem KI-Coding-Tool gedacht.
+**Sicherung:** Es gibt keine Sicherung aller Projekte auf einmal. Exportiere wichtige Projekte deshalb regelmäßig als `.blueprint.json`-Datei. Das ZIP aus dem Export (Abschnitt 8) ist keine Sicherung. Es ist für den Start mit einem KI-Coding-Tool gedacht.
 
-## 11. Häufige Probleme
+## 12. Häufige Probleme
 
 Die Tabelle zeigt die häufigsten Meldungen der App. Die Texte stehen genau so in der App.
 

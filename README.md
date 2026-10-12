@@ -6,7 +6,7 @@ Die App läuft komplett im Browser: kein eigener Server, kein Konto. Projekte bl
 
 **Jetzt ausprobieren:** <https://lucaderg.github.io/blueprint-wizard/>. Du brauchst nur einen eigenen [OpenRouter](https://openrouter.ai/)-Key; der Export klappt auch ohne.
 
-**Projektstatus:** Version 1.0, alle Phasen des [Implementierungsplans](docs/implementierungsplan.md) sind umgesetzt. Drei Einstiege (keine Idee, halbe Idee, fertiges Konzept), Fragenmotor, Entscheidungen und Vorschläge führen zum bearbeitbaren Blueprint, den du als Coding-Paket exportierst. Die App gibt es auf Deutsch und Englisch, hell und dunkel, und sie lässt sich als App installieren und offline öffnen. Wie alles funktioniert, steht im [Nutzerhandbuch](docs/benutzerhandbuch.md).
+**Projektstatus:** Version 1.0, alle Phasen des [Implementierungsplans](docs/implementierungsplan.md) sind umgesetzt. Drei Einstiege (keine Idee, halbe Idee, fertiges Konzept), Fragenmotor, Entscheidungen und Vorschläge führen zum bearbeitbaren Blueprint, den du als Coding-Paket exportierst. Ist der Blueprint weit genug, hilft die Monetarisierung beim Vergleich von Bezahlmodellen und bei der Wahl einer Preisstrategie. Die App gibt es auf Deutsch und Englisch, hell und dunkel, und sie lässt sich als App installieren und offline öffnen. Wie alles funktioniert, steht im [Nutzerhandbuch](docs/benutzerhandbuch.md).
 
 ## Blueprint fürs Coding exportieren
 
@@ -15,7 +15,7 @@ Die App läuft komplett im Browser: kein eigener Server, kein Konto. Projekte bl
 3. Sieh dir jede Datei in der Vorschau an und lade **Alles als ZIP** herunter.
 4. Entpacke die fünf Dateien in einen leeren Projektordner, öffne diesen mit deinem KI-Coding-Tool und füge den kopierten **Start-Prompt** ein.
 
-`BLUEPRINT.md` enthält die zehn Abschnitte, offene Punkte, Entscheidungsprotokoll und Fragenverlauf. `CLAUDE.md` und `AGENTS.md` enthalten denselben Kontext und dieselben Arbeitsregeln. `TASKS.md` bewahrt die vorhandene Roadmap und ergänzt eine ausdrücklich als Vorlage gekennzeichnete Phasenliste mit Aufgaben und Abnahmekriterien. Die Projekt-Roadmap hat Vorrang; fehlende Anforderungen muss das Coding-Tool vor dem betroffenen Schritt klären.
+`BLUEPRINT.md` enthält die zehn Abschnitte, offene Punkte, Entscheidungsprotokoll und Fragenverlauf, nach gewählter Monetarisierung auch ein Kapitel dazu. `CLAUDE.md` und `AGENTS.md` enthalten denselben Kontext und dieselben Arbeitsregeln. `TASKS.md` bewahrt die vorhandene Roadmap und ergänzt eine ausdrücklich als Vorlage gekennzeichnete Phasenliste mit Aufgaben und Abnahmekriterien. Die Projekt-Roadmap hat Vorrang; fehlende Anforderungen muss das Coding-Tool vor dem betroffenen Schritt klären.
 
 Der Export erzeugt Dateien lokal aus dem gespeicherten Projekt und verändert es nicht. Er enthält keine App-Einstellungen oder API-Keys. Die JSON-Sicherung über die Projektliste bleibt für Import und Wiederherstellung verfügbar; das Markdown-Paket dient zum Coding-Start.
 
@@ -41,7 +41,7 @@ npx playwright install chromium
 | Skript                  | Zweck                                                                                           |
 | ----------------------- | ----------------------------------------------------------------------------------------------- |
 | `npm run dev`           | Startet den Vite-Entwicklungsserver mit Hot Reload.                                             |
-| `npm run build`         | Typcheck (`tsc -b`) und Produktions-Build nach `dist/`.                                         |
+| `npm run build`         | Typcheck mit TypeScript 7 und Produktions-Build nach `dist/`.                                   |
 | `npm run preview`       | Liefert den Build aus `dist/` lokal aus.                                                        |
 | `npm run lint`          | Prüft den Code mit ESLint.                                                                      |
 | `npm run format`        | Formatiert alle Dateien mit Prettier.                                                           |
@@ -79,6 +79,8 @@ Unit- und Komponententests liegen als `*.test.ts(x)` direkt neben dem Code.
 ## Tech-Stack
 
 Vite 8, React 19, TypeScript (strict), Tailwind CSS v4, shadcn/ui-Komponenten, React Router, i18next (Deutsch zuerst), Zustand, Vitest + Testing Library + MSW, Playwright, ESLint + Prettier, Husky + lint-staged. Begründung: [ADR 0001](docs/adr/0001-tech-stack.md).
+
+Typprüfung und Build nutzen TypeScript 7.0.2 über den Paket-Alias `@typescript/native`. ESLint und andere Werkzeuge mit Compiler-API nutzen weiterhin TypeScript 6 über das offizielle Kompatibilitätspaket `@typescript/typescript6` (Alias `typescript`). `npm run typecheck` wählt den nativen Compiler ausdrücklich aus; ein direktes `tsc` kann wegen der beiden installierten Versionen noch TypeScript 6 aufrufen. Hintergrund und Versionsprüfung: [Release- und Update-Prozess](docs/release-prozess.md#typescript-7-und-die-linter-api).
 
 ## Weitere Dokumente
 

@@ -14,6 +14,7 @@ export type MigrationMap = Readonly<Record<number, Migration>>
 export const PROJECT_MIGRATIONS: MigrationMap = {
   1: migrateV1ToV2,
   2: migrateV2ToV3,
+  3: migrateV3ToV4,
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -176,4 +177,9 @@ function migrateV2ToV3(data: Record<string, unknown>): Record<string, unknown> {
   }
 
   return { ...data, schemaVersion: 3, blueprint, decisions, additions: [] }
+}
+
+/** v3 → v4: die Monetarisierungs-Sektion kommt hinzu; bestehende Projekte haben sie noch nicht begonnen. */
+function migrateV3ToV4(data: Record<string, unknown>): Record<string, unknown> {
+  return { ...data, schemaVersion: 4, monetization: null }
 }
