@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { ProjectRepositoryProvider } from '@/app/ProjectRepositoryContext'
 import { updateSection, type Project } from '@/core/blueprint'
 import { MemoryProjectRepository } from '@/core/storage'
+import { waitForPendingSaves } from './pendingSaves'
 import { AUTOSAVE_DELAY_MS, useProjectEditor, type ProjectEditorState } from './useProjectEditor'
 
 type ReadyState = Extract<ProjectEditorState, { status: 'ready' }>
@@ -275,6 +276,33 @@ describe('useProjectEditor', () => {
       const third = renderHook(() => useProjectEditor(id), { wrapper })
       await waitFor(() => expect(third.result.current.status).toBe('ready'))
       expect(readyState(third.result.current).saveState).toBe('saved')
+    })
+
+    it('übernimmt eine Umbenennung, die nach fehlgeschlagenem Speichern geschah', async () => {
+      const { editor, repository, id, wrapper, unmount } = await renderEditor()
+      const save = vi.spyOn(repository, 'save').mockRejectedValue(new Error('Speicher voll'))
+
+      act(() => editor().edit(setProblem('Ungespeichert')))
+      await act(() => editor().flush())
+      unmount()
+      // Auch das Speichern beim Verlassen der Seite scheitert noch.
+      await waitForPendingSaves(repository)
+      save.mockRestore()
+
+      // Auf der Startseite umbenannt, während der Entwurf noch im Speicher liegt.
+      await repository.rename(id, 'Neuer Name')
+
+      const next = renderHook(() => useProjectEditor(id), { wrapper })
+      await waitFor(() => expect(next.result.current.status).toBe('ready'))
+      const state = readyState(next.result.current)
+      expect(state.project.name).toBe('Neuer Name')
+      expect(state.project.blueprint.sections.problem.content).toBe('Ungespeichert')
+
+      await act(() => state.flush())
+      const stored = await repository.get(id)
+      expect(stored?.name).toBe('Neuer Name')
+      expect(stored?.blueprint.sections.problem.content).toBe('Ungespeichert')
+      next.unmount()
     })
 
     it('behält Änderungen, die während eines laufenden Speicherns entstehen', async () => {

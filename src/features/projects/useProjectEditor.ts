@@ -72,8 +72,9 @@ export function useProjectEditor(id: string): ProjectEditorState {
           if (!active) return
           if (!project) return setLoaded({ id, status: 'notFound' })
           // Ist das letzte Speichern gescheitert, gilt der ungespeicherte Stand samt Fehler weiter.
+          // Den Namen ändert nur die Projektliste, daher gilt dafür der gespeicherte Stand.
           const draft = getUnsaved(repository, id)
-          latest.current = draft ?? project
+          latest.current = draft ? { ...draft, name: project.name } : project
           dirty.current = !!draft
           historyRef.current = createHistory(latest.current)
           setHistory(historyRef.current)
