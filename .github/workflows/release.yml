@@ -22,6 +22,8 @@ on:
 
 permissions:
   contents: write
+  # Zum Neuveröffentlichen der Pages, damit die App danach „stable“ zeigt.
+  actions: write
 
 concurrency:
   group: release
@@ -97,5 +99,13 @@ jobs:
           HIGHEST=$( (git tag -l 'v*.*.*'; echo "$TAG") | sort -V | tail -n1)
           LATEST=false
           if [[ "$HIGHEST" == "$TAG" ]]; then LATEST=true; fi
+          echo "LATEST=$LATEST" >> "$GITHUB_ENV"
           gh release create "$TAG" --target "$TARGET" --title "$TITLE" \
             --notes-file notes.md --latest="$LATEST"
+      # Pages wurde vor dem Tag gebaut und zeigt deshalb „nightly“. Neu bauen, damit die Seite die
+      # Version als „stable“ zeigt, sofern main noch auf dem getaggten Commit steht.
+      - name: GitHub Pages neu veröffentlichen
+        if: env.LATEST == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --ref main

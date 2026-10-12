@@ -40,6 +40,12 @@ Claude kann aus der Cloud keine Tags pushen, den Workflow aber über die GitHub-
 
 Releases sind öffentlich. Claude legt sie nur an, wenn Luca es im Chat sagt.
 
+### Versionsanzeige: stable oder nightly
+
+Unten in der App steht die Version, z. B. „Version v1.0.0 · stable“. „stable“ erscheint nur, wenn der gebaute Commit den Release-Tag `vX.Y.Z` der Version aus `package.json` trägt. Alles andere, also Pull Requests, lokale Checkouts und Commits nach dem letzten Release, zeigt „nightly“ mit kurzem Commit-Hash, z. B. „Version v1.0.0 · nightly · abc1234“. Ohne git zeigt die App ebenfalls „nightly“. Bestimmt wird das beim Build in `vite.config.ts`; der Pages-Workflow holt dafür die Tags mit (`fetch-depth: 0`).
+
+Weil der Pages-Workflow vor dem Tag läuft, startet `release.yml` ihn nach einem neuen „Latest“-Release noch einmal. Danach zeigt die öffentliche Seite „stable“.
+
 Installierte Apps (PWA) laden die neue Version beim nächsten Öffnen automatisch (`registerType: 'autoUpdate'`).
 
 ## Abhängigkeiten aktuell halten

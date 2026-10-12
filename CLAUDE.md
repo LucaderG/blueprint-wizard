@@ -88,6 +88,7 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 - Seiten außer Start und 404 werden per Route-`lazy` geladen. `renderRoute` löst sie vorab auf, Tests können also direkt abfragen.
 - Die App kann in einem Unterordner laufen (GitHub Pages, `BASE_PATH` beim Build, Router-`basename` aus `import.meta.env.BASE_URL`). **Keine absoluten Pfade** wie `href="/…"` oder `window.location = '/…'`: Links über den Router, Dateien über Vite.
 - Speichert `useProjectEditor` erfolglos, merkt `pendingSaves.ts` den ungespeicherten Stand (`rememberUnsaved`); die nächste Seite übernimmt ihn samt Fehler.
+- Versionsanzeige: `vite.config.ts` bestimmt beim Build `__BUILD_INFO__` über `resolveBuildInfo` (`src/core/build/buildInfo.ts`): „stable“ nur, wenn der Commit den Tag `v<package.json-Version>` trägt, sonst „nightly“. Angezeigt in `VersionFooter`.
 - PWA über `vite-plugin-pwa`. In E2E ist der Service Worker blockiert (`serviceWorkers: 'block'`), nur `e2e/pwa.spec.ts` erlaubt ihn. `e2e/a11y.spec.ts` prüft alle Seiten mit axe (hell und dunkel); Lighthouse läuft in der CI (`lighthouserc.json`, Mindestwert 0,9).
 
 ## Tests

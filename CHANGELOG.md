@@ -8,6 +8,7 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 
 ### Hinzugefügt
 
+- Versionsanzeige: Unten auf jeder Seite steht die Version mit Kanal, z. B. „Version v1.0.0 · stable“ für ein Release oder „Version v1.0.0 · nightly · abc1234“ für Pull Requests und ungetaggte Stände. Nach einem neuen Release baut der Release-Workflow die öffentliche Seite neu, damit sie „stable“ zeigt.
 - Monetarisierung: Neue Seite `/projekte/:projectId/monetarisierung`, erreichbar über den Knopf „Monetarisierung“ auf der Projektseite. Empfohlen ist sie ab 60 % Vollständigkeit und mit Inhalt in Problem, Zielgruppe und Kernfunktionen. Fehlt etwas, zeigt sie, was fehlt, und bietet „Trotzdem starten“ an.
 - Schritt 1 „Monetarisierungsmodelle“: Die KI schlägt 4 bis 6 Modelle aus einer festen Liste vor und bewertet sie nach sechs Kriterien von 1 bis 5 Punkten. Eine Vergleichstabelle zeigt alle Bewertungen. Man wählt ein Modell oder kombiniert bis zu drei. „Nicht monetarisieren“ lässt sich nicht kombinieren. Modelle lassen sich auch ohne KI von Hand ergänzen.
 - Schritt 2 „Preisstrategie“: Erscheint, sobald ein Modell außer „Nicht monetarisieren“ gewählt ist. Die KI schlägt 3 bis 5 Preisstrategien vor. Beispielpreise stehen als Spannen in Euro und ausdrücklich als Annahme, nicht als Marktdaten. Bis zu zwei Strategien sind wählbar, auch von Hand ergänzbar. Ändert man die Modellauswahl, werden die Preisstrategien verworfen.

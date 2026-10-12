@@ -6,6 +6,9 @@
     "label": "Hauptnavigation",
     "settings": "Einstellungen"
   },
+  "footer": {
+    "version": "Version {{version}}"
+  },
   "usage": {
     "summaryLabel": "KI-Kosten dieser Sitzung: {{cost}}",
     "lastTitle": "Letzte KI-Anfrage",
