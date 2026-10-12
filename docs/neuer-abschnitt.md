@@ -177,7 +177,7 @@ npx vitest run src/core/ai/prompts -u
 git diff -- src/core/ai/prompts/__golden__
 ```
 
-Hinweis: Die Schreibweise aus CLAUDE.md (`npx vitest run -u src/core/ai/prompts`) führt in dieser Vitest-Version die ganze Suite aus und schreibt dabei Snapshots aller Bereiche neu. Deshalb den Pfad zuerst nennen. Die Diffs prüfen. Erwartet sind vor allem neue Abschnittszeilen wie `## privacy [empty]`. `classify-idea` hat keine Golden Files; dort prüft `classifyIdea.test.ts`, dass alle Abschnitte im System-Prompt stehen.
+Hinweis: Den Pfad vor `-u` nennen. Steht `-u` vorn (`npx vitest run -u src/core/ai/prompts`), läuft in dieser Vitest-Version die ganze Suite und schreibt Snapshots aller Bereiche neu. Die Diffs prüfen. Erwartet sind vor allem neue Abschnittszeilen wie `## privacy [empty]`. `classify-idea` hat keine Golden Files; dort prüft `classifyIdea.test.ts`, dass alle Abschnitte im System-Prompt stehen.
 
 Soll der Abschnitt Vorschläge bekommen (Schritt 0, Punkt 4), zusätzlich `ADDITION_SECTION_IDS` in `schema.ts` erweitern. Die Liste im Text von `suggestAdditions.ts` ist fest und muss angepasst werden; danach Version und Golden Files wie oben.
 
@@ -223,7 +223,7 @@ Diese Tests enthalten feste Werte und schlagen nach dem Hinzufügen fehl. Im Exp
 
 ### Schritt 10: Texte mit „zehn“
 
-„Zehn Abschnitte“ steht in `README.md` (Zeile 18) und in `docs/benutzerhandbuch.md` (Zeilen 21, 114, 138 und 310). Diese Stellen auf die neue Anzahl bringen oder umformulieren. Die ADRs bleiben unverändert.
+„Zehn Abschnitte“ steht in `README.md` (Zeile 18) und in `docs/benutzerhandbuch.md` (Zeilen 21, 114, 138 und 310). Diese Stellen auf die neue Anzahl bringen oder umformulieren. Unter „Die zehn Abschnitte“ (ab Zeile 138) zusätzlich den neuen Abschnitt in die nummerierte Liste aufnehmen. Die ADRs bleiben unverändert.
 
 ### Schritt 11: Prüfen
 

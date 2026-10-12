@@ -6,6 +6,13 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 
 ## [Unreleased]
 
+### Behoben
+
+- Sicherheit: Der Pages-Workflow veröffentlicht nur noch nach einem Push auf `main` in diesem Repository. Vorher hätte auch ein grüner Pull Request aus einem Fork mit Branch `main` die Seite überschreiben können. Von Hand startbar nur noch für `main`.
+- Wurde ein Projekt nach einem fehlgeschlagenen Speichern umbenannt, kam beim nächsten Öffnen der alte Name zurück und überschrieb die Umbenennung. Gelöschte Projekte hinterlassen keinen ungespeicherten Stand mehr im Speicher.
+- `BASE_PATH` ohne abschließenden Schrägstrich funktioniert jetzt.
+- Doku: `404.html` erzeugt der Pages-Workflow, nicht `npm run build`; veralteter Hinweis zum Golden-File-Befehl und fehlender Schritt in „Neuen Blueprint-Abschnitt hinzufügen“ korrigiert.
+
 ## [1.0.0] – 2026-10-11 – Phase 9: Release & Wartung
 
 ### Hinzugefügt

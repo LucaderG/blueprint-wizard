@@ -20,7 +20,7 @@ Stand: 2026-10-11, v1.0.0. Ausgangspunkt: `7ec3a79` (v0.8.0). Damit ist der Impl
 ## Offen für Luca
 
 - **Einmalig GitHub Pages einschalten:** Repository → Settings → Pages → Source „GitHub Actions“. Danach unter Actions → „GitHub Pages“ → „Run workflow“ starten (oder auf den nächsten Push warten). Die Adresse ist dann https://lucaderg.github.io/blueprint-wizard/.
-- **Release v1.0.0** anlegen (Tags lassen sich aus der Cloud-Umgebung nicht pushen). Die Tags v0.0.1 bis v0.8.0 fehlen auf GitHub ebenfalls; nachholen ist optional.
+- **Release v1.0.0** anlegen (Tags lassen sich aus der Cloud-Umgebung nicht pushen). Auf GitHub liegen nur v0.2.0 bis v0.5.0; v0.0.1, v0.1.0 und v0.6.0 bis v0.8.0 fehlen. Nachholen ist optional.
 - Projekte, die lokal unter `localhost` liegen, erscheinen nicht automatisch auf der Pages-Adresse: über „Exportieren“/„Projekt importieren“ umziehen.
 - Test mit echtem Key auf der öffentlichen Adresse.
 
