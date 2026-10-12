@@ -186,7 +186,7 @@
     "reload": "Reload"
   },
   "projects": {
-    "title": "Your projects",
+    "title": "Your library",
     "new": "New project",
     "import": "Import project",
     "importInputLabel": "Choose project file",
@@ -220,16 +220,19 @@
       "tooLong": "The name must be at most {{max}} characters long."
     },
     "deleteDialog": {
-      "title": "Delete project?",
-      "description": "“{{name}}” goes to the trash. You can restore it there until the retention period ends.",
-      "confirm": "Delete",
+      "title": "Delete permanently?",
+      "description": "“{{name}}” will be deleted permanently. This cannot be undone.",
+      "confirm": "Delete permanently",
       "cancel": "Cancel"
     },
     "notice": {
       "renamed": "The project is now called “{{name}}”.",
       "duplicated": "“{{name}}” has been created.",
       "deleted": "“{{name}}” is now in the trash.",
-      "imported": "“{{name}}” has been imported."
+      "imported": "“{{name}}” has been imported.",
+      "restored": "“{{name}}” is back in the library.",
+      "deletedForever": "“{{name}}” has been deleted permanently.",
+      "trashEmptied": "The trash is empty."
     },
     "errors": {
       "import": {
@@ -249,6 +252,41 @@
       "notFoundTitle": "Project not found",
       "notFoundText": "This project no longer exists. It may have been deleted.",
       "home": "Go to home"
+    },
+    "profileBadge": "Profile",
+    "viewLabel": "View",
+    "views": {
+      "library": "Library",
+      "trash": "Trash ({{count}})"
+    },
+    "searchLabel": "Search the library",
+    "searchPlaceholder": "Search by title …",
+    "noMatches": "No entry matches “{{query}}”.",
+    "undo": "Undo",
+    "trash": {
+      "listLabel": "Trash",
+      "intro_one": "Entries in the trash are removed permanently {{count}} day after deletion. You can change this in the settings.",
+      "intro_other": "Entries in the trash are removed permanently {{count}} days after deletion. You can change this in the settings.",
+      "empty_one": "The trash is empty. Deleted and unsaved entries stay here for {{count}} day.",
+      "empty_other": "The trash is empty. Deleted and unsaved entries stay here for {{count}} days.",
+      "emptyAll": "Delete all permanently",
+      "restore": "Save",
+      "restoreLabel": "Save {{name}}",
+      "deleteForever": "Delete permanently",
+      "deleteForeverLabel": "Delete {{name}} permanently",
+      "remaining": {
+        "days_one": "{{count}} day left",
+        "days_other": "{{count}} days left",
+        "hours_one": "{{count}} hour left",
+        "hours_other": "{{count}} hours left",
+        "minutes_one": "{{count}} minute left",
+        "minutes_other": "{{count}} minutes left"
+      }
+    },
+    "emptyTrashDialog": {
+      "title": "Empty the trash?",
+      "description_one": "{{count}} entry will be deleted permanently. This cannot be undone.",
+      "description_other": "{{count}} entries will be deleted permanently. This cannot be undone."
     }
   },
   "sections": {

@@ -182,11 +182,11 @@
   "routeError": {
     "loading": "Seite wird geladen …",
     "title": "Diese Seite konnte nicht geladen werden",
-    "text": "Vielleicht bist du gerade offline oder die App wurde aktualisiert. Deine Projekte sind sicher gespeichert.",
+    "text": "Vielleicht bist du gerade offline oder die App wurde aktualisiert. Deine Bibliothek sind sicher gespeichert.",
     "reload": "Neu laden"
   },
   "projects": {
-    "title": "Deine Projekte",
+    "title": "Deine Bibliothek",
     "new": "Neues Projekt",
     "import": "Projekt importieren",
     "importInputLabel": "Projektdatei auswählen",
@@ -220,16 +220,19 @@
       "tooLong": "Der Name darf höchstens {{max}} Zeichen lang sein."
     },
     "deleteDialog": {
-      "title": "Projekt löschen?",
-      "description": "„{{name}}“ kommt in den Papierkorb. Dort lässt es sich bis zum Ablauf der Frist wiederherstellen.",
-      "confirm": "Löschen",
+      "title": "Endgültig löschen?",
+      "description": "„{{name}}“ wird endgültig gelöscht. Das lässt sich nicht rückgängig machen.",
+      "confirm": "Endgültig löschen",
       "cancel": "Abbrechen"
     },
     "notice": {
       "renamed": "Das Projekt heißt jetzt „{{name}}“.",
       "duplicated": "„{{name}}“ wurde angelegt.",
       "deleted": "„{{name}}“ liegt jetzt im Papierkorb.",
-      "imported": "„{{name}}“ wurde importiert."
+      "imported": "„{{name}}“ wurde importiert.",
+      "restored": "„{{name}}“ steht wieder in der Bibliothek.",
+      "deletedForever": "„{{name}}“ wurde endgültig gelöscht.",
+      "trashEmptied": "Der Papierkorb ist leer."
     },
     "errors": {
       "import": {
@@ -249,6 +252,41 @@
       "notFoundTitle": "Projekt nicht gefunden",
       "notFoundText": "Dieses Projekt gibt es nicht (mehr). Vielleicht wurde es gelöscht.",
       "home": "Zur Startseite"
+    },
+    "profileBadge": "Steckbrief",
+    "viewLabel": "Ansicht",
+    "views": {
+      "library": "Bibliothek",
+      "trash": "Papierkorb ({{count}})"
+    },
+    "searchLabel": "In der Bibliothek suchen",
+    "searchPlaceholder": "Nach Titel suchen …",
+    "noMatches": "Kein Eintrag passt zu „{{query}}“.",
+    "undo": "Rückgängig",
+    "trash": {
+      "listLabel": "Papierkorb",
+      "intro_one": "Einträge im Papierkorb werden {{count}} Tag nach dem Löschen endgültig entfernt. Die Frist änderst du in den Einstellungen.",
+      "intro_other": "Einträge im Papierkorb werden {{count}} Tage nach dem Löschen endgültig entfernt. Die Frist änderst du in den Einstellungen.",
+      "empty_one": "Der Papierkorb ist leer. Gelöschte und nicht gespeicherte Einträge bleiben hier {{count}} Tag.",
+      "empty_other": "Der Papierkorb ist leer. Gelöschte und nicht gespeicherte Einträge bleiben hier {{count}} Tage.",
+      "emptyAll": "Alle endgültig löschen",
+      "restore": "Speichern",
+      "restoreLabel": "{{name}} speichern",
+      "deleteForever": "Endgültig löschen",
+      "deleteForeverLabel": "{{name}} endgültig löschen",
+      "remaining": {
+        "days_one": "noch {{count}} Tag",
+        "days_other": "noch {{count}} Tage",
+        "hours_one": "noch {{count}} Std.",
+        "hours_other": "noch {{count}} Std.",
+        "minutes_one": "noch {{count}} Min.",
+        "minutes_other": "noch {{count}} Min."
+      }
+    },
+    "emptyTrashDialog": {
+      "title": "Papierkorb leeren?",
+      "description_one": "{{count}} Eintrag wird endgültig gelöscht. Das lässt sich nicht rückgängig machen.",
+      "description_other": "{{count}} Einträge werden endgültig gelöscht. Das lässt sich nicht rückgängig machen."
     }
   },
   "sections": {

@@ -18,7 +18,7 @@ describe('ApiKeyNotice auf der Startseite', () => {
   it('ist mit hinterlegtem Key nicht zu sehen', async () => {
     renderRoute('/', { settings: { apiKey: VALID_TEST_KEY } })
 
-    expect(await screen.findByRole('heading', { level: 2, name: 'Deine Projekte' })).toBeVisible()
+    expect(await screen.findByRole('heading', { level: 2, name: 'Deine Bibliothek' })).toBeVisible()
     expect(screen.queryByText(/Für die KI-Funktionen/)).not.toBeInTheDocument()
     expect(screen.queryByRole('link', { name: 'Zu den Einstellungen' })).not.toBeInTheDocument()
   })

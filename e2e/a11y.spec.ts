@@ -275,6 +275,28 @@ const scenarios: Scenario[] = [
     },
   },
   {
+    name: 'Startseite: Bibliothek mit Rückgängig-Hinweis',
+    ai: false,
+    setup: async (page) => {
+      await createProject(page, 'Behalten')
+      await createProject(page, 'Weg')
+      await page.goto('/')
+      await page.getByRole('button', { name: 'Weg löschen' }).click()
+      await expect(page.getByRole('button', { name: 'Rückgängig' })).toBeVisible()
+    },
+  },
+  {
+    name: 'Startseite: Papierkorb',
+    ai: false,
+    setup: async (page) => {
+      await createProject(page, 'Weg')
+      await page.goto('/')
+      await page.getByRole('button', { name: 'Weg löschen' }).click()
+      await page.getByRole('button', { name: 'Papierkorb (1)' }).click()
+      await expect(page.getByRole('list', { name: 'Papierkorb' })).toBeVisible()
+    },
+  },
+  {
     name: 'Einstellungen ohne Key',
     ai: false,
     setup: async (page) => {

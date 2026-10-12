@@ -4,13 +4,19 @@ import { Button } from '@/shared/ui/button'
 import { Dialog } from '@/shared/ui/dialog'
 
 interface DeleteProjectDialogProps {
-  name: string
+  title: string
+  description: string
   onConfirm: () => Promise<void>
   onClose: () => void
 }
 
-/** Sicherheitsabfrage vor dem Löschen. Der Fokus startet auf „Abbrechen“. */
-export function DeleteProjectDialog({ name, onConfirm, onClose }: DeleteProjectDialogProps) {
+/** Sicherheitsabfrage vor dem endgültigen Löschen. Der Fokus startet auf „Abbrechen“. */
+export function DeleteProjectDialog({
+  title,
+  description,
+  onConfirm,
+  onClose,
+}: DeleteProjectDialogProps) {
   const { t } = useTranslation()
   const [submitting, setSubmitting] = useState(false)
 
@@ -24,12 +30,7 @@ export function DeleteProjectDialog({ name, onConfirm, onClose }: DeleteProjectD
   }
 
   return (
-    <Dialog
-      open
-      onClose={onClose}
-      title={t('projects.deleteDialog.title')}
-      description={t('projects.deleteDialog.description', { name })}
-    >
+    <Dialog open onClose={onClose} title={title} description={description}>
       <div className="flex justify-end gap-2">
         <Button type="button" variant="outline" data-autofocus onClick={onClose}>
           {t('projects.deleteDialog.cancel')}
