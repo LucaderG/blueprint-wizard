@@ -6,6 +6,9 @@
     "label": "Main navigation",
     "settings": "Settings"
   },
+  "footer": {
+    "version": "Version {{version}}"
+  },
   "usage": {
     "summaryLabel": "AI cost this session: {{cost}}",
     "lastTitle": "Last AI request",

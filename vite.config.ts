@@ -1,14 +1,42 @@
+import { execFileSync } from 'node:child_process'
+import { readFileSync } from 'node:fs'
 import { fileURLToPath, URL } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
+import { resolveBuildInfo } from './src/core/build/buildInfo.ts'
 
 // GitHub Pages liefert die App unter /<repo>/ aus; der Deploy-Workflow setzt dafür BASE_PATH.
 const base = process.env.BASE_PATH ?? '/'
 
+function git(...args: string[]): string | null {
+  try {
+    return execFileSync('git', args, {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim()
+  } catch {
+    return null
+  }
+}
+
+// Version unten in der App: „stable“ nur, wenn der gebaute Commit den Release-Tag v<Version> trägt
+// (dafür braucht der Checkout die Tags), sonst „nightly“. Ohne git ebenfalls „nightly“.
+const packageJson = JSON.parse(
+  readFileSync(fileURLToPath(new URL('./package.json', import.meta.url)), 'utf8'),
+) as { version: string }
+const buildInfo = resolveBuildInfo({
+  version: packageJson.version,
+  commit: git('rev-parse', '--short=7', 'HEAD'),
+  tagsAtCommit: git('tag', '--points-at', 'HEAD')?.split('\n').filter(Boolean) ?? [],
+})
+
 export default defineConfig({
   base,
+  define: {
+    __BUILD_INFO__: JSON.stringify(buildInfo),
+  },
   plugins: [
     react(),
     tailwindcss(),
