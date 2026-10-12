@@ -162,3 +162,5 @@ Der Skill `unslop` wird immer auf Prosa angewendet: Antworten, Doku, PR-Texte un
 Auf Deutsch soll der Skill so streng arbeiten wie auf Englisch. Die deutschen Regeln stehen im Abschnitt „Deutsch“ des Skills.
 
 Stil: kurze, konkrete Sätze, zuerst das Ergebnis, keine Füllsätze.
+
+Ausnahmen: Nicht anwenden auf KI-Prompts in `src/core/ai/prompts` (Wortlaut steuert das Modell, Golden Files und VERSION hängen daran) und auf Texte, die Snapshot-Tests festhalten (Export). In Plänen und Tickets bleiben bewusste Unsicherheit („wahrscheinlich“, „noch offen“) und Listenform stehen.
