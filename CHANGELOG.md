@@ -6,6 +6,20 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 
 ## [Unreleased]
 
+### Hinzugefügt
+
+- Monetarisierung: Neue Seite `/projekte/:projectId/monetarisierung`, erreichbar über den Knopf „Monetarisierung“ auf der Projektseite. Empfohlen ist sie ab 60 % Vollständigkeit und mit Inhalt in Problem, Zielgruppe und Kernfunktionen. Fehlt etwas, zeigt sie, was fehlt, und bietet „Trotzdem starten“ an.
+- Schritt 1 „Monetarisierungsmodelle“: Die KI schlägt 4 bis 6 Modelle aus einer festen Liste vor und bewertet sie nach sechs Kriterien von 1 bis 5 Punkten. Eine Vergleichstabelle zeigt alle Bewertungen. Man wählt ein Modell oder kombiniert bis zu drei. „Nicht monetarisieren“ lässt sich nicht kombinieren. Modelle lassen sich auch ohne KI von Hand ergänzen.
+- Schritt 2 „Preisstrategie“: Erscheint, sobald ein Modell außer „Nicht monetarisieren“ gewählt ist. Die KI schlägt 3 bis 5 Preisstrategien vor. Beispielpreise stehen als Spannen in Euro und ausdrücklich als Annahme, nicht als Marktdaten. Bis zu zwei Strategien sind wählbar, auch von Hand ergänzbar. Ändert man die Modellauswahl, werden die Preisstrategien verworfen.
+- Schritt 3 „Abschließen“: „Monetarisierung abschließen“ und „Wieder öffnen“. Regelbasierte Auswirkungen auf andere Abschnitte (z. B. Zahlungsanbieter, Nutzerkonten, Datenschutz bei Werbung) lassen sich per Klick als Stichpunkt übernehmen. Vorhandener Text wird nie überschrieben.
+- Export: `BLUEPRINT.md` bekommt ein Kapitel „Monetarisierung“, sobald ein Modell gewählt ist. `CLAUDE.md` und `AGENTS.md` enthalten dasselbe Kapitel. Hat man ein Modell außer „Nicht monetarisieren“ gewählt, ergänzt `TASKS.md` die Aufgabe „Bezahlfunktion umsetzen“. Ohne gewähltes Modell bleibt der Export unverändert. Die Monetarisierung blockiert den Export nie.
+- Prompts `suggest-monetization-models` und `suggest-pricing-strategies` (Version 1) mit Golden Files. ADR 0011.
+- Nutzerhandbuch und Architektur-Überblick um die Monetarisierung ergänzt.
+
+### Geändert
+
+- Datenformat auf Version 4: Neues Feld `project.monetization`, solange nicht begonnen `null`. Projekte im bisherigen Format (Version 3) werden beim Laden automatisch migriert. Der Reife-Check und das Exportformat (`EXPORT_VERSION` 1) bleiben unverändert.
+
 ## [1.0.0] – 2026-10-11 – Phase 9: Release & Wartung
 
 ### Hinzugefügt

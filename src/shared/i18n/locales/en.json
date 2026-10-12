@@ -260,7 +260,8 @@
       "askQuestions": "Answer questions",
       "decisions": "Decisions & suggestions",
       "contradictions_one": "{{count}} contradiction",
-      "contradictions_other": "{{count}} contradictions"
+      "contradictions_other": "{{count}} contradictions",
+      "monetization": "Monetization"
     },
     "saveStatus": {
       "saved": "Saved",
@@ -637,7 +638,16 @@
       "startTitle": "Start prompt",
       "startIntro": "Implement the project “{{name}}” in this repository.",
       "startBody": "First read BLUEPRINT.md, CLAUDE.md or AGENTS.md, and TASKS.md in full. Briefly summarize the goal, MVP, non-goals and tech stack. Check the existing code and the open points. Clarify only the questions that block the next implementation step; do not treat vague content or AI suggestions as confirmed requirements. Reconcile the proposed sequence with the project roadmap. Then begin with the first clarified phase that is not yet completed, check its acceptance criteria and report the result. Do not invent missing requirements or credentials.",
-      "analysisGaps": "Gaps from the last AI analysis (check current status)"
+      "analysisGaps": "Gaps from the last AI analysis (check current status)",
+      "monetizationTitle": "Monetization",
+      "monetizationStatus": {
+        "open": "Not finished yet",
+        "decided": "Finished"
+      },
+      "monetizationModel": "Model",
+      "monetizationPricing": "Pricing strategy",
+      "examplePrices": "Example prices (assumption, not market data)",
+      "monetizationTask": "Implement payments as described in the “Monetization” chapter of BLUEPRINT.md (payment provider, plans, prices)."
     },
     "open": "Finish blueprint",
     "title": "Finish blueprint",
@@ -659,5 +669,120 @@
     "howToTitle": "How to get started",
     "howTo": "Unzip the ZIP into an empty project folder. Open the folder with your AI coding tool and paste the start prompt. The tool reads BLUEPRINT.md, CLAUDE.md or AGENTS.md, and TASKS.md.",
     "localHint": "The export is generated locally from your project. You don't need an API key for it."
+  },
+  "monetization": {
+    "kinds": {
+      "oneTime": "One-time purchase",
+      "subscription": "Subscription",
+      "freemium": "Freemium",
+      "usageBased": "Usage-based",
+      "ads": "Advertising",
+      "commission": "Commission / marketplace",
+      "inAppPurchase": "In-app purchases",
+      "license": "License / B2B",
+      "openCore": "Open core / donations",
+      "none": "No monetization"
+    },
+    "strategies": {
+      "tiers": "Tiered pricing",
+      "valueBased": "Value-based",
+      "competitive": "Competitive",
+      "penetration": "Penetration pricing",
+      "skimming": "Skimming",
+      "perSeat": "Per seat",
+      "anchor": "Price anchoring",
+      "trialDiscount": "Trial & discounts"
+    },
+    "page": {
+      "back": "Back to blueprint",
+      "lead": "Find out how your project can best be funded: compare the models, choose one or a combination, and set a pricing strategy for it.",
+      "disclaimer": "These suggestions are a guide, not legal, tax or financial advice. Prices are assumptions, not market data.",
+      "reset": "Start over"
+    },
+    "availability": {
+      "title": "Your blueprint is not developed far enough yet",
+      "text": "Well-founded suggestions need a largely developed blueprint. Still missing:",
+      "completeness": "Completeness {{value}}% (recommended from 60%)",
+      "missing": "Content in: {{sections}}",
+      "start": "Start anyway"
+    },
+    "models": {
+      "title": "1. Monetization models",
+      "intro": "Get suitable models suggested and compare them. Choose one or combine up to three.",
+      "suggest": "Suggest models",
+      "rerun": "Suggest again",
+      "running": "Evaluating models …",
+      "empty": "No models yet. Get some suggested or add one by hand below.",
+      "compareCaption": "Comparison (5 points = favorable for your project)",
+      "criterion": "Criterion",
+      "score": "{{score}} out of 5 points",
+      "selectLegend": "Choose model (up to {{max}})",
+      "fit": "Fits because: {{text}}",
+      "concerns": "Arguments against",
+      "unscored": "Added by hand, not scored.",
+      "addLabel": "Add model by hand",
+      "apply": "Apply selection",
+      "saved": "Selection saved.",
+      "add": "Add model"
+    },
+    "criteria": {
+      "revenuePotential": "Revenue potential",
+      "implementationEase": "Ease of implementation",
+      "userAcceptance": "User acceptance",
+      "predictability": "Predictable income",
+      "audienceFit": "Fit with target audience",
+      "techFit": "Fit with tech stack"
+    },
+    "warnings": {
+      "noneCombined": "“No monetization” cannot be combined with other models.",
+      "adsWithLicense": "Advertising rarely fits with company licenses: businesses usually pay so they do not have to see ads.",
+      "oneTimeWithSubscription": "A one-time purchase and a subscription for the same offer often confuse people. Clearly define what applies to what.",
+      "inAppWithLicense": "In-app purchases and company licenses usually target different audiences."
+    },
+    "pricing": {
+      "title": "2. Pricing strategy",
+      "intro": "Matched to your model: how should the prices be structured? Choose one strategy or combine two.",
+      "suggest": "Suggest pricing strategies",
+      "rerun": "Suggest again",
+      "running": "Creating pricing strategies …",
+      "empty": "No pricing strategies yet. Get some suggested or add one by hand below.",
+      "selectLegend": "Choose pricing strategy (up to {{max}})",
+      "examplePrices": "Example prices (assumption):",
+      "addLabel": "Add pricing strategy by hand",
+      "apply": "Apply pricing strategy",
+      "saved": "Pricing strategy saved.",
+      "add": "Add strategy"
+    },
+    "finish": {
+      "title": "3. Finish",
+      "intro": "Once finished, monetization appears as its own chapter in the export.",
+      "ready": "Everything is chosen. You can finish monetization now.",
+      "incomplete": "Choose a pricing strategy to finish.",
+      "finalize": "Finish monetization",
+      "decided": "Finished on {{date}}",
+      "reopen": "Reopen"
+    },
+    "impacts": {
+      "title": "Effects on your blueprint",
+      "intro": "Your choice affects other sections. Apply the hints as a bullet point with one click.",
+      "apply": "Apply",
+      "applyTo": "Apply to “{{section}}”: {{text}}",
+      "applied": "Applied",
+      "items": {
+        "payments": "Connect a payment provider (e.g. Stripe or Paddle)",
+        "accounts": "Store user accounts with plan or subscription status",
+        "usageMetering": "Measure and store usage per user",
+        "adNetwork": "Integrate an ad network",
+        "adPrivacy": "Consent and privacy for advertising (cookie banner, GDPR)",
+        "payouts": "Handle payouts to providers",
+        "storeFees": "App store fees and store rules for in-app purchases",
+        "licenseKeys": "License keys or unlocking of purchases",
+        "openSourceLicense": "Choose a suitable open-source license for the open core"
+      }
+    },
+    "recommended": "Recommended",
+    "rationaleLabel": "Rationale (optional)",
+    "choose": "Please choose",
+    "cancel": "Cancel"
   }
 }

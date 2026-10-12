@@ -36,6 +36,13 @@ export const routes: RouteObject[] = [
           })),
       },
       {
+        path: 'projekte/:projectId/monetarisierung',
+        lazy: () =>
+          import('@/features/monetization/MonetizationPage').then((m) => ({
+            Component: m.MonetizationPage,
+          })),
+      },
+      {
         path: 'projekte/:projectId/export',
         lazy: () =>
           import('@/features/export/ExportPage').then((m) => ({ Component: m.ExportPage })),

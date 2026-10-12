@@ -74,6 +74,7 @@ export function describeProjectRepositoryContract(
           interview: createEmptyInterview(),
           decisions: [],
           additions: [],
+          monetization: null,
         })
         expect(await repo.get('id-1')).toEqual(project)
       })
