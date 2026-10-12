@@ -1,16 +1,20 @@
-import type { Project } from '@/core/blueprint'
+import { isTrashExpired, type Project } from '@/core/blueprint'
 import {
   buildDuplicate,
   buildImported,
   buildNewProject,
+  buildRestored,
+  buildSaved,
+  buildTrashed,
   exportJson,
+  matchesFilter,
   sortByUpdatedDesc,
   toSummary,
-  touch,
   withName,
 } from './projectOperations'
 import {
   ProjectNotFoundError,
+  type ListFilter,
   type ProjectRepository,
   type ProjectSummary,
   type RepositoryDeps,
@@ -38,8 +42,9 @@ export class MemoryProjectRepository implements ProjectRepository {
     return structuredClone(project)
   }
 
-  async list(): Promise<ProjectSummary[]> {
-    return sortByUpdatedDesc([...this.projects.values()].map(toSummary))
+  async list(filter: ListFilter = {}): Promise<ProjectSummary[]> {
+    const projects = [...this.projects.values()].filter((p) => matchesFilter(p, filter))
+    return sortByUpdatedDesc(projects.map(toSummary))
   }
 
   async get(id: string): Promise<Project | undefined> {
@@ -52,17 +57,32 @@ export class MemoryProjectRepository implements ProjectRepository {
   }
 
   async save(project: Project): Promise<Project> {
-    this.require(project.id)
-    return this.put(touch(project, this.now()))
+    return this.put(buildSaved(project, this.require(project.id), this.now()))
   }
 
   async rename(id: string, name: string): Promise<Project> {
     return this.put(withName(this.require(id), name, this.now()))
   }
 
-  async delete(id: string): Promise<void> {
+  async trash(id: string): Promise<Project> {
+    return this.put(buildTrashed(this.require(id), this.now()))
+  }
+
+  async restore(id: string): Promise<Project> {
+    return this.put(buildRestored(this.require(id)))
+  }
+
+  async deleteForever(id: string): Promise<void> {
     this.require(id)
     this.projects.delete(id)
+  }
+
+  async purgeExpired(now: Date, retentionDays: number): Promise<string[]> {
+    const expired = [...this.projects.values()]
+      .filter((p) => isTrashExpired(p.library, now, retentionDays))
+      .map((p) => p.id)
+    for (const id of expired) this.projects.delete(id)
+    return expired
   }
 
   async duplicate(id: string): Promise<Project> {

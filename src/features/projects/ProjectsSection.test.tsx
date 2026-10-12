@@ -146,7 +146,7 @@ describe('Projektliste auf der Startseite', () => {
 
     await user.click(within(await projectList()).getByRole('button', { name: 'Alpha umbenennen' }))
     const [alpha] = await repository.list()
-    await repository.delete(alpha!.id)
+    await repository.deleteForever(alpha!.id)
     const dialog = screen.getByRole('dialog', { name: 'Projekt umbenennen' })
     await user.click(within(dialog).getByRole('button', { name: 'Speichern' }))
 
@@ -175,7 +175,7 @@ describe('Projektliste auf der Startseite', () => {
     renderRoute('/', { repository })
     const button = within(await projectList()).getByRole('button', { name: 'Alpha duplizieren' })
     const [alpha] = await repository.list()
-    await repository.delete(alpha!.id)
+    await repository.deleteForever(alpha!.id)
 
     await user.click(button)
 
@@ -186,7 +186,7 @@ describe('Projektliste auf der Startseite', () => {
     expect(screen.getByText(/Du hast noch keine Projekte/)).toBeVisible()
   })
 
-  it('löscht ein Projekt erst nach Bestätigung', async () => {
+  it('legt ein Projekt erst nach Bestätigung in den Papierkorb', async () => {
     const user = userEvent.setup()
     const repository = await repositoryWith('Alpha')
     const [summary] = await repository.list()
@@ -198,7 +198,7 @@ describe('Projektliste auf der Startseite', () => {
     await user.click(within(await projectList()).getByRole('button', { name: 'Alpha löschen' }))
     const dialog = screen.getByRole('dialog', { name: 'Projekt löschen?' })
     expect(dialog).toHaveAccessibleDescription(
-      '„Alpha“ wird endgültig gelöscht. Das lässt sich nicht rückgängig machen.',
+      '„Alpha“ kommt in den Papierkorb. Dort lässt es sich bis zum Ablauf der Frist wiederherstellen.',
     )
     expect(within(dialog).getByRole('button', { name: 'Abbrechen' })).toHaveFocus()
 
@@ -206,8 +206,9 @@ describe('Projektliste auf der Startseite', () => {
 
     expect(await screen.findByText(/Du hast noch keine Projekte/)).toBeVisible()
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
-    expect(screen.getByRole('status')).toHaveTextContent('„Alpha“ wurde gelöscht.')
-    expect(await repository.list()).toHaveLength(0)
+    expect(screen.getByRole('status')).toHaveTextContent('„Alpha“ liegt jetzt im Papierkorb.')
+    expect(await repository.list({ status: 'saved' })).toHaveLength(0)
+    expect(await repository.list({ status: 'trashed' })).toHaveLength(1)
     expect(getUnsaved(repository, draft.id)).toBeUndefined()
   })
 
@@ -218,7 +219,7 @@ describe('Projektliste auf der Startseite', () => {
     const draft = (await repository.get(summary!.id))!
     draft.blueprint.sections.problem.content = 'Ungespeicherter Entwurf'
     rememberUnsaved(repository, draft)
-    vi.spyOn(repository, 'delete').mockRejectedValue(new Error('Speicher nicht verfügbar'))
+    vi.spyOn(repository, 'trash').mockRejectedValue(new Error('Speicher nicht verfügbar'))
     renderRoute('/', { repository })
 
     await user.click(within(await projectList()).getByRole('button', { name: 'Alpha löschen' }))

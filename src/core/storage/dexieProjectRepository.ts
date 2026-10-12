@@ -1,17 +1,21 @@
-import { migrateProject, type Project } from '@/core/blueprint'
+import { isTrashExpired, migrateProject, type Project } from '@/core/blueprint'
 import { BlueprintDb, type StoredProject } from './db'
 import {
   buildDuplicate,
   buildImported,
   buildNewProject,
+  buildRestored,
+  buildSaved,
+  buildTrashed,
   exportJson,
+  matchesFilter,
   sortByUpdatedDesc,
   toSummary,
-  touch,
   withName,
 } from './projectOperations'
 import {
   ProjectNotFoundError,
+  type ListFilter,
   type ProjectRepository,
   type ProjectSummary,
   type RepositoryDeps,
@@ -65,19 +69,24 @@ export class DexieProjectRepository implements ProjectRepository {
     return this.db.transaction('rw', this.db.projects, work)
   }
 
-  list(): Promise<ProjectSummary[]> {
-    return this.rw(async () => {
-      const records = await this.db.projects.toArray()
-      const summaries: ProjectSummary[] = []
-      for (const raw of records) {
-        try {
-          summaries.push(toSummary(await this.upgrade(raw)))
-        } catch (error) {
-          // Beschädigte Datensätze nicht löschen (Nutzerdaten!), nur aus der Liste heraushalten.
-          console.warn(`Projekt ${String(raw.id)} ist unlesbar und wird übersprungen`, error)
-        }
+  /** Alle lesbaren Projekte. Beschädigte Datensätze bleiben erhalten (Nutzerdaten!), nur außen vor. */
+  private async readable(): Promise<Project[]> {
+    const records = await this.db.projects.toArray()
+    const projects: Project[] = []
+    for (const raw of records) {
+      try {
+        projects.push(await this.upgrade(raw))
+      } catch (error) {
+        console.warn(`Projekt ${String(raw.id)} ist unlesbar und wird übersprungen`, error)
       }
-      return sortByUpdatedDesc(summaries)
+    }
+    return projects
+  }
+
+  list(filter: ListFilter = {}): Promise<ProjectSummary[]> {
+    return this.rw(async () => {
+      const projects = (await this.readable()).filter((p) => matchesFilter(p, filter))
+      return sortByUpdatedDesc(projects.map(toSummary))
     })
   }
 
@@ -94,9 +103,7 @@ export class DexieProjectRepository implements ProjectRepository {
 
   save(project: Project): Promise<Project> {
     return this.rw(async () => {
-      const exists = (await this.db.projects.where('id').equals(project.id).count()) > 0
-      if (!exists) throw new ProjectNotFoundError(project.id)
-      const saved = touch(project, this.now())
+      const saved = buildSaved(project, await this.require(project.id), this.now())
       await this.db.projects.put(saved)
       return saved
     })
@@ -110,7 +117,33 @@ export class DexieProjectRepository implements ProjectRepository {
     })
   }
 
-  delete(id: string): Promise<void> {
+  trash(id: string): Promise<Project> {
+    return this.rw(async () => {
+      const trashed = buildTrashed(await this.require(id), this.now())
+      await this.db.projects.put(trashed)
+      return trashed
+    })
+  }
+
+  restore(id: string): Promise<Project> {
+    return this.rw(async () => {
+      const restored = buildRestored(await this.require(id))
+      await this.db.projects.put(restored)
+      return restored
+    })
+  }
+
+  purgeExpired(now: Date, retentionDays: number): Promise<string[]> {
+    return this.rw(async () => {
+      const expired = (await this.readable())
+        .filter((p) => isTrashExpired(p.library, now, retentionDays))
+        .map((p) => p.id)
+      await this.db.projects.bulkDelete(expired)
+      return expired
+    })
+  }
+
+  deleteForever(id: string): Promise<void> {
     // Absichtlich ohne Migration: Auch unlesbare Datensätze sollen sich löschen lassen.
     return this.rw(async () => {
       const exists = (await this.db.projects.where('id').equals(id).count()) > 0

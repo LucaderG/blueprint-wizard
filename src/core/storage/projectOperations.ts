@@ -1,13 +1,15 @@
 import {
   computeCompleteness,
   createEmptyProject,
+  moveToTrash,
   parseProjectExport,
   projectNameSchema,
   projectSchema,
+  restoreFromTrash,
   serializeProject,
   type Project,
 } from '@/core/blueprint'
-import type { ProjectSummary } from './projectRepository'
+import type { ListFilter, ProjectSummary } from './projectRepository'
 
 /**
  * Gemeinsame, speicherunabhängige Logik aller Repository-Implementierungen.
@@ -21,7 +23,13 @@ export function toSummary(project: Project): ProjectSummary {
     name: project.name,
     updatedAt: project.updatedAt,
     completeness: computeCompleteness(project.blueprint).total,
+    library: project.library,
+    hasProfile: project.profile !== null,
   }
+}
+
+export function matchesFilter(project: Project, { status }: ListFilter): boolean {
+  return status === undefined || project.library.status === status
 }
 
 export function sortByUpdatedDesc(summaries: ProjectSummary[]): ProjectSummary[] {
@@ -36,6 +44,19 @@ export function touch(project: Project, now: Date): Project {
   return projectSchema.parse({ ...project, updatedAt: now.toISOString() })
 }
 
+/** Neuer Stand zum Speichern: Der Bibliotheksstatus kommt aus dem gespeicherten Projekt. */
+export function buildSaved(project: Project, stored: Project, now: Date): Project {
+  return touch({ ...project, library: stored.library }, now)
+}
+
+export function buildTrashed(project: Project, now: Date): Project {
+  return projectSchema.parse(moveToTrash(project, now))
+}
+
+export function buildRestored(project: Project): Project {
+  return projectSchema.parse(restoreFromTrash(project))
+}
+
 export function withName(project: Project, name: string, now: Date): Project {
   return touch({ ...project, name: projectNameSchema.parse(name) }, now)
 }
@@ -43,7 +64,13 @@ export function withName(project: Project, name: string, now: Date): Project {
 export function buildDuplicate(project: Project, id: string, now: Date): Project {
   const timestamp = now.toISOString()
   const name = (project.name + DUPLICATE_SUFFIX).slice(0, 120)
-  return { ...structuredClone(project), id, name, createdAt: timestamp, updatedAt: timestamp }
+  return restoreFromTrash({
+    ...structuredClone(project),
+    id,
+    name,
+    createdAt: timestamp,
+    updatedAt: timestamp,
+  })
 }
 
 export function exportJson(project: Project, now: Date): string {
@@ -52,5 +79,5 @@ export function exportJson(project: Project, now: Date): string {
 
 export function buildImported(json: string, id: string, now: Date): Project {
   const imported = parseProjectExport(json)
-  return { ...imported, id, updatedAt: now.toISOString() }
+  return restoreFromTrash({ ...imported, id, updatedAt: now.toISOString() })
 }

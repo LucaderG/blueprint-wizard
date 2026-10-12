@@ -23,7 +23,7 @@ export function useProjects() {
 
   const reload = useCallback(async () => {
     try {
-      const projects = await repository.list()
+      const projects = await repository.list({ status: 'saved' })
       setState({ status: 'ready', projects })
     } catch {
       setState((current) => ({ ...current, status: 'error' }))
@@ -33,7 +33,7 @@ export function useProjects() {
   useEffect(() => {
     let active = true
     waitForPendingSaves(repository)
-      .then(() => repository.list())
+      .then(() => repository.list({ status: 'saved' }))
       .then(
         (projects) => {
           if (active) setState({ status: 'ready', projects })
@@ -76,7 +76,7 @@ export function useProjects() {
   const remove = useCallback(
     (id: string): Promise<void> =>
       withReload(async () => {
-        await repository.delete(id)
+        await repository.trash(id)
         forgetUnsaved(repository, id)
       }),
     [repository, withReload],

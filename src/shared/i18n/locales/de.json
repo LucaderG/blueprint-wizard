@@ -209,14 +209,14 @@
     },
     "deleteDialog": {
       "title": "Projekt löschen?",
-      "description": "„{{name}}“ wird endgültig gelöscht. Das lässt sich nicht rückgängig machen.",
+      "description": "„{{name}}“ kommt in den Papierkorb. Dort lässt es sich bis zum Ablauf der Frist wiederherstellen.",
       "confirm": "Löschen",
       "cancel": "Abbrechen"
     },
     "notice": {
       "renamed": "Das Projekt heißt jetzt „{{name}}“.",
       "duplicated": "„{{name}}“ wurde angelegt.",
-      "deleted": "„{{name}}“ wurde gelöscht.",
+      "deleted": "„{{name}}“ liegt jetzt im Papierkorb.",
       "imported": "„{{name}}“ wurde importiert."
     },
     "errors": {

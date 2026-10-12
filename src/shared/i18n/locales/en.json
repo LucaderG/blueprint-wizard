@@ -209,14 +209,14 @@
     },
     "deleteDialog": {
       "title": "Delete project?",
-      "description": "“{{name}}” will be deleted permanently. This cannot be undone.",
+      "description": "“{{name}}” goes to the trash. You can restore it there until the retention period ends.",
       "confirm": "Delete",
       "cancel": "Cancel"
     },
     "notice": {
       "renamed": "The project is now called “{{name}}”.",
       "duplicated": "“{{name}}” has been created.",
-      "deleted": "“{{name}}” has been deleted.",
+      "deleted": "“{{name}}” is now in the trash.",
       "imported": "“{{name}}” has been imported."
     },
     "errors": {
