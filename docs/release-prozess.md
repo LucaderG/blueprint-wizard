@@ -23,9 +23,22 @@ Die App ist rein statisch. Für einen anderen Hoster (Netlify, Vercel, eigener S
 3. Version setzen: `npm pkg set version=X.Y.Z && npm install --package-lock-only`.
 4. Prüfen: `npm run check` und `npm run test:e2e`.
 5. Commit `chore: Release vX.Y.Z` auf `main` pushen. Nach grüner CI veröffentlicht der Pages-Workflow die neue Version.
-6. Tag setzen, auf einem von zwei Wegen:
-   - **Per Git:** `git tag vX.Y.Z && git push origin vX.Y.Z`. Der Workflow `release.yml` prüft, ob Tag und `package.json` zusammenpassen, und legt das GitHub-Release mit dem CHANGELOG-Abschnitt als Text an.
-   - **In der GitHub-Oberfläche:** Releases → „Draft a new release“ → Tag `vX.Y.Z` auf `main` anlegen, den CHANGELOG-Abschnitt als Beschreibung einfügen, veröffentlichen.
+6. Tag und GitHub-Release anlegen, auf einem von drei Wegen. Alle nutzen den Workflow `release.yml`: Er prüft, ob Tag und `package.json` zusammenpassen, und legt das Release mit dem CHANGELOG-Abschnitt als Text an.
+   - **Per Chat mit Claude (empfohlen):** „Mach Release X.Y.Z“ schreiben (siehe unten).
+   - **In der GitHub-Oberfläche:** Actions → „Release“ → „Run workflow“, Version `X.Y.Z` eintragen.
+   - **Per Git:** `git tag vX.Y.Z && git push origin vX.Y.Z`.
+
+Ohne Angabe eines Commits setzt der Workflow den Tag auf den ersten Commit auf `main`, dessen `package.json` die Version trägt, also auf den Release-Commit. Als „Latest“ markiert er nur die höchste Version; nachgeholte ältere Releases ändern das nicht. Gibt es das Release schon, passiert nichts.
+
+### Releases per Chat an Claude delegieren
+
+Claude kann aus der Cloud keine Tags pushen, den Workflow aber über die GitHub-Verbindung starten. Im Projekt-Chat genügt:
+
+- **„Mach Release 1.1.0“:** Claude führt die Schritte 2 bis 5 als Pull Request aus (CHANGELOG, Version, Prüfungen). Nach dem Mergen startet Claude den Release-Workflow und meldet den Link zum Release.
+- **„Mach das Release für 1.1.0“, wenn die Version schon auf `main` ist:** Claude startet nur den Workflow.
+- **„Sind die Releases aktuell?“:** Claude vergleicht Tags und Releases mit `package.json` auf `main` und den Versionen im CHANGELOG und holt fehlende nach Rückfrage nach.
+
+Releases sind öffentlich. Claude legt sie nur an, wenn Luca es im Chat sagt.
 
 Installierte Apps (PWA) laden die neue Version beim nächsten Öffnen automatisch (`registerType: 'autoUpdate'`).
 
@@ -43,4 +56,4 @@ Abhängigkeits-Updates allein brauchen kein eigenes Release. Sie gehen mit dem n
 
 - **Pages-Workflow rot:** Ist unter Settings → Pages „GitHub Actions“ gewählt? Sonst das Log des Schritts lesen. Die zuletzt veröffentlichte Version bleibt so lange online.
 - **Fehlerhafte Version veröffentlicht:** Den Fehler-Commit auf `main` per `git revert` zurücknehmen und pushen. Nach grüner CI ist die vorige Fassung wieder online. Danach ein PATCH-Release.
-- **Release-Workflow rot wegen Versionsnummer:** Tag löschen (`git push --delete origin vX.Y.Z`), Version in `package.json` korrigieren, neu taggen.
+- **Release-Workflow rot wegen Versionsnummer:** Version in `package.json` bzw. den CHANGELOG-Abschnitt korrigieren und den Workflow erneut starten. Wurde ein falscher Tag gepusht, ihn vorher löschen (`git push --delete origin vX.Y.Z`).

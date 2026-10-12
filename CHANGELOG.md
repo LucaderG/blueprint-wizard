@@ -19,6 +19,8 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 ### Geändert
 
 - Datenformat auf Version 4: Neues Feld `project.monetization`, solange nicht begonnen `null`. Projekte im bisherigen Format (Version 3) werden beim Laden automatisch migriert. Der Reife-Check und das Exportformat (`EXPORT_VERSION` 1) bleiben unverändert.
+- Entwicklungsabhängigkeiten aktualisiert: Playwright 1.64, jsdom 30, lint-staged 17, @types/node 26; GitHub Actions auf aktuelle Hauptversionen (checkout 7, upload-artifact 7, Pages-Actions). Ein vorinstalliertes Chromium lässt sich für E2E-Tests über `PLAYWRIGHT_CHROMIUM_EXECUTABLE` angeben.
+- Der Release-Workflow lässt sich von Hand oder per API mit einer Version starten und legt Tag und GitHub-Release selbst an, auch für ältere Versionen. So kann Claude Releases aus dem Chat erstellen (`docs/release-prozess.md`).
 
 ## [1.0.0] – 2026-10-11 – Phase 9: Release & Wartung
 

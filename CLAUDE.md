@@ -94,7 +94,7 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 
 - **Tests rufen nie echte APIs auf.** MSW läuft in jedem Test mit `onUnhandledRequest: 'error'` (`src/test/setup.ts`); nicht gemockte Requests lassen den Test fehlschlagen. Handler kommen in `src/test/msw/handlers.ts` oder per `server.use(...)` im Test.
 - Unit- und Komponententests liegen neben dem Code als `*.test.ts` / `*.test.tsx`.
-- E2E-Tests liegen in `e2e/` (Playwright, Chromium).
+- E2E-Tests liegen in `e2e/` (Playwright, Chromium). Passt das vorinstallierte Chromium nicht zur Playwright-Version (Cloud-Sitzungen: `/opt/pw-browsers/chromium`), es mit `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/opt/pw-browsers/chromium npm run test:e2e` angeben.
 - Seiten testen mit `renderRoute('/pfad', { repository })` aus `src/test/render.tsx` (Standard: frisches `MemoryProjectRepository`).
 - KI in Tests: `renderRoute(path, { settings: { apiKey: 'x' }, aiProvider: new MockAiProvider([...]) })`; OpenRouter-HTTP-Mocks in `src/test/msw/openrouter.ts`, in E2E per `page.route('https://openrouter.ai/api/v1/**')`.
 - Testdaten für Projekte: `makeProject()` und `withMaturity()` aus `src/core/blueprint/testing.ts`.
@@ -128,7 +128,8 @@ Am Ende jeder Phase abarbeiten:
 ## Release & Wartung
 
 - Versionen nach SemVer; Ablauf, Pages-Veröffentlichung und Dependabot-Umgang stehen in `docs/release-prozess.md` (ADR 0010).
-- Veröffentlicht wird automatisch nach grüner CI auf `main` (`.github/workflows/pages.yml`); `release.yml` legt bei einem `v*.*.*`-Tag das GitHub-Release aus dem CHANGELOG an.
+- Veröffentlicht wird automatisch nach grüner CI auf `main` (`.github/workflows/pages.yml`); `release.yml` legt bei einem `v*.*.*`-Tag oder per `workflow_dispatch` (Eingabe `version`) Tag und GitHub-Release aus dem CHANGELOG an.
+- Aus der Cloud sind Tag-Pushes blockiert: Releases legt Claude an, indem es `release.yml` per GitHub-MCP (`actions_run_trigger`, `run_workflow`) mit der Version startet. Releases sind öffentlich, also nur auf Lucas ausdrückliche Bitte.
 - Ein neuer Blueprint-Abschnitt: Anleitung in `docs/neuer-abschnitt.md`.
 
 ## Konventionen
