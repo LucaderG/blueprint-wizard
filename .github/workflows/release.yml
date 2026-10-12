@@ -1,14 +1,31 @@
 name: Release
 
-# Ein Versions-Tag (z. B. v1.0.0) legt das GitHub-Release mit dem passenden CHANGELOG-Abschnitt an.
-# Wer das Release lieber in der GitHub-Oberfläche anlegt, kann das tun; dann passiert hier nichts.
+# Legt ein GitHub-Release samt Tag mit dem passenden CHANGELOG-Abschnitt an. Zwei Auslöser:
+# - Ein Versions-Tag (z. B. v1.0.0) wird gepusht.
+# - Von Hand oder per API (workflow_dispatch) mit der Version, z. B. „1.1.0“. Der Workflow sucht auf
+#   main den ersten Commit, dessen package.json diese Version trägt, und setzt dort den Tag.
+#   So kann Claude Releases aus dem Chat anlegen, auch für ältere Versionen.
 # Ablauf: docs/release-prozess.md.
 on:
   push:
     tags: ['v*.*.*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version ohne „v“, z. B. 1.1.0'
+        required: true
+        type: string
+      ref:
+        description: 'Commit für den Tag (leer: erster Commit auf main mit dieser Version)'
+        required: false
+        type: string
 
 permissions:
   contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   release:
@@ -16,22 +33,53 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Version aus package.json mit dem Tag abgleichen
+        with:
+          fetch-depth: 0
+      - name: Version und Ziel-Commit bestimmen
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+          INPUT_REF: ${{ inputs.ref }}
         run: |
-          VERSION=$(node -p "require('./package.json').version")
-          if [[ "$GITHUB_REF_NAME" != "v$VERSION" ]]; then
-            echo "::error::Tag $GITHUB_REF_NAME passt nicht zu package.json ($VERSION)."
+          version_at() { git show "$1:package.json" | jq -r .version; }
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+            TARGET="$GITHUB_SHA"
+          else
+            VERSION="${INPUT_VERSION#v}"
+            if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "::error::„$INPUT_VERSION“ ist keine Version der Form X.Y.Z."
+              exit 1
+            fi
+            if [[ -n "$INPUT_REF" ]]; then
+              TARGET=$(git rev-parse --verify "$INPUT_REF^{commit}")
+            else
+              TARGET=""
+              for c in $(git rev-list --reverse --first-parent origin/main -- package.json); do
+                if [[ "$(version_at "$c")" == "$VERSION" ]]; then TARGET="$c"; break; fi
+              done
+              if [[ -z "$TARGET" ]]; then
+                echo "::error::Kein Commit auf main mit Version $VERSION in package.json."
+                exit 1
+              fi
+            fi
+          fi
+          if [[ "$(version_at "$TARGET")" != "$VERSION" ]]; then
+            echo "::error::package.json in $TARGET hat Version $(version_at "$TARGET"), nicht $VERSION."
             exit 1
           fi
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "TAG=v$VERSION" >> "$GITHUB_ENV"
+          echo "TARGET=$TARGET" >> "$GITHUB_ENV"
+          echo "Release v$VERSION auf Commit $TARGET"
       - name: Release mit CHANGELOG-Abschnitt anlegen (falls noch nicht vorhanden)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
-            echo "Release $GITHUB_REF_NAME gibt es schon."
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            echo "Release $TAG gibt es schon."
             exit 0
           fi
+          # Der CHANGELOG des ausgecheckten Stands kennt auch alle älteren Versionen.
           awk -v v="$VERSION" '
             /^## \[/ { if (found) exit; if (index($0, "## [" v "]") == 1) { found = 1; next } }
             found
@@ -40,4 +88,14 @@ jobs:
             echo "::error::Kein CHANGELOG-Abschnitt für $VERSION gefunden."
             exit 1
           fi
-          gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file notes.md
+          # Titel: letzter Teil der Überschrift, z. B. „Phase 9: Release & Wartung“.
+          HEADING=$(grep -m1 -F "## [$VERSION]" CHANGELOG.md)
+          SUBTITLE="${HEADING##* – }"
+          TITLE="$TAG"
+          if [[ "$SUBTITLE" != "$HEADING" ]]; then TITLE="$TAG – $SUBTITLE"; fi
+          # Nur die höchste Version wird „Latest“; nachgeholte ältere Releases nicht.
+          HIGHEST=$( (git tag -l 'v*.*.*'; echo "$TAG") | sort -V | tail -n1)
+          LATEST=false
+          if [[ "$HIGHEST" == "$TAG" ]]; then LATEST=true; fi
+          gh release create "$TAG" --target "$TARGET" --title "$TITLE" \
+            --notes-file notes.md --latest="$LATEST"

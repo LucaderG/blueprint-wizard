@@ -127,7 +127,8 @@ Am Ende jeder Phase abarbeiten:
 ## Release & Wartung
 
 - Versionen nach SemVer; Ablauf, Pages-Veröffentlichung und Dependabot-Umgang stehen in `docs/release-prozess.md` (ADR 0010).
-- Veröffentlicht wird automatisch nach grüner CI auf `main` (`.github/workflows/pages.yml`); `release.yml` legt bei einem `v*.*.*`-Tag das GitHub-Release aus dem CHANGELOG an.
+- Veröffentlicht wird automatisch nach grüner CI auf `main` (`.github/workflows/pages.yml`); `release.yml` legt bei einem `v*.*.*`-Tag oder per `workflow_dispatch` (Eingabe `version`) Tag und GitHub-Release aus dem CHANGELOG an.
+- Aus der Cloud sind Tag-Pushes blockiert: Releases legt Claude an, indem es `release.yml` per GitHub-MCP (`actions_run_trigger`, `run_workflow`) mit der Version startet. Releases sind öffentlich, also nur auf Lucas ausdrückliche Bitte.
 - Ein neuer Blueprint-Abschnitt: Anleitung in `docs/neuer-abschnitt.md`.
 
 ## Konventionen
