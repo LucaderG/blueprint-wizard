@@ -58,6 +58,23 @@ Dependabot (`.github/dependabot.yml`) öffnet montags Pull Requests:
 
 Abhängigkeits-Updates allein brauchen kein eigenes Release. Sie gehen mit dem nächsten Release raus, außer bei Sicherheitsupdates: dann ein PATCH-Release.
 
+### TypeScript 7 und die Linter-API
+
+TypeScript 7.0.2 bietet noch keine JavaScript-Compiler-API. Deshalb verwendet `typescript-eslint` die API von TypeScript 6, während Typprüfung und Build bereits mit TypeScript 7 laufen. Das entspricht der [von Microsoft beschriebenen parallelen Installation](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/#running-side-by-side-with-typescript-60).
+
+In `package.json` zeigt `@typescript/native` auf `npm:typescript@~7.0.2` und `typescript` auf `npm:@typescript/typescript6@6.0.2`. Das Kompatibilitätspaket bringt seinerseits TypeScript 6 mit. Da dabei mehrere Pakete einen `tsc`-Befehl bereitstellen können, wählt `npm run typecheck` den Compiler unter `node_modules/@typescript/native/bin/tsc` ausdrücklich aus. `npm run build` führt dieselbe Typprüfung vor dem Vite-Build aus.
+
+Nach Abhängigkeitsänderungen regulär mit `npm ci` installieren und die tatsächlich verwendeten Versionen prüfen:
+
+```bash
+node node_modules/@typescript/native/bin/tsc --version  # Version 7.0.2
+node -p "require('typescript').version"                # API-Version 6.x
+npm run check
+npm run test:e2e
+```
+
+Die Kompatibilitätsschicht kann entfallen, sobald die eingesetzten API-Werkzeuge TypeScript 7 unterstützen. Ein Update des nativen Compilers allein ändert die API-Version des Linters nicht.
+
 ## Wenn etwas schiefgeht
 
 - **Pages-Workflow rot:** Ist unter Settings → Pages „GitHub Actions“ gewählt? Sonst das Log des Schritts lesen. Die zuletzt veröffentlichte Version bleibt so lange online.

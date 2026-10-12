@@ -41,7 +41,7 @@ npx playwright install chromium
 | Skript                  | Zweck                                                                                           |
 | ----------------------- | ----------------------------------------------------------------------------------------------- |
 | `npm run dev`           | Startet den Vite-Entwicklungsserver mit Hot Reload.                                             |
-| `npm run build`         | Typcheck (`tsc -b`) und Produktions-Build nach `dist/`.                                         |
+| `npm run build`         | Typcheck mit TypeScript 7 und Produktions-Build nach `dist/`.                                   |
 | `npm run preview`       | Liefert den Build aus `dist/` lokal aus.                                                        |
 | `npm run lint`          | Prüft den Code mit ESLint.                                                                      |
 | `npm run format`        | Formatiert alle Dateien mit Prettier.                                                           |
@@ -79,6 +79,8 @@ Unit- und Komponententests liegen als `*.test.ts(x)` direkt neben dem Code.
 ## Tech-Stack
 
 Vite 8, React 19, TypeScript (strict), Tailwind CSS v4, shadcn/ui-Komponenten, React Router, i18next (Deutsch zuerst), Zustand, Vitest + Testing Library + MSW, Playwright, ESLint + Prettier, Husky + lint-staged. Begründung: [ADR 0001](docs/adr/0001-tech-stack.md).
+
+Typprüfung und Build nutzen TypeScript 7.0.2 über den Paket-Alias `@typescript/native`. ESLint und andere Werkzeuge mit Compiler-API nutzen weiterhin TypeScript 6 über das offizielle Kompatibilitätspaket `@typescript/typescript6` (Alias `typescript`). `npm run typecheck` wählt den nativen Compiler ausdrücklich aus; ein direktes `tsc` kann wegen der beiden installierten Versionen noch TypeScript 6 aufrufen. Hintergrund und Versionsprüfung: [Release- und Update-Prozess](docs/release-prozess.md#typescript-7-und-die-linter-api).
 
 ## Weitere Dokumente
 
