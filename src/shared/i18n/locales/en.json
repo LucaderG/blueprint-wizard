@@ -124,6 +124,16 @@
         "de": "German",
         "en": "English"
       }
+    },
+    "trash": {
+      "title": "Trash",
+      "intro": "Deleted entries and generated results you do not save stay in the trash for a while. After that they are deleted permanently.",
+      "retentionLabel": "Keep in trash for",
+      "days_one": "{{count}} day",
+      "days_other": "{{count}} days",
+      "hint": "A shorter period applies right away, including entries already in the trash.",
+      "expiring_one": "With this period, {{count}} entry in the trash has already expired. It will be deleted permanently.",
+      "expiring_other": "With this period, {{count}} entries in the trash have already expired. They will be deleted permanently."
     }
   },
   "wizard": {

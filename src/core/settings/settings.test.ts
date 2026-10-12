@@ -16,6 +16,7 @@ const custom: Settings = {
   outputLanguage: 'en',
   uiLanguage: 'en',
   theme: 'dark',
+  trashRetentionDays: 30,
 }
 
 function setup() {
@@ -43,6 +44,7 @@ describe('SettingsStore', () => {
       outputLanguage: 'de',
       uiLanguage: 'de',
       theme: 'system',
+      trashRetentionDays: 1,
     })
     expect(store.load()).toEqual(DEFAULT_SETTINGS)
   })
@@ -86,6 +88,7 @@ describe('SettingsStore', () => {
       outputLanguage: DEFAULT_SETTINGS.outputLanguage,
       uiLanguage: DEFAULT_SETTINGS.uiLanguage,
       theme: DEFAULT_SETTINGS.theme,
+      trashRetentionDays: DEFAULT_SETTINGS.trashRetentionDays,
     })
   })
 
@@ -160,6 +163,29 @@ describe('SettingsStore', () => {
     const { store } = setup()
 
     expect(() => store.save({ ...custom, model: '' })).toThrow()
+  })
+
+  it('nutzt die Standardfrist von einem Tag, wenn alte Einstellungen sie nicht kennen', () => {
+    const { storage, store } = setup()
+    const { trashRetentionDays: _removed, ...old } = custom
+    storage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(old))
+
+    expect(store.load()).toEqual({ ...custom, trashRetentionDays: 1 })
+  })
+
+  it.each([7, 30] as const)('speichert die Aufbewahrungsfrist %i Tage', (days) => {
+    const { storage, store } = setup()
+    store.update({ trashRetentionDays: days })
+
+    expect(new SettingsStore(storage).load().trashRetentionDays).toBe(days)
+  })
+
+  it('lehnt andere Fristen ab und fällt beim Laden auf den Standard zurück', () => {
+    const { storage, store } = setup()
+
+    expect(() => store.save({ ...custom, trashRetentionDays: 3 as 1 })).toThrow()
+    storage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify({ ...custom, trashRetentionDays: 14 }))
+    expect(store.load().trashRetentionDays).toBe(1)
   })
 
   it('akzeptiert die Grenzwerte der Temperatur', () => {

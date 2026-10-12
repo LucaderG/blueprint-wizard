@@ -124,6 +124,16 @@
         "de": "Deutsch",
         "en": "English"
       }
+    },
+    "trash": {
+      "title": "Papierkorb",
+      "intro": "Gelöschte Einträge und Erzeugtes, das du nicht speicherst, bleiben eine Zeit lang im Papierkorb. Danach werden sie endgültig gelöscht.",
+      "retentionLabel": "Aufbewahrung im Papierkorb",
+      "days_one": "{{count}} Tag",
+      "days_other": "{{count}} Tage",
+      "hint": "Eine kürzere Frist gilt sofort, auch für Einträge, die schon im Papierkorb liegen.",
+      "expiring_one": "Mit dieser Frist ist für {{count}} Eintrag im Papierkorb die Zeit schon abgelaufen. Er wird endgültig gelöscht.",
+      "expiring_other": "Mit dieser Frist ist für {{count}} Einträge im Papierkorb die Zeit schon abgelaufen. Sie werden endgültig gelöscht."
     }
   },
   "wizard": {

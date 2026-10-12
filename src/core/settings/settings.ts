@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { DEFAULT_MODEL } from '@/core/ai'
+import { TRASH_RETENTION_DAYS } from '@/core/blueprint/library'
 
 export const settingsSchema = z.object({
   /** OpenRouter-API-Key. Liegt nur lokal im Browser des Nutzers. */
@@ -13,6 +14,8 @@ export const settingsSchema = z.object({
   uiLanguage: z.enum(['de', 'en']),
   /** Farbschema: dem System folgen oder fest hell/dunkel. */
   theme: z.enum(['system', 'light', 'dark']),
+  /** Wie viele Tage Einträge im Papierkorb bleiben, bevor sie endgültig gelöscht werden. */
+  trashRetentionDays: z.union(TRASH_RETENTION_DAYS.map((days) => z.literal(days))),
 })
 export type Settings = z.infer<typeof settingsSchema>
 
@@ -23,6 +26,7 @@ export const DEFAULT_SETTINGS: Settings = {
   outputLanguage: 'de',
   uiLanguage: 'de',
   theme: 'system',
+  trashRetentionDays: 1,
 }
 
 export const SETTINGS_STORAGE_KEY = 'blueprint-wizard:settings'
