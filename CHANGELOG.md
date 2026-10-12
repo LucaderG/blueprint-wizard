@@ -21,6 +21,7 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 
 - Typprüfung und Build nutzen TypeScript 7.0.2. ESLint bleibt über das offizielle TypeScript-6-Kompatibilitätspaket funktionsfähig; beide Compiler werden als getrennte Paket-Aliase installiert. `npm run typecheck` wählt TypeScript 7 ausdrücklich aus.
 
+- Kernlogik für Varianten: Prompts `generate-variants` (ein bis drei Steckbriefe aus einer Idee) und `expand-profile` (Steckbrief zu zehn Abschnitten ausarbeiten), jeweils Version 1 mit Golden Files. Die Kostenanzeige nennt beide Aufgaben.
 - Einstellungen: Neuer Abschnitt „Papierkorb“ mit der Aufbewahrungsfrist 1, 7 oder 30 Tage (Standard 1 Tag). Ein Hinweis nennt, für wie viele Einträge eine kürzere Frist sofort abläuft.
 - Löschen legt ein Projekt in den Papierkorb, statt es sofort zu entfernen. Die Projektliste zeigt nur gespeicherte Projekte. Das Repository kann Einträge wiederherstellen, endgültig löschen und abgelaufene Einträge aus dem Papierkorb entfernen; gespeicherte Einträge löscht es dabei nie. Ansicht und Frist folgen in den nächsten Schritten.
 - Datenformat auf Version 5: Neue Felder `project.profile` (Steckbrief, sonst `null`) und `project.library` (Bibliothek oder Papierkorb). Bestehende Projekte werden beim Laden migriert und stehen als gespeichert in der Bibliothek. ADR 0012.

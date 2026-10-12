@@ -65,6 +65,11 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 - Die gewählte Idee wird mit `applyChosenIdea` zum Projekt (Abschnitte als `aiAccepted`).
 - Die UI nutzt das Feature ausschließlich über `useIdeation()` (`src/features/ideation/useIdeation.ts`).
 
+## Bibliothek und Varianten
+
+- Bibliothek und Papierkorb: Jeder Eintrag ist ein `Project` mit `library.status` (`saved`/`trashed`). Löschen heißt `repository.trash`, „Speichern“ und „Wiederherstellen“ heißen `repository.restore`; `save` ändert den Status nie. Endgültig löscht nur `deleteForever` oder `purgeExpired` (nur abgelaufene Einträge im Papierkorb, Frist `trashRetentionDays` 1/7/30). Hilfen in `src/core/blueprint/library.ts`.
+- Varianten: `generateVariants` (Prompt `generate-variants`, 1–3 Steckbriefe) → `applyVariantCandidates` bereinigt (höchstens 8 Funktionen, 3 Risiken) → `applyProfile` macht daraus einen Eintrag. „Voll ausarbeiten“: `expandProfile` (Prompt `expand-profile`, Antwort im Schema der Einordnung) → `expandEntry` über `applyClassification`. Alles in `src/core/engine/variants.ts`.
+
 ## Blueprint-Export
 
 - Generatoren in `src/core/export/generators.ts` sind reine Funktionen. Texte werden über `ExportLabels` übergeben; der Kern importiert weder i18next noch die UI. Snapshot-Tests halten die Exportversion (`EXPORT_VERSION`, unabhängig vom Projektschema) fest.

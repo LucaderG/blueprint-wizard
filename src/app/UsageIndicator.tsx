@@ -12,6 +12,8 @@ const KNOWN_TASKS = [
   'core_decisions',
   'blueprint_additions',
   'project_ideas',
+  'project_variants',
+  'profile_expansion',
 ] as const
 type KnownTask = (typeof KNOWN_TASKS)[number]
 
