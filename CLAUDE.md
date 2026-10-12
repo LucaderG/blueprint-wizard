@@ -93,7 +93,7 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 
 - **Tests rufen nie echte APIs auf.** MSW läuft in jedem Test mit `onUnhandledRequest: 'error'` (`src/test/setup.ts`); nicht gemockte Requests lassen den Test fehlschlagen. Handler kommen in `src/test/msw/handlers.ts` oder per `server.use(...)` im Test.
 - Unit- und Komponententests liegen neben dem Code als `*.test.ts` / `*.test.tsx`.
-- E2E-Tests liegen in `e2e/` (Playwright, Chromium).
+- E2E-Tests liegen in `e2e/` (Playwright, Chromium). Passt das vorinstallierte Chromium nicht zur Playwright-Version (Cloud-Sitzungen: `/opt/pw-browsers/chromium`), es mit `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/opt/pw-browsers/chromium npm run test:e2e` angeben.
 - Seiten testen mit `renderRoute('/pfad', { repository })` aus `src/test/render.tsx` (Standard: frisches `MemoryProjectRepository`).
 - KI in Tests: `renderRoute(path, { settings: { apiKey: 'x' }, aiProvider: new MockAiProvider([...]) })`; OpenRouter-HTTP-Mocks in `src/test/msw/openrouter.ts`, in E2E per `page.route('https://openrouter.ai/api/v1/**')`.
 - Testdaten für Projekte: `makeProject()` und `withMaturity()` aus `src/core/blueprint/testing.ts`.

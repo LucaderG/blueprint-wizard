@@ -8,6 +8,7 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 
 ### Geändert
 
+- Entwicklungsabhängigkeiten aktualisiert: Playwright 1.64, jsdom 30, lint-staged 17, @types/node 26; GitHub Actions auf aktuelle Hauptversionen (checkout 7, upload-artifact 7, Pages-Actions). Ein vorinstalliertes Chromium lässt sich für E2E-Tests über `PLAYWRIGHT_CHROMIUM_EXECUTABLE` angeben.
 - Der Release-Workflow lässt sich von Hand oder per API mit einer Version starten und legt Tag und GitHub-Release selbst an, auch für ältere Versionen. So kann Claude Releases aus dem Chat erstellen (`docs/release-prozess.md`).
 
 ## [1.0.0] – 2026-10-11 – Phase 9: Release & Wartung
