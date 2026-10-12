@@ -87,7 +87,9 @@ interface PricingSelectionProps {
 function PricingSelection({ options, chosenIds, rationale, onChoose }: PricingSelectionProps) {
   const { t } = useTranslation()
   const rationaleId = useId()
-  const [selected, setSelected] = useState<string[]>(chosenIds)
+  const [draftIds, setSelected] = useState<string[]>(chosenIds)
+  // Nach „Neu vorschlagen“ können angehakte, noch nicht übernommene Einträge verschwunden sein.
+  const selected = draftIds.filter((id) => options.some((item) => item.id === id))
   const [draft, setDraft] = useState(rationale)
   const unchanged =
     selected.length === chosenIds.length &&

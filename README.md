@@ -6,7 +6,7 @@ Die App läuft komplett im Browser: kein eigener Server, kein Konto. Projekte bl
 
 **Jetzt ausprobieren:** <https://lucaderg.github.io/blueprint-wizard/>. Du brauchst nur einen eigenen [OpenRouter](https://openrouter.ai/)-Key; der Export klappt auch ohne.
 
-**Projektstatus:** Version 1.0, alle Phasen des [Implementierungsplans](docs/implementierungsplan.md) sind umgesetzt. Drei Einstiege (keine Idee, halbe Idee, fertiges Konzept), Fragenmotor, Entscheidungen und Vorschläge führen zum bearbeitbaren Blueprint, den du als Coding-Paket exportierst. Die App gibt es auf Deutsch und Englisch, hell und dunkel, und sie lässt sich als App installieren und offline öffnen. Wie alles funktioniert, steht im [Nutzerhandbuch](docs/benutzerhandbuch.md).
+**Projektstatus:** Version 1.0, alle Phasen des [Implementierungsplans](docs/implementierungsplan.md) sind umgesetzt. Drei Einstiege (keine Idee, halbe Idee, fertiges Konzept), Fragenmotor, Entscheidungen und Vorschläge führen zum bearbeitbaren Blueprint, den du als Coding-Paket exportierst. Ist der Blueprint weit genug, hilft die Monetarisierung beim Vergleich von Bezahlmodellen und bei der Wahl einer Preisstrategie. Die App gibt es auf Deutsch und Englisch, hell und dunkel, und sie lässt sich als App installieren und offline öffnen. Wie alles funktioniert, steht im [Nutzerhandbuch](docs/benutzerhandbuch.md).
 
 ## Blueprint fürs Coding exportieren
 
@@ -15,7 +15,7 @@ Die App läuft komplett im Browser: kein eigener Server, kein Konto. Projekte bl
 3. Sieh dir jede Datei in der Vorschau an und lade **Alles als ZIP** herunter.
 4. Entpacke die fünf Dateien in einen leeren Projektordner, öffne diesen mit deinem KI-Coding-Tool und füge den kopierten **Start-Prompt** ein.
 
-`BLUEPRINT.md` enthält die zehn Abschnitte, offene Punkte, Entscheidungsprotokoll und Fragenverlauf. `CLAUDE.md` und `AGENTS.md` enthalten denselben Kontext und dieselben Arbeitsregeln. `TASKS.md` bewahrt die vorhandene Roadmap und ergänzt eine ausdrücklich als Vorlage gekennzeichnete Phasenliste mit Aufgaben und Abnahmekriterien. Die Projekt-Roadmap hat Vorrang; fehlende Anforderungen muss das Coding-Tool vor dem betroffenen Schritt klären.
+`BLUEPRINT.md` enthält die zehn Abschnitte, offene Punkte, Entscheidungsprotokoll und Fragenverlauf, nach gewählter Monetarisierung auch ein Kapitel dazu. `CLAUDE.md` und `AGENTS.md` enthalten denselben Kontext und dieselben Arbeitsregeln. `TASKS.md` bewahrt die vorhandene Roadmap und ergänzt eine ausdrücklich als Vorlage gekennzeichnete Phasenliste mit Aufgaben und Abnahmekriterien. Die Projekt-Roadmap hat Vorrang; fehlende Anforderungen muss das Coding-Tool vor dem betroffenen Schritt klären.
 
 Der Export erzeugt Dateien lokal aus dem gespeicherten Projekt und verändert es nicht. Er enthält keine App-Einstellungen oder API-Keys. Die JSON-Sicherung über die Projektliste bleibt für Import und Wiederherstellung verfügbar; das Markdown-Paket dient zum Coding-Start.
 

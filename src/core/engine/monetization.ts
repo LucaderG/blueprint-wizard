@@ -29,7 +29,7 @@ import {
   type Project,
 } from '@/core/blueprint/schema'
 import type { SectionId } from '@/core/blueprint/sections'
-import { clampLeverage, cleanTextList, normalizeText } from './cleaning'
+import { cleanTextList, normalizeText } from './cleaning'
 
 /** Ab dieser Vollständigkeit (Prozent) wird die Sektion angeboten. */
 export const MONETIZATION_MIN_COMPLETENESS = 60
@@ -116,6 +116,12 @@ export function chosenPricing(monetization: Monetization): PricingOption[] {
 export function needsPricing(monetization: Monetization): boolean {
   const models = chosenModels(monetization)
   return models.length > 0 && !models.some((m) => m.kind === 'none')
+}
+
+function requirePricing(monetization: Monetization): void {
+  if (!needsPricing(monetization)) {
+    throw new MonetizationError('Preisstrategien brauchen ein gewähltes Bezahlmodell')
+  }
 }
 
 /** Kann die Sektion abgeschlossen werden? */
@@ -255,9 +261,7 @@ export async function suggestPricingStrategies({
   signal,
 }: MonetizationAiOptions): Promise<MonetizationAiResult<PricingStrategiesResult>> {
   const monetization = current(project)
-  if (!needsPricing(monetization)) {
-    throw new MonetizationError('Preisstrategien brauchen ein gewähltes Bezahlmodell')
-  }
+  requirePricing(monetization)
   const { data, calls } = await generateStructured({
     provider,
     schema: pricingStrategiesResultSchema,
@@ -281,10 +285,21 @@ export interface ApplyCandidatesOptions {
   createId?: () => string
 }
 
-function cleanScores(scores: Record<string, number>): MonetizationScores {
-  return Object.fromEntries(
-    MONETIZATION_CRITERIA.map((criterion) => [criterion, clampLeverage(scores[criterion] ?? NaN)]),
-  ) as MonetizationScores
+/** Ganze Zahl von 1 bis 5; `null`, wenn keine Zahl vorliegt. */
+function clampScore(value: number | undefined): number | null {
+  if (value === undefined || !Number.isFinite(value)) return null
+  return Math.min(5, Math.max(1, Math.round(value)))
+}
+
+/** Fehlt eine Bewertung, wird keine erfunden: Das Modell gilt dann als unbewertet (`null`). */
+function cleanScores(scores: Record<string, number>): MonetizationScores | null {
+  const cleaned: Partial<Record<string, number>> = {}
+  for (const criterion of MONETIZATION_CRITERIA) {
+    const score = clampScore(scores[criterion])
+    if (score === null) return null
+    cleaned[criterion] = score
+  }
+  return cleaned as MonetizationScores
 }
 
 /**
@@ -292,7 +307,8 @@ function cleanScores(scores: Record<string, number>): MonetizationScores {
  * - Gewählte Modelle bleiben erhalten; alle anderen werden ersetzt.
  * - Jedes Modell (kind) höchstens einmal; ein schon gewähltes geht vor.
  * - Ohne Beschreibung entfällt ein Kandidat; höchstens `MAX_MODEL_CANDIDATES` neue.
- * - Texte werden getrimmt, Bewertungen auf 1–5 begrenzt, höchstens drei Gegengründe.
+ * - Texte werden getrimmt, Bewertungen auf 1–5 begrenzt (unvollständige entfallen), höchstens drei
+ *   Gegengründe.
  */
 export function applyModelCandidates(
   project: Project,
@@ -396,9 +412,7 @@ export function applyPricingCandidates(
   { createId = () => crypto.randomUUID() }: ApplyCandidatesOptions = {},
 ): Project {
   const monetization = current(project)
-  if (!needsPricing(monetization)) {
-    throw new MonetizationError('Preisstrategien brauchen ein gewähltes Bezahlmodell')
-  }
+  requirePricing(monetization)
   const kept = chosenPricing(monetization)
   const strategies = new Set(kept.map((o) => o.strategy))
 
@@ -430,9 +444,7 @@ export function addManualPricing(
   createId: () => string = () => crypto.randomUUID(),
 ): Project {
   const monetization = current(project)
-  if (!needsPricing(monetization)) {
-    throw new MonetizationError('Preisstrategien brauchen ein gewähltes Bezahlmodell')
-  }
+  requirePricing(monetization)
   if (monetization.pricingOptions.some((o) => o.strategy === strategy)) return project
   const option: PricingOption = {
     id: createId(),
@@ -456,9 +468,7 @@ export function choosePricing(
   rationale: string,
 ): Project {
   const monetization = current(project)
-  if (!needsPricing(monetization)) {
-    throw new MonetizationError('Preisstrategien brauchen ein gewähltes Bezahlmodell')
-  }
+  requirePricing(monetization)
   const ids = [...new Set(optionIds)]
   if (ids.length === 0) throw new MonetizationError('Mindestens eine Preisstrategie wählen')
   if (ids.length > MAX_CHOSEN_PRICING) {
@@ -478,7 +488,10 @@ export function choosePricing(
   })
 }
 
-/** Schließt die Sektion ab; danach erscheint das Ergebnis im Export. */
+/**
+ * Schließt die Sektion ab. Im Export steht das Kapitel schon vorher (mit Status „offen“), sobald ein
+ * Modell gewählt ist; der Abschluss setzt den Status auf „entschieden“.
+ */
 export function finalizeMonetization(project: Project, now: Date): Project {
   const monetization = current(project)
   if (!canFinalize(monetization)) {
@@ -519,7 +532,8 @@ export function hasImpactNote(project: Project, sectionId: SectionId, text: stri
 
 /**
  * Hängt einen Hinweis als Stichpunkt an einen Abschnitt an. Steht er dort schon, bleibt alles, wie
- * es ist. Vorhandener Inhalt wird nie verändert, seine Herkunft bleibt erhalten.
+ * es ist. Vorhandener Text wird nie verändert. Wie jede Bearbeitung von Hand wird der Abschnitt
+ * dadurch eigener Inhalt (`user`), damit eine spätere KI-Einordnung den Punkt nicht überschreibt.
  */
 export function appendImpactNote(project: Project, sectionId: SectionId, text: string): Project {
   const note = stripBullet(text)
@@ -528,6 +542,6 @@ export function appendImpactNote(project: Project, sectionId: SectionId, text: s
   const existing = section.content.trimEnd()
   return updateSection(project, sectionId, {
     content: existing ? `${existing}\n- ${note}` : `- ${note}`,
-    source: existing ? section.source : 'user',
+    source: 'user',
   })
 }

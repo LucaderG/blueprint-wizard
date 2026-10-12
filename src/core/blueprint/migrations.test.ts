@@ -334,7 +334,8 @@ describe('Migration v1 → aktuell (Kette)', () => {
 })
 
 describe('Migration v3 → v4', () => {
-  // Echte v3-Daten: mit der v3-App erzeugt (Abschnitte, Entscheidungen, Vorschläge), siehe __fixtures__/project-v3.json.
+  // v3-Daten: die echte v2-Sicherung, mit dem Migrationscode von v1.0.0 nach v3 gehoben und um
+  // Entscheidungen, Vorschläge und Abschnittsinhalt ergänzt (__fixtures__/project-v3.json).
   const migrated = () => migrateProject(JSON.parse(JSON.stringify(projectV3)))
 
   it('ergänzt eine noch nicht begonnene Monetarisierung', () => {

@@ -17,7 +17,7 @@ Der Blueprint soll zeigen, wie ein Projekt Geld einbringen kann: Modelle, Preise
 - Die Monetarisierung ist eine eigene Struktur in `project.monetization`. Sie ist kein Eintrag in `SECTION_IDS`. Das Feld ist `null`, solange die Monetarisierung nicht begonnen wurde.
 - Modelle und Preisstrategien stammen aus festen Listen. Die KI erfindet keine eigenen Modelle oder Strategien.
 - Preise stehen nur als Spannen in Euro. Sie sind ausdrücklich eine Annahme und keine Marktdaten.
-- KI-Ergebnisse bereinigen `applyModelCandidates` und `applyPricingCandidates`. Doppelte Einträge fallen weg, Bewertungen werden auf 1 bis 5 begrenzt, Obergrenzen gelten.
+- KI-Ergebnisse bereinigen `applyModelCandidates` und `applyPricingCandidates`. Doppelte Einträge fallen weg, Bewertungen werden auf 1 bis 5 begrenzt, Obergrenzen gelten. Fehlt eine Bewertung, gilt das Modell als unbewertet; es wird keine Zahl erfunden.
 - Die Auswahl ist auf bis zu drei Modelle und bis zu zwei Preisstrategien begrenzt. „Nicht monetarisieren“ lässt sich mit keinem anderen Modell kombinieren.
 - Das Projektformat wird Version 4. Die Migration v3 → v4 setzt `monetization: null`. Die Exportversion (`EXPORT_VERSION`) bleibt 1.
 - Der Export ergänzt das Kapitel nur, wenn ein Modell gewählt ist. Der Reife-Check bleibt unverändert. Die Monetarisierung blockiert den Export nie.
@@ -25,7 +25,7 @@ Der Blueprint soll zeigen, wie ein Projekt Geld einbringen kann: Modelle, Preise
 ## Konsequenzen
 
 - Blueprints ohne Monetarisierung können fertig werden. Bestehende Projekte bleiben ohne Monetarisierung gültig.
-- Neben den Abschnitten gibt es eine zweite Struktur. Auswirkungen auf Abschnitte landen nur als Stichpunkt im Text, nicht in eigenen Feldern. Vorhandener Text wird nie überschrieben.
+- Neben den Abschnitten gibt es eine zweite Struktur. Auswirkungen auf Abschnitte landen nur als Stichpunkt im Text, nicht in eigenen Feldern. Vorhandener Text wird nie überschrieben. Ein übernommener Stichpunkt macht den Abschnitt wie jede Bearbeitung von Hand zu eigenem Inhalt (`source: 'user'`), damit eine spätere KI-Einordnung ihn nicht ersetzt.
 - Die KI-Ergebnisse brauchen Bereinigung und Tests. Inhaltliche Prompt-Änderungen erhöhen die VERSION und erzeugen neue Golden Files.
 - Die Schemaänderung braucht die Migration v3 → v4 und einen Test mit der echten v3-Fixture (`src/core/blueprint/__fixtures__/project-v3.json`).
 

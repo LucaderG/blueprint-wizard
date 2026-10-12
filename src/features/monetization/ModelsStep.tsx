@@ -160,7 +160,9 @@ function ModelSelection({ models, chosenIds, rationale, onChoose }: ModelSelecti
   const { t } = useTranslation()
   const name = useModelName()
   const rationaleId = useId()
-  const [selected, setSelected] = useState<string[]>(chosenIds)
+  const [draftIds, setSelected] = useState<string[]>(chosenIds)
+  // Nach „Neu vorschlagen“ können angehakte, noch nicht übernommene Einträge verschwunden sein.
+  const selected = draftIds.filter((id) => models.some((item) => item.id === id))
   const [draft, setDraft] = useState(rationale)
 
   const kinds = selected.flatMap((id) => models.find((m) => m.id === id)?.kind ?? [])

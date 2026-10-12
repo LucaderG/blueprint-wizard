@@ -241,7 +241,19 @@ describe('Monetarisierung im Export', () => {
 
     expect(content('BLUEPRINT.md')).toContain('_Noch nicht abgeschlossen_')
     expect(content('CLAUDE.md')).toContain('### Modell: Kostenlos für kleine Teams (Freemium)')
-    expect(content('TASKS.md')).toContain('## Monetarisierung\n\n- [ ] Bezahlfunktion')
+    expect(content('TASKS.md')).toContain('## Monetarisierung\n\n- [ ] Optional: Bezahlfunktion')
+  })
+
+  it('fasst das Kapitel in CLAUDE.md kürzer, Beispielpreise bleiben', async () => {
+    const { generateExportFiles } = await import('./generators')
+    const files = generateExportFiles(await withMonetization('decided', 'freemium'), exportLabels)
+    const content = (name: string) => files.find((file) => file.name === name)?.content ?? ''
+
+    expect(content('BLUEPRINT.md')).toContain('Begründung: Teams zahlen für Zusammenarbeit.')
+    expect(content('CLAUDE.md')).toContain('### Preisstrategie: Free, Pro, Team (Staffelpreise)')
+    expect(content('CLAUDE.md')).toContain('Beispielpreise (Annahme, keine Marktdaten)')
+    expect(content('CLAUDE.md')).not.toContain('Begründung: Teams zahlen')
+    expect(content('AGENTS.md')).toBe(content('CLAUDE.md'))
   })
 
   it('braucht bei „nicht monetarisieren“ keine Bezahlaufgabe', async () => {

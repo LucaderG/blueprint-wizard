@@ -208,7 +208,8 @@ describe('applyModelCandidates', () => {
             title: '  Abo  ',
             summary: '  Monatlich.  ',
             concerns: ['a', ' A ', '', 'b', 'c', 'd'],
-            scores: { ...scores, revenuePotential: 9, techFit: 0.4, userAcceptance: NaN },
+            // Eine fehlende Bewertung wird nicht erfunden: das Modell gilt als unbewertet.
+            scores: { ...scores, userAcceptance: NaN },
             recommended: true,
           }),
         ],
@@ -224,11 +225,19 @@ describe('applyModelCandidates', () => {
       summary: 'Monatlich.',
       fitReason: 'Laufender Nutzen.',
       concerns: ['a', 'b', 'c'],
-      scores: { ...scores, revenuePotential: 5, techFit: 1, userAcceptance: 3 },
+      scores: null,
       recommended: true,
     })
     expect(first?.concerns).toHaveLength(MAX_MODEL_CONCERNS)
     expect(() => projectSchema.parse(result)).not.toThrow()
+  })
+
+  it('begrenzt Bewertungen auf ganze Zahlen von 1 bis 5', () => {
+    const result = applyModelCandidates(makeProject(), {
+      models: [candidate({ scores: { ...scores, revenuePotential: 9, techFit: 0.4 } })],
+    })
+
+    expect(mon(result).models[0]?.scores).toEqual({ ...scores, revenuePotential: 5, techFit: 1 })
   })
 
   it('verwirft Kandidaten ohne Beschreibung, doppelte Modelle und mehr als sechs', () => {
@@ -498,7 +507,7 @@ describe('appendImpactNote', () => {
     })
   })
 
-  it('hängt an und behält Herkunft und Reife', () => {
+  it('hängt an, behält die Reife und macht den Abschnitt zu eigenem Inhalt', () => {
     const base = updateSection(makeProject(), 'risks', {
       content: 'KI-Text\n',
       source: 'aiSuggestion',
@@ -509,7 +518,8 @@ describe('appendImpactNote', () => {
 
     expect(result.blueprint.sections.risks).toMatchObject({
       content: 'KI-Text\n- Datenschutz bei Werbung',
-      source: 'aiSuggestion',
+      // Wie jede Bearbeitung von Hand: eine spätere Einordnung überschreibt den Punkt nicht.
+      source: 'user',
       maturity: 'decided',
     })
   })

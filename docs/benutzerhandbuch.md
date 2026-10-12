@@ -338,7 +338,7 @@ Die Seite zeigt außerdem Auswirkungen auf andere Abschnitte, zum Beispiel:
 - Nutzerkonten im „Datenmodell“,
 - Datenschutz bei Werbung unter „Risiken & offene Punkte“.
 
-Mit einem Klick auf **Übernehmen** steht der Hinweis als Stichpunkt im genannten Abschnitt. Vorhandener Text bleibt unverändert.
+Mit einem Klick auf **Übernehmen** steht der Hinweis als Stichpunkt im genannten Abschnitt. Vorhandener Text bleibt unverändert. Wie bei jeder Änderung von Hand gilt der Abschnitt danach als eigener Inhalt, den die KI nicht mehr überschreibt.
 
 ### Rückgängig und Speichern
 
@@ -346,7 +346,7 @@ Die Monetarisierung arbeitet wie der übrige Blueprint. **Rückgängig**, **Wied
 
 ### Im Export
 
-Sobald du ein Modell gewählt hast, enthält **BLUEPRINT.md** ein Kapitel „Monetarisierung“. Es nennt die Modelle, die Begründung, die Preisstrategie, die Beispielpreise als Annahme und den Status. `CLAUDE.md` und `AGENTS.md` enthalten dasselbe Kapitel. Hast du ein Modell außer „Nicht monetarisieren“ gewählt, steht in `TASKS.md` die Aufgabe „Bezahlfunktion umsetzen“. Ohne gewähltes Modell bleibt der Export unverändert. Der Reife-Check ist unverändert. Die Monetarisierung blockiert den Export nie. Die Dateien siehst du in Abschnitt 8.
+Sobald du ein Modell gewählt hast, enthält **BLUEPRINT.md** ein Kapitel „Monetarisierung“. Es nennt die Modelle, die Begründung, die Preisstrategie, die Beispielpreise als Annahme und den Status. `CLAUDE.md` und `AGENTS.md` enthalten eine kurze Fassung: Modelle, Preisstrategien und Beispielpreise ohne Beschreibungen und Begründungen. Hast du ein Modell außer „Nicht monetarisieren“ gewählt, steht in `TASKS.md` die optionale Aufgabe „Bezahlfunktion umsetzen“. Ohne gewähltes Modell bleibt der Export unverändert. Der Reife-Check ist unverändert. Die Monetarisierung blockiert den Export nie. Die Dateien siehst du in Abschnitt 8.
 
 ## 8. Blueprint fertigstellen und exportieren
 

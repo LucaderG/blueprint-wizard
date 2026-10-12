@@ -152,6 +152,53 @@ export function describeProjectRepositoryContract(
         expect(saved.entryPoint).toBe('partialIdea')
       })
 
+      it('speichert und lädt eine begonnene Monetarisierung', async () => {
+        const project = await repo.create('Projekt')
+        project.monetization = {
+          models: [
+            {
+              id: 'm1',
+              kind: 'subscription',
+              title: 'Team-Abo',
+              summary: 'Monatlich pro Team.',
+              fitReason: 'Laufender Nutzen.',
+              concerns: ['Abo-Müdigkeit'],
+              scores: {
+                revenuePotential: 4,
+                implementationEase: 3,
+                userAcceptance: 3,
+                predictability: 5,
+                audienceFit: 4,
+                techFit: 3,
+              },
+              recommended: true,
+            },
+          ],
+          chosenModelIds: ['m1'],
+          modelRationale: 'Passt zum Teamnutzen.',
+          pricingOptions: [
+            {
+              id: 'p1',
+              strategy: 'tiers',
+              title: 'Free, Pro, Team',
+              summary: 'Drei Pakete.',
+              examplePrices: 'Pro: 4–8 € pro Monat',
+              reason: 'Leicht verständlich.',
+              recommended: true,
+            },
+          ],
+          chosenPricingIds: ['p1'],
+          pricingRationale: '',
+          status: 'decided',
+          decidedAt: at(1),
+        }
+
+        const saved = await repo.save(project)
+
+        expect(await repo.get(project.id)).toEqual(saved)
+        expect(saved.monetization).toEqual(project.monetization)
+      })
+
       it('wirft ProjectNotFoundError für unbekannte IDs', async () => {
         const project = await repo.create('Projekt')
         await expect(repo.save({ ...project, id: 'unbekannt' })).rejects.toThrow(

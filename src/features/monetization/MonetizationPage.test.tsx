@@ -1,10 +1,10 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { AiError, MockAiProvider } from '@/core/ai'
+import { AiError, MockAiProvider, type CompletionRequest, type CompletionResult } from '@/core/ai'
 import { monetizationModelsResultSchema } from '@/core/ai/prompts'
 import type { Project } from '@/core/blueprint'
 import { updateSection } from '@/core/blueprint'
-import { applyModelCandidates } from '@/core/engine'
+import { applyModelCandidates, chooseModels } from '@/core/engine'
 import { MemoryProjectRepository } from '@/core/storage'
 import { renderRoute } from '@/test/render'
 
@@ -56,6 +56,19 @@ const PRICING = {
       recommended: false,
     },
   ],
+}
+
+/** Hält die nächste Antwort zurück, bis der Test `release()` aufruft. */
+class GatedAiProvider extends MockAiProvider {
+  private open = () => {}
+  private readonly gate = new Promise<void>((resolve) => (this.open = resolve))
+  release() {
+    this.open()
+  }
+  override async complete(request: CompletionRequest): Promise<CompletionResult> {
+    await this.gate
+    return super.complete(request)
+  }
 }
 
 /** Legt ein Projekt im Speicher an; ohne Änderung ist der Blueprint leer. */
@@ -249,6 +262,71 @@ describe('Monetarisierungsseite', () => {
 
     expect(screen.queryByText('Free, Pro, Team')).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Preisstrategien vorschlagen' })).toBeVisible()
+  })
+
+  it('vergisst angehakte Modelle, die ein neuer Vorschlag ersetzt hat', async () => {
+    const user = userEvent.setup()
+    const { repository, id } = await seedProject(withModels)
+    const rerun = { models: [model('oneTime', 'Einmalkauf'), model('usageBased', 'Nach Nutzung')] }
+    open(repository, id, new MockAiProvider([JSON.stringify(rerun)]))
+
+    for (const name of [/Team-Abo/, /Werbung im Dashboard/, /Firmenlizenz/]) {
+      await user.click(await screen.findByRole('checkbox', { name }))
+    }
+    expect(screen.getByRole('checkbox', { name: /Kostenlos für kleine Teams/ })).toBeDisabled()
+
+    await user.click(screen.getByRole('button', { name: 'Neu vorschlagen' }))
+    const oneTime = await screen.findByRole('checkbox', { name: /Einmalkauf/ })
+    expect(screen.queryByRole('checkbox', { name: /Team-Abo/ })).not.toBeInTheDocument()
+    expect(oneTime).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Auswahl übernehmen' })).toBeDisabled()
+
+    await user.click(oneTime)
+    await user.click(screen.getByRole('button', { name: 'Auswahl übernehmen' }))
+
+    await expectStored(repository, id, (project) =>
+      expect(project.monetization?.chosenModelIds).toHaveLength(1),
+    )
+  })
+
+  it('verwirft Preisvorschläge, wenn sich die Modellauswahl während der Anfrage ändert', async () => {
+    const user = userEvent.setup()
+    const { repository, id } = await seedProject((project) => {
+      const seeded = withModels(project)
+      const abo = seeded.monetization?.models.find((m) => m.kind === 'subscription')
+      return chooseModels(seeded, [abo?.id ?? ''], '')
+    })
+    const aiProvider = new GatedAiProvider([JSON.stringify(PRICING)])
+    open(repository, id, aiProvider)
+
+    await user.click(await screen.findByRole('button', { name: 'Preisstrategien vorschlagen' }))
+    await user.click(screen.getByRole('checkbox', { name: /Kostenlos für kleine Teams/ }))
+    await user.click(screen.getByRole('button', { name: 'Auswahl übernehmen' }))
+    aiProvider.release()
+
+    await waitFor(() => expect(aiProvider.requests).toHaveLength(1))
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Preisstrategien vorschlagen' })).toBeEnabled(),
+    )
+    expect(screen.queryByText('Free, Pro, Team')).not.toBeInTheDocument()
+  })
+
+  it('erkennt einen in anderer Sprache übernommenen Hinweis', async () => {
+    const { repository, id } = await seedProject((project) => {
+      const seeded = withModels(project)
+      const abo = seeded.monetization?.models.find((m) => m.kind === 'subscription')
+      return updateSection(chooseModels(seeded, [abo?.id ?? ''], ''), 'integrations', {
+        content: '- Connect a payment provider (e.g. Stripe or Paddle)',
+      })
+    })
+    open(repository, id)
+
+    expect(
+      await screen.findByText('Zahlungsanbieter anbinden (z. B. Stripe oder Paddle)'),
+    ).toBeVisible()
+    expect(
+      screen.queryByRole('button', { name: /Zahlungsanbieter anbinden/ }),
+    ).not.toBeInTheDocument()
   })
 
   it('ergänzt Modelle und Preisstrategien ohne KI von Hand', async () => {

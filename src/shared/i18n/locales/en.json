@@ -647,7 +647,7 @@
       "monetizationModel": "Model",
       "monetizationPricing": "Pricing strategy",
       "examplePrices": "Example prices (assumption, not market data)",
-      "monetizationTask": "Implement payments as described in the “Monetization” chapter of BLUEPRINT.md (payment provider, plans, prices)."
+      "monetizationTask": "Optional: implement payments as described in the “Monetization” chapter of BLUEPRINT.md (payment provider, plans, prices)."
     },
     "open": "Finish blueprint",
     "title": "Finish blueprint",

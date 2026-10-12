@@ -122,33 +122,42 @@ function renderSection(project: Project, id: SectionId, labels: ExportLabels): s
 
 /**
  * Kapitel „Monetarisierung“; leer, solange kein Modell gewählt ist. Preise bleiben als Annahme
- * gekennzeichnet (Label `examplePrices`).
+ * gekennzeichnet (Label `examplePrices`). `compact` (für CLAUDE.md/AGENTS.md) nennt nur Modelle,
+ * Preisstrategien und Beispielpreise, ohne Beschreibungen und Begründungen.
  */
-export function renderMonetization(project: Project, labels: ExportLabels): string {
+export function renderMonetization(
+  project: Project,
+  labels: ExportLabels,
+  { compact = false }: { compact?: boolean } = {},
+): string {
   const monetization = project.monetization
   if (!monetization || monetization.chosenModelIds.length === 0) return ''
-  const title = (kindLabel: string, own: string) =>
+  const optionHeading = (kindLabel: string, own: string) =>
     heading(own ? `${own} (${kindLabel})` : kindLabel)
+  const details = (...texts: string[]) => (compact ? [] : texts)
   return document([
     `## ${labels.monetizationTitle}`,
     `_${labels.monetizationStatus[monetization.status]}_`,
     ...chosenModels(monetization).map((model) =>
       document([
-        `### ${labels.monetizationModel}: ${title(labels.modelKinds[model.kind], model.title)}`,
-        model.summary,
-        model.fitReason,
+        `### ${labels.monetizationModel}: ${optionHeading(labels.modelKinds[model.kind], model.title)}`,
+        ...details(model.summary, model.fitReason),
       ]).trimEnd(),
     ),
-    monetization.modelRationale ? `${labels.rationale}: ${monetization.modelRationale}` : '',
+    ...details(
+      monetization.modelRationale ? `${labels.rationale}: ${monetization.modelRationale}` : '',
+    ),
     ...chosenPricing(monetization).map((option) =>
       document([
-        `### ${labels.monetizationPricing}: ${title(labels.pricingStrategies[option.strategy], option.title)}`,
-        option.summary,
+        `### ${labels.monetizationPricing}: ${optionHeading(labels.pricingStrategies[option.strategy], option.title)}`,
+        ...details(option.summary),
         option.examplePrices ? `${labels.examplePrices}: ${option.examplePrices}` : '',
-        option.reason,
+        ...details(option.reason),
       ]).trimEnd(),
     ),
-    monetization.pricingRationale ? `${labels.rationale}: ${monetization.pricingRationale}` : '',
+    ...details(
+      monetization.pricingRationale ? `${labels.rationale}: ${monetization.pricingRationale}` : '',
+    ),
   ]).trimEnd()
 }
 
@@ -260,7 +269,7 @@ export function generateAgentContext(project: Project, labels: ExportLabels): st
     ...(['problem', 'audience', 'features', 'nonGoals', 'techStack'] as const).map((id) =>
       renderSection(project, id, labels),
     ),
-    renderMonetization(project, labels),
+    renderMonetization(project, labels, { compact: true }),
     `## ${labels.rulesTitle}`,
     labels.rules.map((rule, index) => `${index + 1}. ${rule}`).join('\n'),
     `## ${labels.openPoints}`,

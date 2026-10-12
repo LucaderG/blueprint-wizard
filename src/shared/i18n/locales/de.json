@@ -647,7 +647,7 @@
       "monetizationModel": "Modell",
       "monetizationPricing": "Preisstrategie",
       "examplePrices": "Beispielpreise (Annahme, keine Marktdaten)",
-      "monetizationTask": "Bezahlfunktion nach dem Kapitel „Monetarisierung“ in BLUEPRINT.md umsetzen (Zahlungsanbieter, Pakete, Preise)."
+      "monetizationTask": "Optional: Bezahlfunktion nach dem Kapitel „Monetarisierung“ in BLUEPRINT.md umsetzen (Zahlungsanbieter, Pakete, Preise)."
     },
     "open": "Blueprint fertigstellen",
     "title": "Blueprint fertigstellen",

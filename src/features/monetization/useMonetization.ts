@@ -100,6 +100,8 @@ export function useMonetization(editor: ReadyEditor): MonetizationController {
   const { run: runPricing } = pricingTask
   const suggestPricing = useCallback(async () => {
     if (!aiProvider) return
+    // Die Vorschläge passen nur zu der Modellauswahl, für die sie angefragt wurden.
+    const requestedFor = project.monetization?.chosenModelIds.join() ?? ''
     await runPricing(
       (signal) =>
         suggestPricingStrategies({
@@ -108,7 +110,12 @@ export function useMonetization(editor: ReadyEditor): MonetizationController {
           language: settings.outputLanguage,
           signal,
         }),
-      ({ result }) => safeEdit((current) => applyPricingCandidates(current, result)),
+      ({ result }) =>
+        safeEdit((current) =>
+          current.monetization?.chosenModelIds.join() === requestedFor
+            ? applyPricingCandidates(current, result)
+            : current,
+        ),
     )
   }, [aiProvider, project, runPricing, safeEdit, settings.outputLanguage])
 

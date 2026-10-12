@@ -3,6 +3,7 @@ import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Monetization, Project, SectionId } from '@/core/blueprint'
 import { canFinalize, hasImpactNote, type MonetizationImpact } from '@/core/engine'
+import { resources, type UiLanguage } from '@/shared/i18n'
 import { formatDateTime } from '@/shared/lib/format'
 import { Button } from '@/shared/ui/button'
 
@@ -24,9 +25,18 @@ export function FinishStep({
   onReopen,
   onApplyImpact,
 }: FinishStepProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const headingId = useId()
   const impactsId = useId()
+  // Ein Hinweis gilt auch dann als übernommen, wenn er in einer anderen UI-Sprache angehängt wurde.
+  const isApplied = (code: MonetizationImpact['code'], sectionId: SectionId) =>
+    (Object.keys(resources) as UiLanguage[]).some((language) =>
+      hasImpactNote(
+        project,
+        sectionId,
+        i18n.getFixedT(language)(`monetization.impacts.items.${code}`),
+      ),
+    )
   const decided = monetization.status === 'decided'
 
   return (
@@ -73,7 +83,7 @@ export function FinishStep({
           <ul aria-labelledby={impactsId} className="space-y-2">
             {impacts.map(({ code, sectionId }) => {
               const text = t(`monetization.impacts.items.${code}`)
-              const applied = hasImpactNote(project, sectionId, text)
+              const applied = isApplied(code, sectionId)
               return (
                 <li
                   key={code}
