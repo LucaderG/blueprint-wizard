@@ -29,6 +29,7 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 - **Schemaänderung = Migration:** `CURRENT_SCHEMA_VERSION` erhöhen, Eintrag in `PROJECT_MIGRATIONS` (`migrations.ts`) ergänzen, Test mit echten Altdaten schreiben.
 - Der Zustand des Fragenmotors liegt projektweit in `project.interview` (`questions`, `log`, `analysis`); Schemaversion 2 (Migration v1 → v2 in `migrations.ts`).
 - Entscheidungen liegen projektweit in `project.decisions`, Ergänzungsvorschläge in `project.additions`; Schemaversion 3 (Migration v2 → v3 in `migrations.ts`).
+- Monetarisierung liegt in `project.monetization`; Schemaversion 4 (Migration v3 → v4 in `migrations.ts`). Die Logik liegt in `src/core/engine/monetization.ts`. Sie ist kein Abschnitt in `SECTION_IDS` (ADR 0011).
 - Komponenten greifen nur über `useProjectRepository()` auf Projekte zu, nie direkt auf Dexie.
 - Neue Repository-Logik gehört in `projectOperations.ts`, damit IndexedDB- und Memory-Variante gleich bleiben; die Vertrags-Testsuite `projectRepository.contract.ts` prüft beide.
 
@@ -87,13 +88,14 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 - Seiten außer Start und 404 werden per Route-`lazy` geladen. `renderRoute` löst sie vorab auf, Tests können also direkt abfragen.
 - Die App kann in einem Unterordner laufen (GitHub Pages, `BASE_PATH` beim Build, Router-`basename` aus `import.meta.env.BASE_URL`). **Keine absoluten Pfade** wie `href="/…"` oder `window.location = '/…'`: Links über den Router, Dateien über Vite.
 - Speichert `useProjectEditor` erfolglos, merkt `pendingSaves.ts` den ungespeicherten Stand (`rememberUnsaved`); die nächste Seite übernimmt ihn samt Fehler.
+- Versionsanzeige: `vite.config.ts` bestimmt beim Build `__BUILD_INFO__` über `resolveBuildInfo` (`src/core/build/buildInfo.ts`): „stable“ nur, wenn der Commit den Tag `v<package.json-Version>` trägt, sonst „nightly“. Angezeigt in `VersionFooter`.
 - PWA über `vite-plugin-pwa`. In E2E ist der Service Worker blockiert (`serviceWorkers: 'block'`), nur `e2e/pwa.spec.ts` erlaubt ihn. `e2e/a11y.spec.ts` prüft alle Seiten mit axe (hell und dunkel); Lighthouse läuft in der CI (`lighthouserc.json`, Mindestwert 0,9).
 
 ## Tests
 
 - **Tests rufen nie echte APIs auf.** MSW läuft in jedem Test mit `onUnhandledRequest: 'error'` (`src/test/setup.ts`); nicht gemockte Requests lassen den Test fehlschlagen. Handler kommen in `src/test/msw/handlers.ts` oder per `server.use(...)` im Test.
 - Unit- und Komponententests liegen neben dem Code als `*.test.ts` / `*.test.tsx`.
-- E2E-Tests liegen in `e2e/` (Playwright, Chromium).
+- E2E-Tests liegen in `e2e/` (Playwright, Chromium). Passt das vorinstallierte Chromium nicht zur Playwright-Version (Cloud-Sitzungen: `/opt/pw-browsers/chromium`), es mit `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/opt/pw-browsers/chromium npm run test:e2e` angeben.
 - Seiten testen mit `renderRoute('/pfad', { repository })` aus `src/test/render.tsx` (Standard: frisches `MemoryProjectRepository`).
 - KI in Tests: `renderRoute(path, { settings: { apiKey: 'x' }, aiProvider: new MockAiProvider([...]) })`; OpenRouter-HTTP-Mocks in `src/test/msw/openrouter.ts`, in E2E per `page.route('https://openrouter.ai/api/v1/**')`.
 - Testdaten für Projekte: `makeProject()` und `withMaturity()` aus `src/core/blueprint/testing.ts`.
@@ -127,7 +129,8 @@ Am Ende jeder Phase abarbeiten:
 ## Release & Wartung
 
 - Versionen nach SemVer; Ablauf, Pages-Veröffentlichung und Dependabot-Umgang stehen in `docs/release-prozess.md` (ADR 0010).
-- Veröffentlicht wird automatisch nach grüner CI auf `main` (`.github/workflows/pages.yml`); `release.yml` legt bei einem `v*.*.*`-Tag das GitHub-Release aus dem CHANGELOG an.
+- Veröffentlicht wird automatisch nach grüner CI auf `main` (`.github/workflows/pages.yml`); `release.yml` legt bei einem `v*.*.*`-Tag oder per `workflow_dispatch` (Eingabe `version`) Tag und GitHub-Release aus dem CHANGELOG an.
+- Aus der Cloud sind Tag-Pushes blockiert: Releases legt Claude an, indem es `release.yml` per GitHub-MCP (`actions_run_trigger`, `run_workflow`) mit der Version startet. Releases sind öffentlich, also nur auf Lucas ausdrückliche Bitte.
 - Ein neuer Blueprint-Abschnitt: Anleitung in `docs/neuer-abschnitt.md`.
 
 ## Konventionen

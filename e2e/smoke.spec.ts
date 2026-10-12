@@ -17,3 +17,11 @@ test('Einstellungen sind erreichbar', async ({ page }) => {
   await expect(page).toHaveURL(/\/einstellungen$/)
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Einstellungen')
 })
+
+test('Fußzeile zeigt Version und Kanal', async ({ page }) => {
+  await page.goto('/')
+
+  await expect(page.getByRole('contentinfo')).toHaveText(
+    /^Version v\d+\.\d+\.\d+ · (stable|nightly)/,
+  )
+})

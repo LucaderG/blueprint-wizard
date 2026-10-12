@@ -6,11 +6,29 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 
 ## [Unreleased]
 
+### Hinzugefügt
+
+- Versionsanzeige: Unten auf jeder Seite steht die Version mit Kanal, z. B. „Version v1.0.0 · stable“ für ein Release oder „Version v1.0.0 · nightly · abc1234“ für Pull Requests und ungetaggte Stände. Nach einem neuen Release baut der Release-Workflow die öffentliche Seite neu, damit sie „stable“ zeigt.
+- Monetarisierung: Neue Seite `/projekte/:projectId/monetarisierung`, erreichbar über den Knopf „Monetarisierung“ auf der Projektseite. Empfohlen ist sie ab 60 % Vollständigkeit und mit Inhalt in Problem, Zielgruppe und Kernfunktionen. Fehlt etwas, zeigt sie, was fehlt, und bietet „Trotzdem starten“ an.
+- Schritt 1 „Monetarisierungsmodelle“: Die KI schlägt 4 bis 6 Modelle aus einer festen Liste vor und bewertet sie nach sechs Kriterien von 1 bis 5 Punkten. Eine Vergleichstabelle zeigt alle Bewertungen. Man wählt ein Modell oder kombiniert bis zu drei. „Nicht monetarisieren“ lässt sich nicht kombinieren. Modelle lassen sich auch ohne KI von Hand ergänzen.
+- Schritt 2 „Preisstrategie“: Erscheint, sobald ein Modell außer „Nicht monetarisieren“ gewählt ist. Die KI schlägt 3 bis 5 Preisstrategien vor. Beispielpreise stehen als Spannen in Euro und ausdrücklich als Annahme, nicht als Marktdaten. Bis zu zwei Strategien sind wählbar, auch von Hand ergänzbar. Ändert man die Modellauswahl, werden die Preisstrategien verworfen.
+- Schritt 3 „Abschließen“: „Monetarisierung abschließen“ und „Wieder öffnen“. Regelbasierte Auswirkungen auf andere Abschnitte (z. B. Zahlungsanbieter, Nutzerkonten, Datenschutz bei Werbung) lassen sich per Klick als Stichpunkt übernehmen. Vorhandener Text wird nie überschrieben.
+- Export: `BLUEPRINT.md` bekommt ein Kapitel „Monetarisierung“, sobald ein Modell gewählt ist. `CLAUDE.md` und `AGENTS.md` enthalten eine kurze Fassung davon. Hat man ein Modell außer „Nicht monetarisieren“ gewählt, ergänzt `TASKS.md` die optionale Aufgabe „Bezahlfunktion umsetzen“. Ohne gewähltes Modell bleibt der Export unverändert. Die Monetarisierung blockiert den Export nie.
+- Prompts `suggest-monetization-models` und `suggest-pricing-strategies` (Version 1) mit Golden Files. ADR 0011.
+- Nutzerhandbuch und Architektur-Überblick um die Monetarisierung ergänzt.
+
+### Geändert
+
+- Datenformat auf Version 4: Neues Feld `project.monetization`, solange nicht begonnen `null`. Projekte im bisherigen Format (Version 3) werden beim Laden automatisch migriert. Der Reife-Check und das Exportformat (`EXPORT_VERSION` 1) bleiben unverändert.
+- Entwicklungsabhängigkeiten aktualisiert: Playwright 1.64, jsdom 30, lint-staged 17, @types/node 26; GitHub Actions auf aktuelle Hauptversionen (checkout 7, upload-artifact 7, Pages-Actions). Ein vorinstalliertes Chromium lässt sich für E2E-Tests über `PLAYWRIGHT_CHROMIUM_EXECUTABLE` angeben.
+- Der Release-Workflow lässt sich von Hand oder per API mit einer Version starten und legt Tag und GitHub-Release selbst an, auch für ältere Versionen. So kann Claude Releases aus dem Chat erstellen (`docs/release-prozess.md`).
+
 ### Behoben
 
 - Sicherheit: Der Pages-Workflow veröffentlicht nur noch nach einem Push auf `main` in diesem Repository. Vorher hätte auch ein grüner Pull Request aus einem Fork mit Branch `main` die Seite überschreiben können. Von Hand startbar nur noch für `main`.
 - Wurde ein Projekt nach einem fehlgeschlagenen Speichern umbenannt, kam beim nächsten Öffnen der alte Name zurück und überschrieb die Umbenennung. Gelöschte Projekte hinterlassen keinen ungespeicherten Stand mehr im Speicher.
 - `BASE_PATH` ohne abschließenden Schrägstrich funktioniert jetzt.
+- Der Monetarisierungs-E2E-Test wartet beim Wechsel des Farbschemas auf das Ende der Farbwechsel, bevor er den Kontrast prüft. So meldet er keine Fehler durch Zwischenfarben.
 - Doku: `404.html` erzeugt der Pages-Workflow, nicht `npm run build`; veralteter Hinweis zum Golden-File-Befehl und fehlender Schritt in „Neuen Blueprint-Abschnitt hinzufügen“ korrigiert.
 
 ## [1.0.0] – 2026-10-11 – Phase 9: Release & Wartung

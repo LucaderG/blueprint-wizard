@@ -60,6 +60,8 @@ function ExportView({ project }: { project: Project }) {
   const labels = {
     ...t('export.document', { returnObjects: true }),
     sectionTitles: t('sections', { returnObjects: true }),
+    modelKinds: t('monetization.kinds', { returnObjects: true }),
+    pricingStrategies: t('monetization.strategies', { returnObjects: true }),
     maturity: t('maturity', { returnObjects: true }),
   }
   const readiness = checkReadiness(project)

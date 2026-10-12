@@ -1,11 +1,26 @@
-import type { InterviewLogEntry, Maturity, Project } from '@/core/blueprint/schema'
+import type {
+  InterviewLogEntry,
+  Maturity,
+  MonetizationModelKind,
+  PricingStrategyKind,
+  Project,
+} from '@/core/blueprint/schema'
 import { formatAnswer } from '@/core/engine/interview'
+import { chosenModels, chosenPricing, needsPricing } from '@/core/engine/monetization'
 import { SECTION_IDS, type SectionId } from '@/core/blueprint/sections'
 import { checkReadiness, type Readiness } from './readiness'
 
 /** Alle Texte werden übergeben: Kernlogik hängt weder an i18next noch an React. */
 export interface ExportLabels {
   sectionTitles: Record<SectionId, string>
+  modelKinds: Record<MonetizationModelKind, string>
+  pricingStrategies: Record<PricingStrategyKind, string>
+  monetizationTitle: string
+  monetizationStatus: Record<'open' | 'decided', string>
+  monetizationModel: string
+  monetizationPricing: string
+  examplePrices: string
+  monetizationTask: string
   maturity: Record<Maturity, string>
   maturityLabel: string
   missing: string
@@ -105,6 +120,47 @@ function renderSection(project: Project, id: SectionId, labels: ExportLabels): s
   ]).trimEnd()
 }
 
+/**
+ * Kapitel „Monetarisierung“; leer, solange kein Modell gewählt ist. Preise bleiben als Annahme
+ * gekennzeichnet (Label `examplePrices`). `compact` (für CLAUDE.md/AGENTS.md) nennt nur Modelle,
+ * Preisstrategien und Beispielpreise, ohne Beschreibungen und Begründungen.
+ */
+export function renderMonetization(
+  project: Project,
+  labels: ExportLabels,
+  { compact = false }: { compact?: boolean } = {},
+): string {
+  const monetization = project.monetization
+  if (!monetization || monetization.chosenModelIds.length === 0) return ''
+  const optionHeading = (kindLabel: string, own: string) =>
+    heading(own ? `${own} (${kindLabel})` : kindLabel)
+  const details = (...texts: string[]) => (compact ? [] : texts)
+  return document([
+    `## ${labels.monetizationTitle}`,
+    `_${labels.monetizationStatus[monetization.status]}_`,
+    ...chosenModels(monetization).map((model) =>
+      document([
+        `### ${labels.monetizationModel}: ${optionHeading(labels.modelKinds[model.kind], model.title)}`,
+        ...details(model.summary, model.fitReason),
+      ]).trimEnd(),
+    ),
+    ...details(
+      monetization.modelRationale ? `${labels.rationale}: ${monetization.modelRationale}` : '',
+    ),
+    ...chosenPricing(monetization).map((option) =>
+      document([
+        `### ${labels.monetizationPricing}: ${optionHeading(labels.pricingStrategies[option.strategy], option.title)}`,
+        ...details(option.summary),
+        option.examplePrices ? `${labels.examplePrices}: ${option.examplePrices}` : '',
+        ...details(option.reason),
+      ]).trimEnd(),
+    ),
+    ...details(
+      monetization.pricingRationale ? `${labels.rationale}: ${monetization.pricingRationale}` : '',
+    ),
+  ]).trimEnd()
+}
+
 /** Vollständiger Blueprint einschließlich Entscheidungsprotokoll und ungeklärtem Kontext. */
 export function generateBlueprint(project: Project, labels: ExportLabels): string {
   const answerLog = interviewEntries(project)
@@ -116,6 +172,7 @@ export function generateBlueprint(project: Project, labels: ExportLabels): strin
     `# ${heading(project.name)}`,
     `${labels.updatedAt}: ${project.updatedAt} · ${labels.formatVersion}: ${EXPORT_VERSION}`,
     ...SECTION_IDS.map((id) => renderSection(project, id, labels)),
+    renderMonetization(project, labels),
     `## ${labels.openPoints}`,
     warnings.length ? bullets(warnings) : labels.noOpenPoints,
     ...readiness.questions.map((q) =>
@@ -212,6 +269,7 @@ export function generateAgentContext(project: Project, labels: ExportLabels): st
     ...(['problem', 'audience', 'features', 'nonGoals', 'techStack'] as const).map((id) =>
       renderSection(project, id, labels),
     ),
+    renderMonetization(project, labels, { compact: true }),
     `## ${labels.rulesTitle}`,
     labels.rules.map((rule, index) => `${index + 1}. ${rule}`).join('\n'),
     `## ${labels.openPoints}`,
@@ -233,6 +291,9 @@ export function generateTasks(project: Project, labels: ExportLabels): string {
         `**${labels.acceptance}:** ${phase.acceptance}`,
       ]).trimEnd(),
     ),
+    project.monetization && needsPricing(project.monetization)
+      ? `## ${labels.monetizationTitle}\n\n- [ ] ${labels.monetizationTask}`
+      : '',
     renderSection(project, 'features', labels),
     renderSection(project, 'flows', labels),
     renderSection(project, 'nonGoals', labels),

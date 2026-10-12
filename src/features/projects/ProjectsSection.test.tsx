@@ -4,6 +4,7 @@ import { computeCompleteness, PROJECT_NAME_MAX_LENGTH } from '@/core/blueprint'
 import { MemoryProjectRepository } from '@/core/storage'
 import { downloadTextFile } from '@/shared/lib/download'
 import { renderRoute } from '@/test/render'
+import { getUnsaved, rememberUnsaved } from './pendingSaves'
 
 vi.mock('@/shared/lib/download', () => ({ downloadTextFile: vi.fn() }))
 
@@ -188,6 +189,10 @@ describe('Projektliste auf der Startseite', () => {
   it('löscht ein Projekt erst nach Bestätigung', async () => {
     const user = userEvent.setup()
     const repository = await repositoryWith('Alpha')
+    const [summary] = await repository.list()
+    const draft = (await repository.get(summary!.id))!
+    draft.blueprint.sections.problem.content = 'Ungespeicherter Entwurf'
+    rememberUnsaved(repository, draft)
     renderRoute('/', { repository })
 
     await user.click(within(await projectList()).getByRole('button', { name: 'Alpha löschen' }))
@@ -203,6 +208,27 @@ describe('Projektliste auf der Startseite', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     expect(screen.getByRole('status')).toHaveTextContent('„Alpha“ wurde gelöscht.')
     expect(await repository.list()).toHaveLength(0)
+    expect(getUnsaved(repository, draft.id)).toBeUndefined()
+  })
+
+  it('behält den ungespeicherten Entwurf, wenn das Löschen scheitert', async () => {
+    const user = userEvent.setup()
+    const repository = await repositoryWith('Alpha')
+    const [summary] = await repository.list()
+    const draft = (await repository.get(summary!.id))!
+    draft.blueprint.sections.problem.content = 'Ungespeicherter Entwurf'
+    rememberUnsaved(repository, draft)
+    vi.spyOn(repository, 'delete').mockRejectedValue(new Error('Speicher nicht verfügbar'))
+    renderRoute('/', { repository })
+
+    await user.click(within(await projectList()).getByRole('button', { name: 'Alpha löschen' }))
+    const dialog = screen.getByRole('dialog', { name: 'Projekt löschen?' })
+    await user.click(within(dialog).getByRole('button', { name: 'Löschen' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Das hat leider nicht geklappt.')
+    expect(within(await projectList()).getByRole('link', { name: 'Alpha' })).toBeVisible()
+    expect(await repository.get(draft.id)).toBeDefined()
+    expect(getUnsaved(repository, draft.id)).toEqual(draft)
   })
 
   it('behält das Projekt, wenn das Löschen abgebrochen wird', async () => {
