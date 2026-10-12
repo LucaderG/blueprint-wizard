@@ -47,7 +47,7 @@ export interface IdentifyDecisionsInput {
   language: 'de' | 'en'
 }
 
-function describeDecided(decisions: readonly Decision[]): string {
+export function describeDecided(decisions: readonly Decision[]): string {
   const lines = decisions.flatMap((d) => {
     if (d.status === 'open') return []
     if (d.status === 'dismissed') return [`- [${d.sectionId}] ${d.title} → (verworfen)`]
