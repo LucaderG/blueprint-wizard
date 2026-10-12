@@ -140,3 +140,25 @@ Am Ende jeder Phase abarbeiten:
 - **ADRs:** Architekturentscheidungen als ADR in `docs/adr/` festhalten (Vorlage: `docs/adr/0000-template.md`, fortlaufend nummeriert).
 - **Changelog:** Jede nennenswerte Änderung bekommt einen Eintrag in `CHANGELOG.md` unter `[Unreleased]`.
 - Formatierung macht Prettier (keine Semikolons, einfache Anführungszeichen, Zeilenbreite 100); nicht von Hand dagegen arbeiten.
+
+## Agent skills
+
+### Issue tracker
+
+Tickets liegen als Markdown-Dateien unter `.scratch/<feature>/`. Siehe `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Standard-Labels: needs-triage, needs-info, ready-for-agent, ready-for-human, wontfix. Siehe `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: ein `CONTEXT.md` und `docs/adr/` im Repo-Root. Siehe `docs/agents/domain.md`.
+
+### Unslop
+
+Der Skill `unslop` wird immer auf Prosa angewendet: Antworten, Doku, PR-Texte und Kommentare. Er gilt nicht für Code, das Commit-Format und feste Vorlagen (PR-Vorlage, ADR-Vorlage, Checklisten, Tabellen).
+
+Auf Deutsch soll der Skill so streng arbeiten wie auf Englisch. Die deutschen Regeln stehen im Abschnitt „Deutsch“ des Skills.
+
+Stil: kurze, konkrete Sätze, zuerst das Ergebnis, keine Füllsätze.
