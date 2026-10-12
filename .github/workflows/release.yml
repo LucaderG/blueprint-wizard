@@ -5,6 +5,8 @@ name: Release
 # - Von Hand oder per API (workflow_dispatch) mit der Version, z. B. „1.1.0“. Der Workflow sucht auf
 #   main den ersten Commit, dessen package.json diese Version trägt, und setzt dort den Tag.
 #   So kann Claude Releases aus dem Chat anlegen, auch für ältere Versionen.
+# Ein bereits in der GitHub-Oberfläche angelegtes Release bleibt unverändert; der Workflow prüft
+# weiterhin die Version.
 # Ablauf: docs/release-prozess.md.
 on:
   push:

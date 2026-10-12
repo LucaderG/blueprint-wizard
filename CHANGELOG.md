@@ -23,6 +23,14 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 - Entwicklungsabhängigkeiten aktualisiert: Playwright 1.64, jsdom 30, lint-staged 17, @types/node 26; GitHub Actions auf aktuelle Hauptversionen (checkout 7, upload-artifact 7, Pages-Actions). Ein vorinstalliertes Chromium lässt sich für E2E-Tests über `PLAYWRIGHT_CHROMIUM_EXECUTABLE` angeben.
 - Der Release-Workflow lässt sich von Hand oder per API mit einer Version starten und legt Tag und GitHub-Release selbst an, auch für ältere Versionen. So kann Claude Releases aus dem Chat erstellen (`docs/release-prozess.md`).
 
+### Behoben
+
+- Sicherheit: Der Pages-Workflow veröffentlicht nur noch nach einem Push auf `main` in diesem Repository. Vorher hätte auch ein grüner Pull Request aus einem Fork mit Branch `main` die Seite überschreiben können. Von Hand startbar nur noch für `main`.
+- Wurde ein Projekt nach einem fehlgeschlagenen Speichern umbenannt, kam beim nächsten Öffnen der alte Name zurück und überschrieb die Umbenennung. Gelöschte Projekte hinterlassen keinen ungespeicherten Stand mehr im Speicher.
+- `BASE_PATH` ohne abschließenden Schrägstrich funktioniert jetzt.
+- Der Monetarisierungs-E2E-Test wartet beim Wechsel des Farbschemas auf das Ende der Farbwechsel, bevor er den Kontrast prüft. So meldet er keine Fehler durch Zwischenfarben.
+- Doku: `404.html` erzeugt der Pages-Workflow, nicht `npm run build`; veralteter Hinweis zum Golden-File-Befehl und fehlender Schritt in „Neuen Blueprint-Abschnitt hinzufügen“ korrigiert.
+
 ## [1.0.0] – 2026-10-11 – Phase 9: Release & Wartung
 
 ### Hinzugefügt

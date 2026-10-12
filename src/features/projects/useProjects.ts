@@ -3,7 +3,7 @@ import { useProjectRepository } from '@/app/useProjectRepository'
 import type { Project } from '@/core/blueprint'
 import type { ProjectSummary } from '@/core/storage'
 import { downloadTextFile } from '@/shared/lib/download'
-import { waitForPendingSaves } from './pendingSaves'
+import { forgetUnsaved, waitForPendingSaves } from './pendingSaves'
 import { exportFileName } from './projectName'
 
 export type ProjectsStatus = 'loading' | 'ready' | 'error'
@@ -74,7 +74,11 @@ export function useProjects() {
   )
 
   const remove = useCallback(
-    (id: string): Promise<void> => withReload(() => repository.delete(id)),
+    (id: string): Promise<void> =>
+      withReload(async () => {
+        await repository.delete(id)
+        forgetUnsaved(repository, id)
+      }),
     [repository, withReload],
   )
 

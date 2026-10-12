@@ -11,7 +11,7 @@ Phase 9 verlangt eine öffentliche, rein statische Bereitstellung, semantische V
 ## Entscheidung
 
 - **GitHub Pages** unter `https://lucaderg.github.io/blueprint-wizard/`. Die App liegt damit in einem Unterordner. Vite liest dafür `BASE_PATH` (Standard `/`), der Router nutzt `import.meta.env.BASE_URL` als `basename`, Manifest und Service Worker leiten Scope und Fallback daraus ab. Lokal und in allen Tests bleibt die App unter `/`.
-- **SPA-Routing auf Pages:** Der Build kopiert `index.html` nach `404.html`, damit direkt aufgerufene Unterseiten laden. Nach dem ersten Besuch übernimmt der Service Worker das Routing.
+- **SPA-Routing auf Pages:** Der Pages-Workflow kopiert nach dem Build `index.html` nach `404.html`, damit direkt aufgerufene Unterseiten laden. Nach dem ersten Besuch übernimmt der Service Worker das Routing.
 - **Veröffentlichen nach grüner CI:** `pages.yml` startet per `workflow_run`, sobald die CI auf `main` erfolgreich war, und baut genau diesen Commit. So geht nichts online, was Tests nicht bestanden hat, und es braucht keine Tag-Regeln für die `github-pages`-Umgebung.
 - **Releases über Tags:** `release.yml` reagiert auf `v*.*.*`-Tags, prüft die Übereinstimmung mit `package.json` und legt das GitHub-Release mit dem CHANGELOG-Abschnitt an. Ein in der Oberfläche angelegtes Release bleibt unverändert.
 - **Dependabot** statt Renovate: in GitHub eingebaut, keine App-Installation nötig. Minor/Patch-Updates gebündelt, Major einzeln, Actions monatlich.

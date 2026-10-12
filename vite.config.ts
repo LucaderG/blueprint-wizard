@@ -8,7 +8,8 @@ import { VitePWA } from 'vite-plugin-pwa'
 import { resolveBuildInfo } from './src/core/build/buildInfo.ts'
 
 // GitHub Pages liefert die App unter /<repo>/ aus; der Deploy-Workflow setzt dafür BASE_PATH.
-const base = process.env.BASE_PATH ?? '/'
+// Ein fehlender Schrägstrich am Ende wird ergänzt, sonst zeigt der Service-Worker-Fallback ins Leere.
+const base = (process.env.BASE_PATH ?? '/').replace(/\/?$/, '/')
 
 function git(...args: string[]): string | null {
   try {

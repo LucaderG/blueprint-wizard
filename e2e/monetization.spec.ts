@@ -237,6 +237,13 @@ async function openMonetization(page: Page) {
 
 /** Barrierefreiheit wie in `a11y.spec.ts`: keine Verstöße mit Impact „serious“ oder „critical“. */
 async function expectNoSeriousViolations(page: Page) {
+  // Nach einem Farbschemawechsel erst die fertigen Farben prüfen, nicht einen Übergangszustand.
+  await page.evaluate(async () => {
+    const transitions = document
+      .getAnimations()
+      .filter((animation) => animation instanceof CSSTransition)
+    await Promise.all(transitions.map((animation) => animation.finished.catch(() => undefined)))
+  })
   const results = await new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
     .analyze()
@@ -285,6 +292,7 @@ test('Kompletter Ablauf: Modelle, Preisstrategie, Abschluss, Export und Neuladen
   // Alle Schritte sichtbar: Barrierefreiheit hell und dunkel prüfen.
   await expectNoSeriousViolations(page)
   await page.emulateMedia({ colorScheme: 'dark' })
+  await expect(page.locator('html')).toHaveClass(/\bdark\b/)
   await expectNoSeriousViolations(page)
   await page.emulateMedia({ colorScheme: 'light' })
 

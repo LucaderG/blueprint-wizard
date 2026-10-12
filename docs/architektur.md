@@ -114,7 +114,7 @@ Das Projektschema steht bei Version 4: Version 1 zu 2 verschob die Fragen in den
 - `vite-plugin-pwa` (`vite.config.ts`) mit `registerType: 'autoUpdate'`. Der Service Worker cacht nur die App-Dateien. KI-Anfragen laufen immer übers Netz; Projekte liegen ohnehin in IndexedDB.
 - `e2e/pwa.spec.ts` prüft Manifest, Service Worker und Start ohne Netz. Nur dieser Test erlaubt den Service Worker ausdrücklich.
 - **Veröffentlichung:** `pages.yml` stellt `main` auf GitHub Pages bereit, sobald die CI auf `main` grün war (`workflow_run`). Der Ablauf steht in [release-prozess.md](release-prozess.md). `release.yml` legt bei einem Tag `v*.*.*` das GitHub-Release mit dem CHANGELOG-Abschnitt an und prüft die Version gegen `package.json`.
-- **Unterordner und Routing:** Die Seite liegt unter einem Unterordner. Vite liest dafür `BASE_PATH` (`vite.config.ts`), der Router nutzt `BASE_URL` als `basename` (`app/router.ts`). Der Build kopiert `index.html` nach `404.html`, damit direkt aufgerufene Unterseiten laden. Absolute Pfade wie `href="/…"` vermeiden; Links laufen über den Router.
+- **Unterordner und Routing:** Die Seite liegt unter einem Unterordner. Vite liest dafür `BASE_PATH` (`vite.config.ts`), der Router nutzt `BASE_URL` als `basename` (`app/router.ts`). Der Pages-Workflow kopiert nach dem Build `index.html` nach `404.html` (`npm run build` allein tut das nicht), damit direkt aufgerufene Unterseiten laden. Absolute Pfade wie `href="/…"` vermeiden; Links laufen über den Router.
 - **Speicher pro Adresse:** Jede Origin hat eigenen Browser-Speicher. Projekte von `localhost` erscheinen nicht automatisch auf der Pages-Adresse; dafür dienen Export und Import.
 - Abhängigkeiten: Dependabot hält npm-Pakete und GitHub Actions aktuell (ADR 0010).
 
