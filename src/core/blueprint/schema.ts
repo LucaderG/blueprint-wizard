@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { SECTION_IDS, type SectionId } from './sections'
 
 /** Aktuelle Version des gespeicherten Projektformats. Bei jeder Schemaänderung erhöhen und eine Migration ergänzen. */
-export const CURRENT_SCHEMA_VERSION = 4
+export const CURRENT_SCHEMA_VERSION = 5
 
 export const sectionIdSchema = z.enum(SECTION_IDS)
 
@@ -332,6 +332,47 @@ export const monetizationSchema = z
   })
 export type Monetization = z.infer<typeof monetizationSchema>
 
+/** Grober Aufwand einer ersten Version (wie bei den Ideen der Ideenfindung). */
+export const PROFILE_EFFORTS = ['small', 'medium', 'large'] as const
+export const profileEffortSchema = z.enum(PROFILE_EFFORTS)
+export type ProfileEffort = z.infer<typeof profileEffortSchema>
+
+/**
+ * Steckbrief eines Eintrags (seit Schema 5): die Kurzfassung einer Idee oder Variante. Der Titel ist
+ * der Projektname. Die Grenzen für die KI (5–8 Funktionen, höchstens 3 Risiken) gelten nur beim
+ * Bereinigen ihrer Antwort; von Hand darf der Steckbrief davon abweichen.
+ */
+export const profileSchema = z.object({
+  /** Ein bis zwei Sätze: worum es geht. */
+  pitch: z.string().trim().min(1),
+  problem: z.string(),
+  audience: z.string(),
+  features: z.array(z.string().trim().min(1)),
+  platform: z.string(),
+  /** Nur Text, keine Übernahme in `project.monetization` (ADR 0012). Preise sind eine Annahme. */
+  monetization: z.object({ model: z.string(), priceRange: z.string(), reason: z.string() }),
+  effort: profileEffortSchema,
+  risks: z.array(z.string().trim().min(1)),
+})
+export type ProjectProfile = z.infer<typeof profileSchema>
+
+/** Ob ein Eintrag in der Bibliothek steht oder im Papierkorb liegt. */
+export const libraryStatusSchema = z.enum(['saved', 'trashed'])
+export type LibraryStatus = z.infer<typeof libraryStatusSchema>
+
+/** Platz eines Eintrags in Bibliothek oder Papierkorb (seit Schema 5). */
+export const librarySchema = z
+  .object({
+    status: libraryStatusSchema,
+    /** Seit wann der Eintrag im Papierkorb liegt; Grundlage für Restzeit und Endlöschung. */
+    trashedAt: z.iso.datetime().nullable(),
+  })
+  .refine((l) => (l.status === 'trashed') === (l.trashedAt !== null), {
+    message: 'Nur Einträge im Papierkorb haben einen Zeitpunkt',
+    path: ['trashedAt'],
+  })
+export type Library = z.infer<typeof librarySchema>
+
 export const projectSchema = z.object({
   schemaVersion: z.literal(CURRENT_SCHEMA_VERSION),
   id: z.string().min(1),
@@ -345,5 +386,9 @@ export const projectSchema = z.object({
   additions: z.array(additionSchema).refine(uniqueIds, 'Vorschlags-IDs müssen eindeutig sein'),
   /** Monetarisierung (seit Schema 4); `null`, solange die Sektion nicht begonnen wurde. */
   monetization: monetizationSchema.nullable(),
+  /** Steckbrief (seit Schema 5); `null` bei Projekten ohne Steckbrief. */
+  profile: profileSchema.nullable(),
+  /** Bibliothek oder Papierkorb (seit Schema 5). */
+  library: librarySchema,
 })
 export type Project = z.infer<typeof projectSchema>

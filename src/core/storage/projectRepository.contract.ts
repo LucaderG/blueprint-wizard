@@ -75,6 +75,8 @@ export function describeProjectRepositoryContract(
           decisions: [],
           additions: [],
           monetization: null,
+          profile: null,
+          library: { status: 'saved', trashedAt: null },
         })
         expect(await repo.get('id-1')).toEqual(project)
       })

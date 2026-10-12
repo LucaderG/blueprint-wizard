@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 4,
+  "id": "4b1d7c2e-3a5f-4e8b-9d10-6c7e8f9a0b03",
+  "name": "Rezeptplaner",
+  "entryPoint": "partialIdea",
+  "createdAt": "2026-01-10T09:00:00.000Z",
+  "updatedAt": "2026-10-12T12:00:00.000Z",
+  "blueprint": {
+    "sections": {
+      "problem": {
+        "id": "problem",
+        "content": "Wochenplanung mit Rezepten kostet Zeit und endet oft ohne Einkaufsliste.",
+        "maturity": "decided",
+        "source": "user"
+      },
+      "audience": {
+        "id": "audience",
+        "content": "Berufstätige, die für die Familie kochen.",
+        "maturity": "vague",
+        "source": "user"
+      },
+      "features": {
+        "id": "features",
+        "content": "- Rezepte für die Woche planen\n- Einkaufsliste erzeugen\n- Rezepte per Link importieren",
+        "maturity": "vague",
+        "source": "user"
+      },
+      "nonGoals": {
+        "id": "nonGoals",
+        "content": "",
+        "maturity": "empty",
+        "source": "user"
+      },
+      "flows": {
+        "id": "flows",
+        "content": "1. Woche öffnen\n2. Rezepte auf Tage ziehen\n3. Einkaufsliste prüfen",
+        "maturity": "vague",
+        "source": "user"
+      },
+      "dataModel": {
+        "id": "dataModel",
+        "content": "Rezepte und Wochenpläne.",
+        "maturity": "vague",
+        "source": "aiSuggestion"
+      },
+      "techStack": {
+        "id": "techStack",
+        "content": "Web-App (React), Daten lokal im Browser.",
+        "maturity": "decided",
+        "source": "user"
+      },
+      "integrations": {
+        "id": "integrations",
+        "content": "",
+        "maturity": "empty",
+        "source": "user"
+      },
+      "risks": {
+        "id": "risks",
+        "content": "Rezeptquellen können sich ändern.",
+        "maturity": "vague",
+        "source": "aiAccepted"
+      },
+      "roadmap": {
+        "id": "roadmap",
+        "content": "",
+        "maturity": "empty",
+        "source": "user"
+      }
+    }
+  },
+  "interview": {
+    "questions": [
+      {
+        "id": "v2-q1",
+        "sectionId": "audience",
+        "text": "Für wen ist die App gedacht?",
+        "why": "Bestimmt den Umfang der ersten Version.",
+        "leverage": 5,
+        "options": [
+          {
+            "id": "family",
+            "label": "Familien"
+          }
+        ],
+        "dependsOn": [],
+        "status": "answered",
+        "answer": {
+          "kind": "option",
+          "optionId": "family",
+          "note": "Vor allem für mich"
+        },
+        "createdAt": "2026-02-01T10:00:00.000Z",
+        "answeredAt": "2026-02-02T10:00:00.000Z"
+      },
+      {
+        "id": "v2-q2",
+        "sectionId": "nonGoals",
+        "text": "Sollen Rezepte mit anderen geteilt werden können?",
+        "why": "",
+        "leverage": 2,
+        "options": [],
+        "dependsOn": [],
+        "status": "open",
+        "answer": null,
+        "createdAt": "2026-02-01T10:00:00.000Z",
+        "answeredAt": null
+      }
+    ],
+    "log": [
+      {
+        "questionId": "v2-q1",
+        "questionText": "Für wen ist die App gedacht?",
+        "sectionId": "audience",
+        "action": "answered",
+        "answerText": "Familien – Vor allem für mich",
+        "at": "2026-02-02T10:00:00.000Z"
+      }
+    ],
+    "analysis": null
+  },
+  "decisions": [
+    {
+      "id": "v2-d2",
+      "sectionId": "dataModel",
+      "title": "Wo werden die Rezepte gespeichert?",
+      "context": "",
+      "leverage": 4,
+      "options": [
+        {
+          "id": "local",
+          "label": "Nur auf dem Gerät",
+          "pros": [],
+          "cons": [],
+          "consequence": "Keine Konten nötig, aber kein Abgleich zwischen Geräten"
+        },
+        {
+          "id": "server",
+          "label": "Auf einem Server",
+          "pros": [],
+          "cons": [],
+          "consequence": "Abgleich zwischen Geräten, dafür Konten und Hosting nötig"
+        }
+      ],
+      "recommendedOptionId": null,
+      "chosenOptionId": "local",
+      "rationale": "Passt zum MVP.",
+      "status": "decided",
+      "createdAt": "2026-03-10T12:00:00.000Z",
+      "decidedAt": "2026-10-11T18:10:00.000Z"
+    },
+    {
+      "id": "v2-d1",
+      "sectionId": "techStack",
+      "title": "Web-App oder native App?",
+      "context": "",
+      "leverage": 5,
+      "options": [
+        {
+          "id": "web",
+          "label": "Web-App",
+          "pros": [],
+          "cons": [],
+          "consequence": "Läuft im Browser auf allen Geräten, ohne App-Store"
+        },
+        {
+          "id": "native",
+          "label": "Native App",
+          "pros": [],
+          "cons": [],
+          "consequence": "Eine App je Plattform und Veröffentlichung im App-Store"
+        }
+      ],
+      "recommendedOptionId": null,
+      "chosenOptionId": "web",
+      "rationale": "Der Browser reicht für die erste Version.",
+      "status": "decided",
+      "createdAt": "2026-03-10T12:00:00.000Z",
+      "decidedAt": "2026-03-10T12:00:00.000Z"
+    }
+  ],
+  "additions": [
+    {
+      "id": "v3-a1",
+      "sectionId": "features",
+      "text": "Rezepte per Link importieren",
+      "reason": "Spart Abtippen.",
+      "status": "accepted",
+      "createdAt": "2026-10-11T18:00:00.000Z",
+      "resolvedAt": "2026-10-11T18:05:00.000Z"
+    },
+    {
+      "id": "v3-a2",
+      "sectionId": "nonGoals",
+      "text": "Keine Nährwertberechnung",
+      "reason": "Hält den MVP klein.",
+      "status": "rejected",
+      "createdAt": "2026-10-11T18:00:00.000Z",
+      "resolvedAt": "2026-10-11T18:06:00.000Z"
+    },
+    {
+      "id": "v3-a3",
+      "sectionId": "risks",
+      "text": "Import-Seiten ändern ihr Format",
+      "reason": "Parser brechen.",
+      "status": "open",
+      "createdAt": "2026-10-11T18:00:00.000Z",
+      "resolvedAt": null
+    }
+  ],
+  "monetization": {
+    "models": [
+      {
+        "id": "m1",
+        "kind": "freemium",
+        "title": "Kostenlos für Einzelne",
+        "summary": "Grundfunktionen gratis, Familienplanung kostenpflichtig.",
+        "fitReason": "Niedrige Einstiegshürde.",
+        "concerns": ["Wenige zahlen"],
+        "scores": {
+          "revenuePotential": 3,
+          "implementationEase": 4,
+          "userAcceptance": 5,
+          "predictability": 3,
+          "audienceFit": 4,
+          "techFit": 4
+        },
+        "recommended": true
+      },
+      {
+        "id": "m2",
+        "kind": "subscription",
+        "title": "",
+        "summary": "Monatliches Abo.",
+        "fitReason": "Laufender Nutzen.",
+        "concerns": [],
+        "scores": null,
+        "recommended": false
+      }
+    ],
+    "chosenModelIds": ["m1"],
+    "modelRationale": "Erst Nutzer gewinnen.",
+    "pricingOptions": [
+      {
+        "id": "p1",
+        "strategy": "tiers",
+        "title": "Free und Familie",
+        "summary": "Zwei Pakete.",
+        "examplePrices": "Familie: 2–4 € pro Monat",
+        "reason": "Einfach.",
+        "recommended": true
+      }
+    ],
+    "chosenPricingIds": ["p1"],
+    "pricingRationale": "Klar verständlich.",
+    "status": "decided",
+    "decidedAt": "2026-10-12T11:30:00.000Z"
+  }
+}
