@@ -157,4 +157,8 @@ Single-context: ein `CONTEXT.md` und `docs/adr/` im Repo-Root. Siehe `docs/agent
 
 ### Unslop
 
-Der Skill `unslop` wird immer genutzt: Texte und Code vor der Abgabe damit von Füllwörtern und KI-Floskeln befreien.
+Der Skill `unslop` wird immer auf Prosa angewendet: Antworten, Doku, PR-Texte und Kommentare. Er gilt nicht für Code, das Commit-Format und feste Vorlagen (PR-Vorlage, ADR-Vorlage, Checklisten, Tabellen).
+
+Auf Deutsch soll der Skill so streng arbeiten wie auf Englisch. Die deutschen Regeln stehen im Abschnitt „Deutsch“ des Skills.
+
+Stil: kurze, konkrete Sätze, zuerst das Ergebnis, keine Füllsätze.
