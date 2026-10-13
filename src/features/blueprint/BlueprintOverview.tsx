@@ -13,8 +13,10 @@ import {
   acceptSuggestion,
   computeCompleteness,
   SECTION_IDS,
+  updateProfile,
   updateSection,
   type Maturity,
+  type ProjectProfile,
   type SectionId,
 } from '@/core/blueprint'
 import { detectContradictions, prioritizeQuestions, rankDecisions } from '@/core/engine'
@@ -23,6 +25,7 @@ import type { ProjectEditorState } from '@/features/projects/useProjectEditor'
 import { CompletenessBar } from '@/features/projects/CompletenessBar'
 import { Button } from '@/shared/ui/button'
 import { MaturitySummary } from './MaturitySummary'
+import { ProfileCard } from './ProfileCard'
 import { SaveStatus } from './SaveStatus'
 import { SectionCard } from './SectionCard'
 import { countByMaturity } from './maturity'
@@ -57,6 +60,7 @@ export function BlueprintOverview({
   const setMaturity = (id: SectionId, maturity: Maturity) =>
     edit((current) => updateSection(current, id, { maturity }))
   const accept = (id: SectionId) => edit((current) => acceptSuggestion(current, id))
+  const setProfile = (profile: ProjectProfile) => edit((current) => updateProfile(current, profile))
 
   return (
     <div className="space-y-6">
@@ -125,6 +129,8 @@ export function BlueprintOverview({
           <SaveStatus saveState={saveState} onRetry={() => void flush()} />
         </div>
       </header>
+
+      {project.profile && <ProfileCard profile={project.profile} onChange={setProfile} />}
 
       <MaturitySummary counts={counts} />
 

@@ -30,6 +30,7 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 - Der Zustand des Fragenmotors liegt projektweit in `project.interview` (`questions`, `log`, `analysis`); Schemaversion 2 (Migration v1 → v2 in `migrations.ts`).
 - Entscheidungen liegen projektweit in `project.decisions`, Ergänzungsvorschläge in `project.additions`; Schemaversion 3 (Migration v2 → v3 in `migrations.ts`).
 - Monetarisierung liegt in `project.monetization`; Schemaversion 4 (Migration v3 → v4 in `migrations.ts`). Die Logik liegt in `src/core/engine/monetization.ts`. Sie ist kein Abschnitt in `SECTION_IDS` (ADR 0011).
+- Steckbrief (`project.profile`) und Bibliotheksstatus (`project.library`, `saved`/`trashed` mit `trashedAt`) liegen am Projekt; Schemaversion 5 (Migration v4 → v5 in `migrations.ts`, ADR 0012). Jeder Eintrag der Bibliothek ist ein `Project`, es gibt keine Art-Spalte.
 - Komponenten greifen nur über `useProjectRepository()` auf Projekte zu, nie direkt auf Dexie.
 - Neue Repository-Logik gehört in `projectOperations.ts`, damit IndexedDB- und Memory-Variante gleich bleiben; die Vertrags-Testsuite `projectRepository.contract.ts` prüft beide.
 
@@ -59,10 +60,16 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 
 ## Ideenfindung (Einstieg „keine Idee“)
 
-- Fragebogen-Logik und Sitzungsschema liegen in `src/core/ideation` (`profile.ts`, `session.ts`); der Stand lebt nur im `sessionStorage`, nicht im Projekt (kein Schemawechsel).
+- Fragebogen-Logik und Sitzungsschema liegen in `src/core/ideation` (`profile.ts`, `session.ts`); Fragebogen, gesehene Titel und die gerade gezeigten Ideen leben im `sessionStorage`. Die Ideen selbst liegen als Einträge im Repository.
 - KI-Ideen laufen über `generateIdeas` mit einer `IdeaRequest` (`generate`, `moreLike`, `refine`, `combine`); `applyIdeas` bereinigt und baut das Ergebnis ein (`src/core/engine/ideation.ts`).
-- Die gewählte Idee wird mit `applyChosenIdea` zum Projekt (Abschnitte als `aiAccepted`).
+- Jede neue Idee wird sofort ein Eintrag im Papierkorb (`ideaToDraft` → `createVariantEntries` mit `noIdea`); die Idee trägt die ID des Eintrags. „Speichern“ holt ihn in die Bibliothek. Die gewählte Idee füllt mit `applyChosenIdea` die Abschnitte ihres Eintrags (als `aiAccepted`) und wird gespeichert.
 - Die UI nutzt das Feature ausschließlich über `useIdeation()` (`src/features/ideation/useIdeation.ts`).
+
+## Bibliothek und Varianten
+
+- Bibliothek und Papierkorb: Jeder Eintrag ist ein `Project` mit `library.status` (`saved`/`trashed`). Löschen heißt `repository.trash`, „Speichern“ und „Wiederherstellen“ heißen `repository.restore`; `save` ändert den Status nie. Endgültig löscht nur `deleteForever` oder `purgeExpired` (nur abgelaufene Einträge im Papierkorb, Frist `trashRetentionDays` 1/7/30). Hilfen in `src/core/blueprint/library.ts`.
+- Varianten: `generateVariants` (Prompt `generate-variants`, 1–3 Steckbriefe) → `applyVariantCandidates` bereinigt (höchstens 8 Funktionen, 3 Risiken) → `applyProfile` macht daraus einen Eintrag. „Voll ausarbeiten“: `expandProfile` (Prompt `expand-profile`, Antwort im Schema der Einordnung) → `expandEntry` über `applyClassification`. Alles in `src/core/engine/variants.ts`.
+- UI: `useVariantGeneration` (`src/features/variants`) erzeugt Einträge über `createVariantEntries` (anlegen, Steckbrief setzen, in den Papierkorb) und merkt Idee, Anzahl und IDs im `sessionStorage` (`variantsSession.ts`) für die Seite `/varianten`. Den Steckbrief zeigt `ProfileView`, bearbeitet wird er über `ProfileCard` und `updateProfile` (`editing.ts`).
 
 ## Blueprint-Export
 

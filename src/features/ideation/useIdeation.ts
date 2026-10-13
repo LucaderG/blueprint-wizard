@@ -4,7 +4,14 @@ import { useNavigate } from 'react-router'
 import { useProjectRepository } from '@/app/useProjectRepository'
 import { useSettings } from '@/app/useSettings'
 import type { IdeaRequest, RefineDirection } from '@/core/ai/prompts'
-import { applyChosenIdea, applyIdeas, generateIdeas, titlesToAvoid } from '@/core/engine'
+import type { LibraryStatus } from '@/core/blueprint'
+import {
+  applyChosenIdea,
+  applyIdeas,
+  generateIdeas,
+  ideaToDraft,
+  titlesToAvoid,
+} from '@/core/engine'
 import {
   EMPTY_SESSION,
   normalizeProfile,
@@ -15,6 +22,7 @@ import {
   type IdeationSession,
 } from '@/core/ideation'
 import { useAiTask, type AiTaskState } from '@/features/ai/useAiTask'
+import { createVariantEntries } from '@/features/variants/createVariantEntries'
 import { createProjectWithoutAi } from '@/features/wizard/startProject'
 
 /** Schlüssel im sessionStorage: Der Stand überlebt Neuladen, aber nicht das Schließen des Tabs. */
@@ -61,7 +69,11 @@ export interface IdeationController {
   moreLike: (idea: Idea) => Promise<void>
   refine: (idea: Idea, direction: RefineDirection, note?: string) => Promise<void>
   combine: (a: Idea, b: Idea) => Promise<void>
-  /** Legt mit der Idee ein Projekt an und öffnet es. */
+  /** Bibliotheksstatus des Eintrags einer Idee; `undefined`, solange er lädt oder fehlt. */
+  entryStatus: (idea: Idea) => LibraryStatus | undefined
+  /** Speichert den Eintrag einer Idee in der Bibliothek, ohne sie zu wählen. */
+  save: (idea: Idea) => Promise<void>
+  /** Speichert den Eintrag der Idee, füllt die Abschnitte und öffnet ihn. */
   choose: (idea: Idea) => Promise<void>
   /** Ohne KI: leeres Projekt, die Antworten zu Frust/Interessen landen als eigener Text. */
   startWithoutAi: () => Promise<void>
@@ -94,9 +106,45 @@ export function useIdeation(): IdeationController {
   const [nothingNew, setNothingNew] = useState(false)
   const [saveFailed, setSaveFailed] = useState(false)
 
+  const [statuses, setStatuses] = useState<Record<string, LibraryStatus>>({})
+
   useEffect(() => storeSession(session), [session])
 
+  // Jede gezeigte Idee ist ein Eintrag; hier steht, ob er noch im Papierkorb liegt.
+  useEffect(() => {
+    let active = true
+    void Promise.all(
+      session.ideas.map(async (idea) => {
+        const entry = await repository.get(idea.id).catch(() => undefined)
+        return [idea.id, entry?.library.status] as const
+      }),
+    ).then((pairs) => {
+      if (!active) return
+      const next: Record<string, LibraryStatus> = {}
+      for (const [id, status] of pairs) if (status) next[id] = status
+      setStatuses(next)
+    })
+    return () => {
+      active = false
+    }
+  }, [repository, session.ideas])
+
   const running = task.state.status === 'running'
+
+  /** Legt für jede neue Idee einen Eintrag im Papierkorb an; die Idee trägt danach dessen ID. */
+  const withEntries = useCallback(
+    async (updated: IdeationSession, previous: IdeationSession): Promise<IdeationSession> => {
+      const known = new Set(previous.ideas.map((idea) => idea.id))
+      const fresh = updated.ideas.filter((idea) => !known.has(idea.id))
+      const entries = await createVariantEntries(repository, fresh.map(ideaToDraft), 'noIdea')
+      const ids = new Map(fresh.map((idea, index) => [idea.id, entries[index]?.id ?? idea.id]))
+      return {
+        ...updated,
+        ideas: updated.ideas.map((idea) => ({ ...idea, id: ids.get(idea.id) ?? idea.id })),
+      }
+    },
+    [repository],
+  )
 
   const request = useCallback(
     async (next: IdeaRequest) => {
@@ -105,25 +153,28 @@ export function useIdeation(): IdeationController {
       setNothingNew(false)
       const avoidTitles = titlesToAvoid(session, next)
       await task.run(
-        (signal) =>
-          generateIdeas({
+        async (signal) => {
+          const { candidates } = await generateIdeas({
             provider: aiProvider,
             profile: session.profile,
             request: next,
             avoidTitles,
             language: settings.outputLanguage,
             signal,
-          }),
-        ({ candidates }) => {
+          })
           // Während der Anfrage ist alles gesperrt; `session` ist also noch aktuell.
           const updated = applyIdeas(session, next, candidates)
+          if (updated === session || signal.aborted) return session
+          return withEntries(updated, session)
+        },
+        (updated) => {
           setNothingNew(updated === session)
           setSession(updated)
           if (updated.ideas.length > 0) setView('ideas')
         },
       )
     },
-    [aiProvider, session, settings.outputLanguage, task],
+    [aiProvider, session, settings.outputLanguage, task, withEntries],
   )
 
   const choose = useCallback(
@@ -131,8 +182,10 @@ export function useIdeation(): IdeationController {
       setChoosing(true)
       setSaveFailed(false)
       try {
-        const created = await repository.create(idea.title)
-        const project = await repository.save(applyChosenIdea(created, idea))
+        // Ältere Sitzungen kennen noch keine Einträge; dann entsteht er erst jetzt.
+        const entry = (await repository.get(idea.id)) ?? (await repository.create(idea.title))
+        const project = await repository.save(applyChosenIdea(entry, idea))
+        await repository.restore(project.id)
         storeSession(null)
         void navigate(`/projekte/${project.id}`)
       } catch {
@@ -141,6 +194,19 @@ export function useIdeation(): IdeationController {
       }
     },
     [navigate, repository],
+  )
+
+  const save = useCallback(
+    async (idea: Idea) => {
+      setSaveFailed(false)
+      try {
+        const entry = await repository.restore(idea.id)
+        setStatuses((current) => ({ ...current, [idea.id]: entry.library.status }))
+      } catch {
+        setSaveFailed(true)
+      }
+    },
+    [repository],
   )
 
   const startWithoutAi = useCallback(async () => {
@@ -178,6 +244,8 @@ export function useIdeation(): IdeationController {
     moreLike: (idea) => request({ kind: 'moreLike', idea }),
     refine: (idea, direction, note = '') => request({ kind: 'refine', idea, direction, note }),
     combine: (a, b) => request({ kind: 'combine', ideas: [a, b] }),
+    entryStatus: (idea) => statuses[idea.id],
+    save,
     choose,
     startWithoutAi,
     editProfile: () => setView('questionnaire'),

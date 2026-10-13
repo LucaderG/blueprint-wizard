@@ -14,6 +14,8 @@ type IdeaListProps = Pick<
   | 'generate'
   | 'combine'
   | 'choose'
+  | 'save'
+  | 'entryStatus'
   | 'moreLike'
   | 'refine'
   | 'editProfile'
@@ -28,6 +30,8 @@ export function IdeaList({
   generate,
   combine,
   choose,
+  save,
+  entryStatus,
   moreLike,
   refine,
   editProfile,
@@ -64,6 +68,7 @@ export function IdeaList({
             {t('ideation.ideas.title')}
           </h2>
           <p className="text-sm text-muted-foreground">{t('ideation.ideas.lead')}</p>
+          <p className="text-sm text-muted-foreground">{t('ideation.ideas.trashHint')}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button variant="ghost" size="sm" disabled={busy} onClick={editProfile}>
@@ -102,6 +107,8 @@ export function IdeaList({
                 busy={busy}
                 disabled={aiDisabled}
                 onSelectChange={(on) => toggle(idea.id, on)}
+                status={entryStatus(idea)}
+                save={save}
                 choose={choose}
                 moreLike={moreLike}
                 refine={refine}

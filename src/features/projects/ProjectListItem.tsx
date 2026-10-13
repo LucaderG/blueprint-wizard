@@ -40,10 +40,16 @@ export function ProjectListItem({
         >
           {name}
         </Link>
-        <CompletenessBar
-          value={project.completeness}
-          label={t('projects.completenessLabel', { name })}
-        />
+        {project.hasProfile && project.completeness === 0 ? (
+          <span className="inline-block rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
+            {t('projects.profileBadge')}
+          </span>
+        ) : (
+          <CompletenessBar
+            value={project.completeness}
+            label={t('projects.completenessLabel', { name })}
+          />
+        )}
         <p className="text-xs text-muted-foreground">
           {t('projects.lastChanged', { date: formatDateTime(project.updatedAt) })}
         </p>

@@ -68,19 +68,60 @@ test('Projekt duplizieren', async ({ page }) => {
   await expect(projectList(page).getByRole('link', { name: 'Alpha', exact: true })).toBeVisible()
 })
 
-test('Projekt löschen mit Bestätigung', async ({ page }) => {
+test('Löschen legt in den Papierkorb, Rückgängig und Speichern holen zurück', async ({ page }) => {
   await createProject(page, 'Alpha')
 
+  // Löschen in der Bibliothek braucht keine Bestätigung und bietet „Rückgängig“.
   await projectList(page).getByRole('button', { name: 'Alpha löschen' }).click()
-  await page.getByRole('dialog').getByRole('button', { name: 'Abbrechen' }).click()
+  await expect(page.getByRole('status')).toHaveText('„Alpha“ liegt jetzt im Papierkorb.')
+  await expect(page.getByText(/Du hast noch keine Projekte/)).toBeVisible()
+  await page.getByRole('button', { name: 'Rückgängig' }).click()
   await expect(projectList(page).getByRole('link', { name: 'Alpha', exact: true })).toBeVisible()
 
+  // Erneut löschen; der Eintrag überlebt im Papierkorb ein Neuladen.
   await projectList(page).getByRole('button', { name: 'Alpha löschen' }).click()
-  await page.getByRole('dialog').getByRole('button', { name: 'Löschen' }).click()
+  await expect(page.getByRole('button', { name: 'Papierkorb (1)' })).toBeVisible()
+  await page.reload()
+  await page.getByRole('button', { name: 'Papierkorb (1)' }).click()
+  const trash = page.getByRole('list', { name: 'Papierkorb' })
+  await expect(trash.getByText('noch 24 Std.')).toBeVisible()
+  await trash.getByRole('button', { name: 'Alpha speichern' }).click()
 
-  await expect(page.getByText(/Du hast noch keine Projekte/)).toBeVisible()
+  await page.getByRole('button', { name: 'Bibliothek', exact: true }).click()
+  await expect(projectList(page).getByRole('link', { name: 'Alpha', exact: true })).toBeVisible()
+})
+
+test('Endgültig löschen mit Bestätigung', async ({ page }) => {
+  await createProject(page, 'Alpha')
+  await projectList(page).getByRole('button', { name: 'Alpha löschen' }).click()
+  await page.getByRole('button', { name: 'Papierkorb (1)' }).click()
+  const trash = page.getByRole('list', { name: 'Papierkorb' })
+
+  await trash.getByRole('button', { name: 'Alpha endgültig löschen' }).click()
+  await page.getByRole('dialog').getByRole('button', { name: 'Abbrechen' }).click()
+  await expect(trash.getByRole('link', { name: 'Alpha', exact: true })).toBeVisible()
+
+  await trash.getByRole('button', { name: 'Alpha endgültig löschen' }).click()
+  await page.getByRole('dialog').getByRole('button', { name: 'Endgültig löschen' }).click()
+
+  await expect(page.getByRole('button', { name: 'Papierkorb (0)' })).toBeVisible()
   await page.reload()
   await expect(page.getByText(/Du hast noch keine Projekte/)).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Papierkorb (0)' })).toBeVisible()
+})
+
+test('Nach Ablauf der Frist entfernt der Start den Eintrag endgültig', async ({ page }) => {
+  await page.clock.install({ time: new Date('2026-10-01T10:00:00Z') })
+  await page.reload()
+  await createProject(page, 'Alpha')
+  await projectList(page).getByRole('button', { name: 'Alpha löschen' }).click()
+  await expect(page.getByRole('button', { name: 'Papierkorb (1)' })).toBeVisible()
+
+  // Standardfrist: ein Tag.
+  await page.clock.setSystemTime(new Date('2026-10-02T11:00:00Z'))
+  await page.reload()
+
+  await expect(page.getByRole('button', { name: 'Papierkorb (0)' })).toBeVisible()
 })
 
 test('Export und Import ergeben wieder dasselbe Projekt', async ({ page }) => {
@@ -94,7 +135,6 @@ test('Export und Import ergeben wieder dasselbe Projekt', async ({ page }) => {
 
   // Original löschen, dann die exportierte Datei wieder importieren.
   await projectList(page).getByRole('button', { name: 'Rundreise Ü löschen' }).click()
-  await page.getByRole('dialog').getByRole('button', { name: 'Löschen' }).click()
   await expect(page.getByText(/Du hast noch keine Projekte/)).toBeVisible()
 
   await page.getByLabel('Projektdatei auswählen').setInputFiles(path)

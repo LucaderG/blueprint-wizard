@@ -28,6 +28,8 @@
       "core_decisions": "Find decisions",
       "blueprint_additions": "Get suggestions",
       "project_ideas": "Find ideas",
+      "project_variants": "Generate variants",
+      "profile_expansion": "Expand profile",
       "other": "Other request"
     }
   },
@@ -124,6 +126,16 @@
         "de": "German",
         "en": "English"
       }
+    },
+    "trash": {
+      "title": "Trash",
+      "intro": "Deleted entries and generated results you do not save stay in the trash for a while. After that they are deleted permanently.",
+      "retentionLabel": "Keep in trash for",
+      "days_one": "{{count}} day",
+      "days_other": "{{count}} days",
+      "hint": "A shorter period applies right away, including entries already in the trash.",
+      "expiring_one": "With this period, {{count}} entry in the trash has already expired. It will be deleted permanently.",
+      "expiring_other": "With this period, {{count}} entries in the trash have already expired. They will be deleted permanently."
     }
   },
   "wizard": {
@@ -174,7 +186,7 @@
     "reload": "Reload"
   },
   "projects": {
-    "title": "Your projects",
+    "title": "Your library",
     "new": "New project",
     "import": "Import project",
     "importInputLabel": "Choose project file",
@@ -208,16 +220,19 @@
       "tooLong": "The name must be at most {{max}} characters long."
     },
     "deleteDialog": {
-      "title": "Delete project?",
+      "title": "Delete permanently?",
       "description": "“{{name}}” will be deleted permanently. This cannot be undone.",
-      "confirm": "Delete",
+      "confirm": "Delete permanently",
       "cancel": "Cancel"
     },
     "notice": {
       "renamed": "The project is now called “{{name}}”.",
       "duplicated": "“{{name}}” has been created.",
-      "deleted": "“{{name}}” has been deleted.",
-      "imported": "“{{name}}” has been imported."
+      "deleted": "“{{name}}” is now in the trash.",
+      "imported": "“{{name}}” has been imported.",
+      "restored": "“{{name}}” is back in the library.",
+      "deletedForever": "“{{name}}” has been deleted permanently.",
+      "trashEmptied": "The trash is empty."
     },
     "errors": {
       "import": {
@@ -237,6 +252,47 @@
       "notFoundTitle": "Project not found",
       "notFoundText": "This project no longer exists. It may have been deleted.",
       "home": "Go to home"
+    },
+    "profileBadge": "Profile",
+    "viewLabel": "View",
+    "views": {
+      "library": "Library",
+      "trash": "Trash ({{count}})"
+    },
+    "searchLabel": "Search the library",
+    "searchPlaceholder": "Search by title …",
+    "noMatches": "No entry matches “{{query}}”.",
+    "undo": "Undo",
+    "trash": {
+      "listLabel": "Trash",
+      "intro_one": "Entries in the trash are removed permanently {{count}} day after deletion. You can change this in the settings.",
+      "intro_other": "Entries in the trash are removed permanently {{count}} days after deletion. You can change this in the settings.",
+      "empty_one": "The trash is empty. Deleted and unsaved entries stay here for {{count}} day.",
+      "empty_other": "The trash is empty. Deleted and unsaved entries stay here for {{count}} days.",
+      "emptyAll": "Delete all permanently",
+      "restore": "Save",
+      "restoreLabel": "Save {{name}}",
+      "deleteForever": "Delete permanently",
+      "deleteForeverLabel": "Delete {{name}} permanently",
+      "remaining": {
+        "days_one": "{{count}} day left",
+        "days_other": "{{count}} days left",
+        "hours_one": "{{count}} hour left",
+        "hours_other": "{{count}} hours left",
+        "minutes_one": "{{count}} minute left",
+        "minutes_other": "{{count}} minutes left"
+      }
+    },
+    "emptyTrashDialog": {
+      "title": "Empty the trash?",
+      "description_one": "{{count}} entry will be deleted permanently. This cannot be undone.",
+      "description_other": "{{count}} entries will be deleted permanently. This cannot be undone."
+    },
+    "trashedNotice": {
+      "text": "This entry is in the trash ({{remaining}}). Save it to keep it in your library.",
+      "textNoDate": "This entry is in the trash. Save it to keep it in your library.",
+      "save": "Save to library",
+      "saved": "Saved. The entry is now in your library."
     }
   },
   "sections": {
@@ -553,7 +609,11 @@
       "retry": "Try again",
       "dismiss": "Close",
       "errorIntro": "That didn't work.",
-      "nothingNew": "The AI didn't come up with a new idea. Try again or change your answers."
+      "nothingNew": "The AI didn't come up with a new idea. Try again or change your answers.",
+      "save": "Save",
+      "saveLabel": "Save {{title}} to the library",
+      "saved": "Saved",
+      "trashHint": "Each idea stays in the trash until you save or choose it."
     }
   },
   "export": {
@@ -787,5 +847,58 @@
     "rationaleLabel": "Rationale (optional)",
     "choose": "Please choose",
     "cancel": "Cancel"
+  },
+  "profile": {
+    "title": "Profile",
+    "edit": "Edit profile",
+    "apply": "Apply",
+    "cancel": "Cancel",
+    "fields": {
+      "pitch": "Pitch",
+      "problem": "Problem",
+      "audience": "Target audience",
+      "platform": "Platform",
+      "features": "Core features",
+      "featuresHint": "One feature per line.",
+      "monetizationModel": "Model",
+      "priceRange": "Price range",
+      "reason": "Reasoning",
+      "effort": "Effort",
+      "risks": "Risks",
+      "risksHint": "One risk per line."
+    },
+    "monetization": "Monetization",
+    "priceAssumption": "Prices are an assumption, not market data.",
+    "effort": {
+      "small": "small",
+      "medium": "medium",
+      "large": "large"
+    }
+  },
+  "variants": {
+    "title": "Your variants",
+    "intro": "Each variant stays in the trash until you save it. The app saves expanded variants automatically.",
+    "none": "Variants appear here once you generate them from an idea.",
+    "enterIdea": "Enter an idea",
+    "countLabel": "Number of variants",
+    "generate": "Generate variants",
+    "regenerate": "Generate again",
+    "running": "The AI is generating variants …",
+    "loading": "Loading variants …",
+    "gone": "These variants no longer exist. Generate new ones or look in your library.",
+    "listLabel": "Variants",
+    "status": {
+      "saved": "Saved in the library",
+      "trashed": "In the trash, {{remaining}}",
+      "trashedNoDate": "In the trash"
+    },
+    "save": "Save",
+    "saveLabel": "Save {{name}}",
+    "savedButton": "Saved",
+    "expand": "Expand fully",
+    "expandLabel": "Expand {{name}} fully",
+    "expanding": "The AI is expanding the profile …",
+    "open": "Open",
+    "openLabel": "Open {{name}}"
   }
 }

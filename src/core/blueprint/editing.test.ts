@@ -1,5 +1,5 @@
-import { acceptSuggestion, setEntryPoint, updateSection } from './editing'
-import type { Project, Section } from './schema'
+import { acceptSuggestion, setEntryPoint, updateProfile, updateSection } from './editing'
+import type { Project, ProjectProfile, Section } from './schema'
 import { makeProject } from './testing'
 
 /** Testhilfe: setzt Inhalt, Reife und Herkunft eines Abschnitts direkt. */
@@ -144,5 +144,43 @@ describe('setEntryPoint', () => {
     expect(next.entryPoint).toBe('almostDone')
     expect(next.blueprint).toBe(project.blueprint)
     expect(project.entryPoint).toBeNull()
+  })
+})
+
+describe('updateProfile', () => {
+  const profile: ProjectProfile = {
+    pitch: '  Eine App für Fans  ',
+    problem: ' Tourdaten sind verstreut ',
+    audience: 'Fans',
+    features: [' Tourkalender ', '', '   ', 'Erinnerungen'],
+    platform: ' Web ',
+    monetization: { model: ' Abo ', priceRange: ' 2–4 € ', reason: ' Wiederkehrender Nutzen ' },
+    effort: 'medium',
+    risks: ['Datenquellen', ' '],
+  }
+
+  it('trimmt Texte und entfernt leere Listeneinträge', () => {
+    const project = updateProfile(makeProject(), profile)
+
+    expect(project.profile).toEqual({
+      pitch: 'Eine App für Fans',
+      problem: 'Tourdaten sind verstreut',
+      audience: 'Fans',
+      features: ['Tourkalender', 'Erinnerungen'],
+      platform: 'Web',
+      monetization: { model: 'Abo', priceRange: '2–4 €', reason: 'Wiederkehrender Nutzen' },
+      effort: 'medium',
+      risks: ['Datenquellen'],
+    })
+  })
+
+  it('lässt das Original unverändert', () => {
+    const original = makeProject()
+    updateProfile(original, profile)
+    expect(original.profile).toBeNull()
+  })
+
+  it('verlangt einen Pitch', () => {
+    expect(() => updateProfile(makeProject(), { ...profile, pitch: '  ' })).toThrow(RangeError)
   })
 })

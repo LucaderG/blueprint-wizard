@@ -1,14 +1,22 @@
 import { useId, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router'
 import { useAiProvider } from '@/app/useSettings'
 import { PROJECT_NAME_MAX_LENGTH, type EntryPoint } from '@/core/blueprint'
+import { DEFAULT_VARIANT_COUNT, MAX_VARIANTS, MIN_VARIANTS } from '@/core/ai'
 import { MAX_IDEA_TEXT_LENGTH } from '@/core/engine'
+import { useVariantGeneration } from '@/features/variants/useVariantGeneration'
 import { Button } from '@/shared/ui/button'
+import { Select } from '@/shared/ui/select'
 import { Input } from '@/shared/ui/input'
 import { useIdeaClassification } from './useIdeaClassification'
 import { formatNumber } from '@/shared/lib/format'
 
 const TEXT_FILE_PATTERN = /\.(txt|md)$/i
+const VARIANT_COUNTS = Array.from(
+  { length: MAX_VARIANTS - MIN_VARIANTS + 1 },
+  (_, index) => MIN_VARIANTS + index,
+)
 
 interface IdeaFormProps {
   entryPoint: EntryPoint
@@ -18,7 +26,10 @@ interface IdeaFormProps {
 export function IdeaForm({ entryPoint }: IdeaFormProps) {
   const { t } = useTranslation()
   const aiProvider = useAiProvider()
+  const navigate = useNavigate()
   const { state, classify, startWithoutAi, cancel } = useIdeaClassification()
+  const variants = useVariantGeneration()
+  const [variantCount, setVariantCount] = useState(DEFAULT_VARIANT_COUNT)
   const [name, setName] = useState('')
   const [text, setText] = useState('')
   const [fileError, setFileError] = useState<string | null>(null)
@@ -27,17 +38,27 @@ export function IdeaForm({ entryPoint }: IdeaFormProps) {
   const textId = useId()
   const counterId = useId()
   const tooLongId = useId()
+  const variantCountId = useId()
 
-  const busy = state.status === 'running'
-  const aiRunning = busy && state.mode === 'ai'
+  const variantsRunning = variants.state.status === 'running'
+  const busy = state.status === 'running' || variantsRunning
+  const aiRunning = state.status === 'running' && state.mode === 'ai'
   const tooLong = text.length > MAX_IDEA_TEXT_LENGTH
   const canClassify = aiProvider !== null && text.trim() !== '' && !tooLong && !busy
   const canUpload = entryPoint === 'almostDone'
+  // Varianten gibt es nur im Einstieg „halbe Idee“ (Entscheidung zu ADR 0012).
+  const offersVariants = entryPoint === 'partialIdea'
   const submission = { text, name, entryPoint }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (canClassify) void classify(submission)
+  }
+
+  function handleVariants() {
+    if (!canClassify) return
+    variants.reset()
+    void variants.generate(text, variantCount, () => navigate('/varianten'))
   }
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
@@ -147,9 +168,29 @@ export function IdeaForm({ entryPoint }: IdeaFormProps) {
         </p>
       )}
 
+      {variants.state.status === 'error' && (
+        <p
+          role="alert"
+          className="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive"
+        >
+          {t(variants.state.errorKey)}
+          {variants.state.detail && (
+            <span className="mt-1 block text-xs break-words opacity-80">
+              {variants.state.detail}
+            </span>
+          )}
+        </p>
+      )}
+
       {busy && (
         <p role="status" className="text-sm text-muted-foreground">
-          {t(aiRunning ? 'wizard.form.runningAi' : 'wizard.form.runningManual')}
+          {t(
+            variantsRunning
+              ? 'variants.running'
+              : aiRunning
+                ? 'wizard.form.runningAi'
+                : 'wizard.form.runningManual',
+          )}
         </p>
       )}
 
@@ -162,6 +203,40 @@ export function IdeaForm({ entryPoint }: IdeaFormProps) {
           <Button type="submit" disabled={!canClassify}>
             {t('wizard.form.submitAi')}
           </Button>
+        )}
+        {offersVariants && (
+          <div className="flex flex-wrap items-center gap-2">
+            <label htmlFor={variantCountId} className="text-sm font-medium">
+              {t('variants.countLabel')}
+            </label>
+            <Select
+              id={variantCountId}
+              value={variantCount}
+              disabled={busy}
+              onChange={(event) => setVariantCount(Number(event.target.value))}
+              className="w-auto disabled:opacity-50"
+            >
+              {VARIANT_COUNTS.map((count) => (
+                <option key={count} value={count}>
+                  {formatNumber(count)}
+                </option>
+              ))}
+            </Select>
+            {variantsRunning ? (
+              <Button type="button" variant="outline" onClick={variants.cancel}>
+                {t('wizard.form.cancel')}
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                variant="outline"
+                disabled={!canClassify}
+                onClick={handleVariants}
+              >
+                {t('variants.generate')}
+              </Button>
+            )}
+          </div>
         )}
         <Button
           type="button"

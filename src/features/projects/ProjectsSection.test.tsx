@@ -20,6 +20,29 @@ function projectList() {
   return screen.findByRole('list', { name: 'Projektliste' })
 }
 
+const HOUR = 60 * 60 * 1000
+const DAY = 24 * HOUR
+
+/** Repository mit verstellbarer Uhr, damit Einträge auch zu einem früheren Zeitpunkt gelöscht werden. */
+function repositoryWithClock() {
+  const clock = { now: new Date() }
+  const repository = new MemoryProjectRepository({ now: () => clock.now })
+  return { repository, clock }
+}
+
+/** Legt einen Eintrag an und verschiebt ihn `ago` Millisekunden vor „jetzt“ in den Papierkorb. */
+async function addTrashed(
+  { repository, clock }: ReturnType<typeof repositoryWithClock>,
+  name: string,
+  ago: number,
+) {
+  const project = await repository.create(name)
+  clock.now = new Date(Date.now() - ago)
+  await repository.trash(project.id)
+  clock.now = new Date()
+  return project
+}
+
 describe('Projektliste auf der Startseite', () => {
   beforeEach(() => {
     vi.mocked(downloadTextFile).mockClear()
@@ -28,7 +51,7 @@ describe('Projektliste auf der Startseite', () => {
   it('zeigt einen Hinweis, wenn es noch keine Projekte gibt', async () => {
     renderRoute('/')
 
-    expect(screen.getByRole('heading', { level: 2, name: 'Deine Projekte' })).toBeVisible()
+    expect(screen.getByRole('heading', { level: 2, name: 'Deine Bibliothek' })).toBeVisible()
     expect(await screen.findByText(/Du hast noch keine Projekte/)).toBeVisible()
     expect(screen.queryByRole('list', { name: 'Projektliste' })).not.toBeInTheDocument()
   })
@@ -146,7 +169,7 @@ describe('Projektliste auf der Startseite', () => {
 
     await user.click(within(await projectList()).getByRole('button', { name: 'Alpha umbenennen' }))
     const [alpha] = await repository.list()
-    await repository.delete(alpha!.id)
+    await repository.deleteForever(alpha!.id)
     const dialog = screen.getByRole('dialog', { name: 'Projekt umbenennen' })
     await user.click(within(dialog).getByRole('button', { name: 'Speichern' }))
 
@@ -175,7 +198,7 @@ describe('Projektliste auf der Startseite', () => {
     renderRoute('/', { repository })
     const button = within(await projectList()).getByRole('button', { name: 'Alpha duplizieren' })
     const [alpha] = await repository.list()
-    await repository.delete(alpha!.id)
+    await repository.deleteForever(alpha!.id)
 
     await user.click(button)
 
@@ -186,7 +209,7 @@ describe('Projektliste auf der Startseite', () => {
     expect(screen.getByText(/Du hast noch keine Projekte/)).toBeVisible()
   })
 
-  it('löscht ein Projekt erst nach Bestätigung', async () => {
+  it('verschiebt ein Projekt ohne Rückfrage in den Papierkorb und vergisst den Entwurf', async () => {
     const user = userEvent.setup()
     const repository = await repositoryWith('Alpha')
     const [summary] = await repository.list()
@@ -196,18 +219,13 @@ describe('Projektliste auf der Startseite', () => {
     renderRoute('/', { repository })
 
     await user.click(within(await projectList()).getByRole('button', { name: 'Alpha löschen' }))
-    const dialog = screen.getByRole('dialog', { name: 'Projekt löschen?' })
-    expect(dialog).toHaveAccessibleDescription(
-      '„Alpha“ wird endgültig gelöscht. Das lässt sich nicht rückgängig machen.',
-    )
-    expect(within(dialog).getByRole('button', { name: 'Abbrechen' })).toHaveFocus()
 
-    await user.click(within(dialog).getByRole('button', { name: 'Löschen' }))
-
-    expect(await screen.findByText(/Du hast noch keine Projekte/)).toBeVisible()
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
-    expect(screen.getByRole('status')).toHaveTextContent('„Alpha“ wurde gelöscht.')
-    expect(await repository.list()).toHaveLength(0)
+    expect(await screen.findByText(/Du hast noch keine Projekte/)).toBeVisible()
+    expect(screen.getByRole('status')).toHaveTextContent('„Alpha“ liegt jetzt im Papierkorb.')
+    expect(screen.getByRole('button', { name: 'Rückgängig' })).toBeVisible()
+    expect(await repository.list({ status: 'saved' })).toHaveLength(0)
+    expect(await repository.list({ status: 'trashed' })).toHaveLength(1)
     expect(getUnsaved(repository, draft.id)).toBeUndefined()
   })
 
@@ -218,31 +236,209 @@ describe('Projektliste auf der Startseite', () => {
     const draft = (await repository.get(summary!.id))!
     draft.blueprint.sections.problem.content = 'Ungespeicherter Entwurf'
     rememberUnsaved(repository, draft)
-    vi.spyOn(repository, 'delete').mockRejectedValue(new Error('Speicher nicht verfügbar'))
+    vi.spyOn(repository, 'trash').mockRejectedValue(new Error('Speicher nicht verfügbar'))
     renderRoute('/', { repository })
 
     await user.click(within(await projectList()).getByRole('button', { name: 'Alpha löschen' }))
-    const dialog = screen.getByRole('dialog', { name: 'Projekt löschen?' })
-    await user.click(within(dialog).getByRole('button', { name: 'Löschen' }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Das hat leider nicht geklappt.')
     expect(within(await projectList()).getByRole('link', { name: 'Alpha' })).toBeVisible()
-    expect(await repository.get(draft.id)).toBeDefined()
+    expect(await repository.list({ status: 'saved' })).toHaveLength(1)
     expect(getUnsaved(repository, draft.id)).toEqual(draft)
   })
 
-  it('behält das Projekt, wenn das Löschen abgebrochen wird', async () => {
+  it('stellt ein gelöschtes Projekt über „Rückgängig“ wieder her', async () => {
     const user = userEvent.setup()
     const repository = await repositoryWith('Alpha')
     renderRoute('/', { repository })
 
     await user.click(within(await projectList()).getByRole('button', { name: 'Alpha löschen' }))
-    const dialog = screen.getByRole('dialog', { name: 'Projekt löschen?' })
-    await user.click(within(dialog).getByRole('button', { name: 'Abbrechen' }))
+    await user.click(await screen.findByRole('button', { name: 'Rückgängig' }))
+
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      '„Alpha“ steht wieder in der Bibliothek.',
+    )
+    expect(within(await projectList()).getByRole('link', { name: 'Alpha' })).toBeVisible()
+    expect(await repository.list({ status: 'trashed' })).toHaveLength(0)
+  })
+
+  it('filtert die Bibliothek nach Titel, ohne Groß- und Kleinschreibung', async () => {
+    const user = userEvent.setup()
+    renderRoute('/', { repository: await repositoryWith('Alpha Café', 'Beta') })
+    await projectList()
+
+    await user.type(screen.getByRole('searchbox', { name: 'In der Bibliothek suchen' }), 'ALPHA')
+
+    const list = await projectList()
+    expect(within(list).getByRole('link', { name: 'Alpha Café' })).toBeVisible()
+    expect(within(list).queryByRole('link', { name: 'Beta' })).not.toBeInTheDocument()
+  })
+
+  it('zeigt einen Hinweis, wenn die Suche keinen Eintrag findet', async () => {
+    const user = userEvent.setup()
+    renderRoute('/', { repository: await repositoryWith('Alpha') })
+    await projectList()
+
+    await user.type(screen.getByRole('searchbox', { name: 'In der Bibliothek suchen' }), 'Gamma')
+
+    expect(screen.getByText('Kein Eintrag passt zu „Gamma“.')).toBeVisible()
+    expect(screen.queryByRole('list', { name: 'Projektliste' })).not.toBeInTheDocument()
+  })
+
+  it('zeigt bei einem Steckbrief ohne Fortschritt das Abzeichen statt der Fortschrittsanzeige', async () => {
+    const repository = await repositoryWith('Idee')
+    const [summary] = await repository.list()
+    const project = (await repository.get(summary!.id))!
+    project.profile = {
+      pitch: 'Kurz gesagt.',
+      problem: '',
+      audience: '',
+      features: [],
+      platform: '',
+      monetization: { model: '', priceRange: '', reason: '' },
+      effort: 'small',
+      risks: [],
+    }
+    await repository.save(project)
+
+    renderRoute('/', { repository })
+
+    const list = await projectList()
+    expect(within(list).getByText('Steckbrief')).toBeVisible()
+    expect(within(list).queryByRole('progressbar')).not.toBeInTheDocument()
+  })
+
+  it('zeigt die Restzeit im Papierkorb und sortiert nach dem nächsten Ende', async () => {
+    const user = userEvent.setup()
+    const clock = repositoryWithClock()
+    await addTrashed(clock, 'Fünf Tage', 2 * DAY)
+    await addTrashed(clock, 'Siebzehn Stunden', 7 * DAY - 17 * HOUR)
+    await addTrashed(clock, 'Drei Tage', 4 * DAY)
+    renderRoute('/', { repository: clock.repository, settings: { trashRetentionDays: 7 } })
+
+    await user.click(await screen.findByRole('button', { name: 'Papierkorb (3)' }))
+
+    const trashList = await screen.findByRole('list', { name: 'Papierkorb' })
+    const items = within(trashList).getAllByRole('listitem')
+    expect(items.map((item) => within(item).getByRole('link').textContent)).toEqual([
+      'Siebzehn Stunden',
+      'Drei Tage',
+      'Fünf Tage',
+    ])
+    expect(within(items[0]!).getByText('noch 17 Std.')).toBeVisible()
+    expect(within(items[1]!).getByText('noch 3 Tage')).toBeVisible()
+    expect(within(items[2]!).getByText('noch 5 Tage')).toBeVisible()
+  })
+
+  it('speichert einen Eintrag aus dem Papierkorb ohne Rückfrage', async () => {
+    const user = userEvent.setup()
+    const clock = repositoryWithClock()
+    await addTrashed(clock, 'Alpha', 1 * DAY)
+    renderRoute('/', { repository: clock.repository, settings: { trashRetentionDays: 7 } })
+
+    await user.click(await screen.findByRole('button', { name: 'Papierkorb (1)' }))
+    const trashList = await screen.findByRole('list', { name: 'Papierkorb' })
+    await user.click(within(trashList).getByRole('button', { name: 'Alpha speichern' }))
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      '„Alpha“ steht wieder in der Bibliothek.',
+    )
+    expect(await clock.repository.list({ status: 'trashed' })).toHaveLength(0)
+    await user.click(screen.getByRole('button', { name: 'Bibliothek' }))
     expect(within(await projectList()).getByRole('link', { name: 'Alpha' })).toBeVisible()
-    expect(await repository.list()).toHaveLength(1)
+  })
+
+  it('löscht einen Eintrag endgültig, nach Bestätigung', async () => {
+    const user = userEvent.setup()
+    const clock = repositoryWithClock()
+    await addTrashed(clock, 'Alpha', 1 * DAY)
+    renderRoute('/', { repository: clock.repository, settings: { trashRetentionDays: 7 } })
+
+    await user.click(await screen.findByRole('button', { name: 'Papierkorb (1)' }))
+    const trashList = await screen.findByRole('list', { name: 'Papierkorb' })
+    await user.click(within(trashList).getByRole('button', { name: 'Alpha endgültig löschen' }))
+
+    const dialog = screen.getByRole('dialog', { name: 'Endgültig löschen?' })
+    expect(dialog).toHaveAccessibleDescription(
+      '„Alpha“ wird endgültig gelöscht. Das lässt sich nicht rückgängig machen.',
+    )
+    expect(within(dialog).getByRole('button', { name: 'Abbrechen' })).toHaveFocus()
+    await user.click(within(dialog).getByRole('button', { name: 'Endgültig löschen' }))
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(await screen.findByRole('status')).toHaveTextContent('„Alpha“ wurde endgültig gelöscht.')
+    expect(await clock.repository.list({ status: 'trashed' })).toHaveLength(0)
+    expect(await screen.findByText(/Der Papierkorb ist leer\./)).toBeVisible()
+  })
+
+  it('behält einen Eintrag im Papierkorb, wenn das endgültige Löschen abgebrochen wird', async () => {
+    const user = userEvent.setup()
+    const clock = repositoryWithClock()
+    await addTrashed(clock, 'Alpha', 1 * DAY)
+    renderRoute('/', { repository: clock.repository, settings: { trashRetentionDays: 7 } })
+
+    await user.click(await screen.findByRole('button', { name: 'Papierkorb (1)' }))
+    const trashList = await screen.findByRole('list', { name: 'Papierkorb' })
+    await user.click(within(trashList).getByRole('button', { name: 'Alpha endgültig löschen' }))
+    await user.click(
+      within(screen.getByRole('dialog', { name: 'Endgültig löschen?' })).getByRole('button', {
+        name: 'Abbrechen',
+      }),
+    )
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(within(trashList).getByRole('link', { name: 'Alpha' })).toBeVisible()
+    expect(await clock.repository.list({ status: 'trashed' })).toHaveLength(1)
+  })
+
+  it('leert den Papierkorb nach Bestätigung und lässt die Bibliothek unberührt', async () => {
+    const user = userEvent.setup()
+    const clock = repositoryWithClock()
+    await clock.repository.create('Behalten')
+    await addTrashed(clock, 'Alpha', 1 * DAY)
+    await addTrashed(clock, 'Beta', 2 * DAY)
+    renderRoute('/', { repository: clock.repository, settings: { trashRetentionDays: 7 } })
+
+    await user.click(await screen.findByRole('button', { name: 'Papierkorb (2)' }))
+    await user.click(screen.getByRole('button', { name: 'Alle endgültig löschen' }))
+
+    const dialog = screen.getByRole('dialog', { name: 'Papierkorb leeren?' })
+    expect(dialog).toHaveAccessibleDescription(
+      '2 Einträge werden endgültig gelöscht. Das lässt sich nicht rückgängig machen.',
+    )
+    await user.click(within(dialog).getByRole('button', { name: 'Endgültig löschen' }))
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(await screen.findByRole('status')).toHaveTextContent('Der Papierkorb ist leer.')
+    expect(await clock.repository.list({ status: 'trashed' })).toHaveLength(0)
+    expect(await clock.repository.list({ status: 'saved' })).toHaveLength(1)
+  })
+
+  it('entfernt beim Laden Einträge, deren Frist abgelaufen ist', async () => {
+    const user = userEvent.setup()
+    const clock = repositoryWithClock()
+    await addTrashed(clock, 'Alt', 2 * DAY)
+    renderRoute('/', { repository: clock.repository })
+
+    // Standardfrist ist ein Tag: der vor zwei Tagen gelöschte Eintrag ist abgelaufen.
+    await waitFor(async () => {
+      expect(await clock.repository.list({ status: 'trashed' })).toHaveLength(0)
+    })
+    await user.click(await screen.findByRole('button', { name: 'Papierkorb (0)' }))
+    expect(await screen.findByText(/Der Papierkorb ist leer\./)).toBeVisible()
+  })
+
+  it('behält einen Eintrag beim Laden, solange die eingestellte Frist nicht abgelaufen ist', async () => {
+    const user = userEvent.setup()
+    const clock = repositoryWithClock()
+    await addTrashed(clock, 'Alt', 2 * DAY)
+    renderRoute('/', { repository: clock.repository, settings: { trashRetentionDays: 7 } })
+
+    await user.click(await screen.findByRole('button', { name: 'Papierkorb (1)' }))
+    const trashList = await screen.findByRole('list', { name: 'Papierkorb' })
+    expect(within(trashList).getByText('noch 5 Tage')).toBeVisible()
+    expect(await clock.repository.list({ status: 'trashed' })).toHaveLength(1)
   })
 
   it('exportiert ein Projekt als JSON-Datei', async () => {

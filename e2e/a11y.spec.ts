@@ -154,6 +154,19 @@ const IDEAS = ['Lesezeichen-Helfer', 'Kochplan-Assistent', 'Garten-Tagebuch', 'R
   }),
 )
 
+/** Antwort „Varianten erzeugen“ im Schema `variantsResultSchema`. */
+const VARIANTS = ['Tourbegleiter', 'Setlist-Archiv'].map((title) => ({
+  title,
+  pitch: `${title} begleitet Fans auf Tour.`,
+  problem: 'Fans verpassen Konzerte.',
+  audience: 'Fans einer Band',
+  features: ['Tourdaten', 'Setlisten', 'Treffpunkte', 'Fotos teilen', 'Erinnerungen'],
+  platform: 'Smartphone-App',
+  monetization: { model: 'Freemium', priceRange: '2–4 € pro Monat', reason: 'Niedrige Hürde.' },
+  effort: 'medium',
+  risks: ['Rechte an Fotos', 'Wenig Nutzer außerhalb der Tour'],
+}))
+
 function completion(content: unknown) {
   return {
     id: 'gen-e2e',
@@ -180,6 +193,7 @@ function answerChat(route: Route) {
     core_decisions: decisionsResponse,
     blueprint_additions: additionsResponse,
     project_ideas: { ideas: IDEAS },
+    project_variants: { variants: VARIANTS },
   }
   if (name && name in answers) {
     return route.fulfill({ json: completion(answers[name]), headers: CORS })
@@ -275,6 +289,28 @@ const scenarios: Scenario[] = [
     },
   },
   {
+    name: 'Startseite: Bibliothek mit Rückgängig-Hinweis',
+    ai: false,
+    setup: async (page) => {
+      await createProject(page, 'Behalten')
+      await createProject(page, 'Weg')
+      await page.goto('/')
+      await page.getByRole('button', { name: 'Weg löschen' }).click()
+      await expect(page.getByRole('button', { name: 'Rückgängig' })).toBeVisible()
+    },
+  },
+  {
+    name: 'Startseite: Papierkorb',
+    ai: false,
+    setup: async (page) => {
+      await createProject(page, 'Weg')
+      await page.goto('/')
+      await page.getByRole('button', { name: 'Weg löschen' }).click()
+      await page.getByRole('button', { name: 'Papierkorb (1)' }).click()
+      await expect(page.getByRole('list', { name: 'Papierkorb' })).toBeVisible()
+    },
+  },
+  {
     name: 'Einstellungen ohne Key',
     ai: false,
     setup: async (page) => {
@@ -323,6 +359,30 @@ const scenarios: Scenario[] = [
       await page.getByLabel('Was nervt dich im Alltag?').fill(FRUSTRATION)
       await page.getByRole('button', { name: 'Ideen finden' }).click()
       await expect(page.getByRole('article', { name: IDEAS[0]!.title })).toBeVisible()
+    },
+  },
+  {
+    name: 'Variantenseite',
+    ai: true,
+    setup: async (page) => {
+      await page.goto('/neu/teil-idee')
+      await page.getByLabel('Beschreib deine Idee').fill('Eine App für Fans einer Band')
+      await page.getByLabel('Anzahl Varianten').selectOption('2')
+      await page.getByRole('button', { name: 'Varianten erzeugen' }).click()
+      await expect(page.getByRole('list', { name: 'Varianten' }).getByRole('article')).toHaveCount(
+        2,
+      )
+    },
+  },
+  {
+    name: 'Projektseite mit Steckbrief',
+    ai: true,
+    setup: async (page) => {
+      await page.goto('/neu/teil-idee')
+      await page.getByLabel('Beschreib deine Idee').fill('Eine App für Fans einer Band')
+      await page.getByRole('button', { name: 'Varianten erzeugen' }).click()
+      await page.getByRole('link', { name: 'Tourbegleiter öffnen' }).click()
+      await expect(page.getByRole('heading', { level: 2, name: 'Steckbrief' })).toBeVisible()
     },
   },
   {

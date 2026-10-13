@@ -121,7 +121,7 @@ describe('DexieProjectRepository (IndexedDB-spezifisch)', () => {
     })
 
     it('lassen sich löschen', async () => {
-      await repo.delete('kaputt')
+      await repo.deleteForever('kaputt')
       expect(await db.projects.get('kaputt')).toBeUndefined()
     })
 

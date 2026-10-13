@@ -2,11 +2,14 @@ import { createEmptyProject } from './factory'
 import {
   additionSchema,
   decisionSchema,
+  librarySchema,
   monetizationSchema,
+  profileSchema,
   PROJECT_NAME_MAX_LENGTH,
   projectSchema,
   type Monetization,
   type MonetizationModel,
+  type ProjectProfile,
 } from './schema'
 import { SECTION_IDS } from './sections'
 import { makeProject } from './testing'
@@ -283,4 +286,61 @@ describe('monetizationSchema', () => {
       techFit: 3,
     }
   }
+})
+
+describe('profileSchema', () => {
+  const valid: ProjectProfile = {
+    pitch: 'Wochenplan mit Einkaufsliste in fünf Minuten.',
+    problem: 'Planung kostet Zeit.',
+    audience: 'Berufstätige Familien',
+    features: ['Woche planen', 'Einkaufsliste'],
+    platform: 'Web-App',
+    monetization: { model: 'Freemium', priceRange: '2–4 € pro Monat', reason: 'Niedrige Hürde.' },
+    effort: 'medium',
+    risks: ['Wenige zahlen'],
+  }
+
+  it('akzeptiert einen Steckbrief, auch mit leeren Feldern zum Bearbeiten von Hand', () => {
+    expect(profileSchema.parse(valid)).toEqual(valid)
+    const sparse = { ...valid, problem: '', features: [], risks: [], platform: '' }
+    expect(profileSchema.safeParse(sparse).success).toBe(true)
+    expect(projectSchema.safeParse({ ...makeProject(), profile: valid }).success).toBe(true)
+  })
+
+  it('erlaubt mehr Funktionen und Risiken, als die KI liefern darf (Bearbeitung von Hand)', () => {
+    const many = { ...valid, features: Array.from({ length: 12 }, (_, i) => `F${i}`) }
+    expect(profileSchema.safeParse(many).success).toBe(true)
+  })
+
+  it.each([
+    ['leerer Pitch', { pitch: '  ' }],
+    ['unbekannter Aufwand', { effort: 'huge' }],
+    ['leere Funktion', { features: [''] }],
+    ['Monetarisierung ohne Begründungsfeld', { monetization: { model: 'Abo', priceRange: '' } }],
+  ])('lehnt ab: %s', (_label, overrides) => {
+    expect(profileSchema.safeParse({ ...valid, ...overrides }).success).toBe(false)
+  })
+})
+
+describe('librarySchema', () => {
+  it('akzeptiert gespeichert ohne und Papierkorb mit Zeitpunkt', () => {
+    expect(librarySchema.safeParse({ status: 'saved', trashedAt: null }).success).toBe(true)
+    expect(
+      librarySchema.safeParse({ status: 'trashed', trashedAt: '2026-10-12T10:00:00.000Z' }).success,
+    ).toBe(true)
+  })
+
+  it.each([
+    ['Papierkorb ohne Zeitpunkt', { status: 'trashed', trashedAt: null }],
+    ['gespeichert mit Zeitpunkt', { status: 'saved', trashedAt: '2026-10-12T10:00:00.000Z' }],
+    ['unbekannter Status', { status: 'archived', trashedAt: null }],
+    ['ungültiger Zeitpunkt', { status: 'trashed', trashedAt: 'gestern' }],
+  ])('lehnt ab: %s', (_label, value) => {
+    expect(librarySchema.safeParse(value).success).toBe(false)
+  })
+
+  it('ist Pflicht am Projekt', () => {
+    const { library: _removed, ...rest } = makeProject()
+    expect(projectSchema.safeParse(rest).success).toBe(false)
+  })
 })

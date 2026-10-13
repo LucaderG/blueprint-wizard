@@ -1,6 +1,7 @@
 import { AiError, MockAiProvider, type IdeaCandidate, type IdeaRequest } from '@/core/ai'
 import {
   PROJECT_NAME_MAX_LENGTH,
+  profileSchema,
   projectNameSchema,
   projectSchema,
   type Project,
@@ -14,6 +15,7 @@ import {
   cleanIdeaCandidates,
   generateIdeas,
   ideaToClassification,
+  ideaToDraft,
   MAX_IDEA_FEATURES,
   MAX_IDEAS,
   MAX_SEEN_TITLES,
@@ -744,5 +746,27 @@ describe('generateIdeas', () => {
         language: 'de',
       }),
     ).rejects.toMatchObject({ code: 'rateLimited' })
+  })
+})
+
+describe('ideaToDraft', () => {
+  it('übernimmt Titel und Ideenfelder; Monetarisierung und Risiken bleiben leer', () => {
+    expect(ideaToDraft(IDEA_A)).toEqual({
+      name: IDEA_A.title,
+      profile: {
+        pitch: IDEA_A.pitch,
+        problem: IDEA_A.problem,
+        audience: IDEA_A.audience,
+        features: IDEA_A.features,
+        platform: IDEA_A.platform,
+        monetization: { model: '', priceRange: '', reason: '' },
+        effort: IDEA_A.effort,
+        risks: [],
+      },
+    })
+  })
+
+  it('ergibt einen gültigen Steckbrief', () => {
+    expect(profileSchema.safeParse(ideaToDraft(IDEA_B).profile).success).toBe(true)
   })
 })

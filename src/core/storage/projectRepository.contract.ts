@@ -75,6 +75,8 @@ export function describeProjectRepositoryContract(
           decisions: [],
           additions: [],
           monetization: null,
+          profile: null,
+          library: { status: 'saved', trashedAt: null },
         })
         expect(await repo.get('id-1')).toEqual(project)
       })
@@ -127,6 +129,8 @@ export function describeProjectRepositoryContract(
           name: 'A',
           updatedAt: savedA.updatedAt,
           completeness: computeCompleteness(savedA.blueprint).total,
+          library: { status: 'saved', trashedAt: null },
+          hasProfile: false,
         })
         expect(list[0]?.completeness).toBeGreaterThan(0)
         expect(list[1]?.completeness).toBe(0)
@@ -235,20 +239,128 @@ export function describeProjectRepositoryContract(
       })
     })
 
-    describe('delete', () => {
-      it('entfernt das Projekt', async () => {
+    describe('Papierkorb', () => {
+      const DAY = 24 * 60 * 60 * 1000
+      const afterDays = (iso: string, days: number) => new Date(Date.parse(iso) + days * DAY)
+
+      it('trash legt das Projekt mit Zeitpunkt in den Papierkorb, ohne den Inhalt zu ändern', async () => {
+        const project = await repo.create('Weg')
+
+        const trashed = await repo.trash(project.id)
+
+        expect(trashed).toEqual({ ...project, library: { status: 'trashed', trashedAt: at(1) } })
+        expect(await repo.get(project.id)).toEqual(trashed)
+      })
+
+      it('trash behält den ersten Zeitpunkt, wenn das Projekt schon im Papierkorb liegt', async () => {
+        const project = await repo.create('Weg')
+        await repo.trash(project.id)
+
+        expect((await repo.trash(project.id)).library.trashedAt).toBe(at(1))
+      })
+
+      it('restore stellt ein gelöschtes Projekt vollständig wieder her', async () => {
+        const project = await repo.create('Zurück')
+        project.blueprint.sections.problem.content = 'Wichtiger Inhalt'
+        const saved = await repo.save(project)
+        await repo.trash(saved.id)
+
+        const restored = await repo.restore(saved.id)
+
+        expect(restored).toEqual(saved)
+        expect(await repo.get(saved.id)).toEqual(saved)
+      })
+
+      it('list filtert nach Status und liefert Bibliotheksstatus und Steckbrief-Kennung', async () => {
+        const keep = await repo.create('Bleibt')
+        const gone = await repo.create('Weg')
+        await repo.trash(gone.id)
+
+        expect((await repo.list({ status: 'saved' })).map((s) => s.id)).toEqual([keep.id])
+        const trashList = await repo.list({ status: 'trashed' })
+        expect(trashList.map((s) => s.id)).toEqual([gone.id])
+        expect(trashList[0]).toMatchObject({
+          library: { status: 'trashed', trashedAt: at(2) },
+          hasProfile: false,
+        })
+        expect(await repo.list()).toHaveLength(2)
+      })
+
+      it('list kennzeichnet Einträge mit Steckbrief', async () => {
+        const project = await repo.create('Steckbrief')
+        await repo.save({
+          ...project,
+          profile: {
+            pitch: 'Kurz gesagt.',
+            problem: '',
+            audience: '',
+            features: [],
+            platform: '',
+            monetization: { model: '', priceRange: '', reason: '' },
+            effort: 'small',
+            risks: [],
+          },
+        })
+
+        expect((await repo.list())[0]?.hasProfile).toBe(true)
+      })
+
+      it('save behält den gespeicherten Status, damit ein veralteter Stand nichts zurückholt', async () => {
+        const project = await repo.create('Offen in einem anderen Tab')
+        await repo.trash(project.id)
+
+        const saved = await repo.save({ ...project, name: 'Geändert' })
+
+        expect(saved.library).toEqual({ status: 'trashed', trashedAt: at(1) })
+        expect((await repo.get(project.id))?.library.status).toBe('trashed')
+      })
+
+      it('deleteForever entfernt das Projekt endgültig', async () => {
         const keep = await repo.create('Bleibt')
         const gone = await repo.create('Weg')
 
-        await repo.delete(gone.id)
+        await repo.deleteForever(gone.id)
 
         expect(await repo.get(gone.id)).toBeUndefined()
         expect((await repo.list()).map((s) => s.id)).toEqual([keep.id])
       })
 
-      it('wirft ProjectNotFoundError für unbekannte IDs', async () => {
-        await expect(repo.delete('unbekannt')).rejects.toThrow(ProjectNotFoundError)
+      it('purgeExpired löscht nur Einträge im Papierkorb, deren Frist abgelaufen ist', async () => {
+        const saved = await repo.create('Gespeichert')
+        const old = await repo.create('Alt')
+        const fresh = await repo.create('Frisch')
+        const oldTrashed = await repo.trash(old.id)
+        await repo.trash(fresh.id)
+        const now = afterDays(oldTrashed.library.trashedAt!, 1)
+
+        const purged = await repo.purgeExpired(now, 1)
+
+        expect(purged).toEqual([old.id])
+        expect((await repo.list()).map((s) => s.id).sort()).toEqual([fresh.id, saved.id].sort())
       })
+
+      it('purgeExpired trifft nie gespeicherte Einträge, auch bei sehr später Uhr', async () => {
+        const saved = await repo.create('Gespeichert')
+
+        expect(await repo.purgeExpired(new Date('2099-01-01T00:00:00.000Z'), 1)).toEqual([])
+        expect(await repo.get(saved.id)).toEqual(saved)
+      })
+
+      it('purgeExpired richtet sich nach der Frist', async () => {
+        const project = await repo.create('Sieben Tage')
+        const trashed = await repo.trash(project.id)
+        const twoDaysLater = afterDays(trashed.library.trashedAt!, 2)
+
+        expect(await repo.purgeExpired(twoDaysLater, 7)).toEqual([])
+        expect(await repo.purgeExpired(twoDaysLater, 1)).toEqual([project.id])
+      })
+
+      it.each(['trash', 'restore', 'deleteForever'] as const)(
+        '%s wirft ProjectNotFoundError für unbekannte IDs',
+        async (method) => {
+          await expect(repo[method]('unbekannt')).rejects.toThrow(ProjectNotFoundError)
+        },
+      )
     })
 
     describe('duplicate', () => {
@@ -278,6 +390,15 @@ export function describeProjectRepositoryContract(
         await repo.save(copy)
 
         expect((await repo.get(original.id))?.blueprint.sections.problem.content).toBe('')
+      })
+
+      it('legt die Kopie eines Eintrags im Papierkorb gespeichert an', async () => {
+        const original = await repo.create('Original')
+        await repo.trash(original.id)
+
+        const copy = await repo.duplicate(original.id)
+
+        expect(copy.library).toEqual({ status: 'saved', trashedAt: null })
       })
 
       it('kürzt den Namen auf die erlaubte Länge', async () => {
@@ -315,6 +436,16 @@ export function describeProjectRepositoryContract(
         expect(await repo.get(imported.id)).toEqual(imported)
         expect(await repo.get(saved.id)).toEqual(saved)
         expect(await repo.list()).toHaveLength(2)
+      })
+
+      it('importiert immer als gespeichert, auch einen Eintrag aus dem Papierkorb', async () => {
+        const original = await repo.create('Aus dem Papierkorb')
+        await repo.trash(original.id)
+        const json = await repo.exportProject(original.id)
+
+        const imported = await repo.importProject(json)
+
+        expect(imported.library).toEqual({ status: 'saved', trashedAt: null })
       })
 
       it('lehnt Text ohne gültiges JSON ab', async () => {

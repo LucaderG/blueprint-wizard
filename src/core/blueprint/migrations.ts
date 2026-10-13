@@ -15,6 +15,7 @@ export const PROJECT_MIGRATIONS: MigrationMap = {
   1: migrateV1ToV2,
   2: migrateV2ToV3,
   3: migrateV3ToV4,
+  4: migrateV4ToV5,
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -182,4 +183,17 @@ function migrateV2ToV3(data: Record<string, unknown>): Record<string, unknown> {
 /** v3 → v4: die Monetarisierungs-Sektion kommt hinzu; bestehende Projekte haben sie noch nicht begonnen. */
 function migrateV3ToV4(data: Record<string, unknown>): Record<string, unknown> {
   return { ...data, schemaVersion: 4, monetization: null }
+}
+
+/**
+ * v4 → v5: Steckbrief und Bibliothek kommen hinzu. Bestehende Projekte haben keinen Steckbrief und
+ * stehen unverändert als gespeichert in der Bibliothek.
+ */
+function migrateV4ToV5(data: Record<string, unknown>): Record<string, unknown> {
+  return {
+    ...data,
+    schemaVersion: 5,
+    profile: null,
+    library: { status: 'saved', trashedAt: null },
+  }
 }

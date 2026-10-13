@@ -6,6 +6,7 @@ import { makeProject } from './testing'
 import projectV1 from './__fixtures__/project-v1.json'
 import projectV2 from './__fixtures__/project-v2.json'
 import projectV3 from './__fixtures__/project-v3.json'
+import projectV4 from './__fixtures__/project-v4.json'
 
 function formatError(fn: () => unknown) {
   try {
@@ -330,6 +331,8 @@ describe('Migration v1 → aktuell (Kette)', () => {
     expect(project.decisions).toEqual([])
     expect(project.additions).toEqual([])
     expect(project.monetization).toBeNull()
+    expect(project.profile).toBeNull()
+    expect(project.library).toEqual({ status: 'saved', trashedAt: null })
   })
 })
 
@@ -341,15 +344,48 @@ describe('Migration v3 → v4', () => {
   it('ergänzt eine noch nicht begonnene Monetarisierung', () => {
     const project = migrated()
 
-    expect(project.schemaVersion).toBe(4)
     expect(project.monetization).toBeNull()
   })
 
   it('lässt alle übrigen Daten unverändert', () => {
     const { schemaVersion: _old, ...rest } = projectV3
-    const { schemaVersion: _new, monetization: _m, ...migratedRest } = migrated()
+    const {
+      schemaVersion: _new,
+      monetization: _m,
+      profile: _p,
+      library: _l,
+      ...migratedRest
+    } = migrated()
 
     expect(migratedRest).toEqual(rest)
+  })
+
+  it('lässt bereits migrierte Daten unverändert', () => {
+    const once = migrated()
+
+    expect(migrateProject(JSON.parse(JSON.stringify(once)))).toEqual(once)
+  })
+})
+
+describe('Migration v4 → v5', () => {
+  // Echte v4-Sicherung: die v3-Fixture, mit dem Code von v1.1.0 nach v4 gehoben und um eine
+  // abgeschlossene Monetarisierung ergänzt (__fixtures__/project-v4.json).
+  const migrated = () => migrateProject(JSON.parse(JSON.stringify(projectV4)))
+
+  it('stellt das Projekt ohne Steckbrief als gespeichert in die Bibliothek', () => {
+    const project = migrated()
+
+    expect(project.schemaVersion).toBe(5)
+    expect(project.profile).toBeNull()
+    expect(project.library).toEqual({ status: 'saved', trashedAt: null })
+  })
+
+  it('lässt alle übrigen Daten unverändert, auch die Monetarisierung', () => {
+    const { schemaVersion: _old, ...rest } = projectV4
+    const { schemaVersion: _new, profile: _p, library: _l, ...migratedRest } = migrated()
+
+    expect(migratedRest).toEqual(rest)
+    expect(migratedRest.monetization?.status).toBe('decided')
   })
 
   it('lässt bereits migrierte Daten unverändert', () => {

@@ -3,6 +3,7 @@ import { ApiKeySection } from './ApiKeySection'
 import { AppearanceSection } from './AppearanceSection'
 import { ModelSection } from './ModelSection'
 import { ResponseSection } from './ResponseSection'
+import { TrashSection } from './TrashSection'
 
 export function SettingsPage() {
   const { t } = useTranslation()
@@ -14,6 +15,7 @@ export function SettingsPage() {
       <ModelSection />
       <ResponseSection />
       <AppearanceSection />
+      <TrashSection />
     </div>
   )
 }

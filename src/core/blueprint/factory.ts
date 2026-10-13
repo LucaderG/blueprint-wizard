@@ -40,5 +40,7 @@ export function createEmptyProject({ id, name, now }: CreateProjectOptions): Pro
     decisions: [],
     additions: [],
     monetization: null,
+    profile: null,
+    library: { status: 'saved', trashedAt: null },
   }
 }

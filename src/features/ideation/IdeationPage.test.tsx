@@ -392,7 +392,6 @@ describe('Ideen', () => {
   it('meldet, wenn das Projekt nicht angelegt werden kann, und bleibt bei den Ideen', async () => {
     const user = userEvent.setup()
     const repository = new MemoryProjectRepository()
-    vi.spyOn(repository, 'create').mockRejectedValueOnce(new Error('Speicher voll'))
     renderRoute(ROUTE, {
       repository,
       settings: aiSettings,
@@ -402,6 +401,7 @@ describe('Ideen', () => {
     await answerMinimal(user)
     await user.click(findsIdeasButton())
     await screen.findByRole('article', { name: 'Alpha' })
+    vi.spyOn(repository, 'save').mockRejectedValueOnce(new Error('Speicher voll'))
     await user.click(within(card('Alpha')).getByRole('button', { name: 'Diese Idee nehmen' }))
 
     const alert = await screen.findByRole('alert')
@@ -544,5 +544,72 @@ describe('Ohne KI-Key', () => {
     expect(project?.blueprint.sections.problem.content).toContain(FRUSTRATION)
     expect(project?.blueprint.sections.problem.content).toContain('Musik')
     expect(aiProvider.requests).toEqual([])
+  })
+})
+
+describe('Ideen als Einträge', () => {
+  async function showIdeas(...titles: string[]) {
+    const user = userEvent.setup()
+    const rendered = renderRoute(ROUTE, {
+      settings: aiSettings,
+      aiProvider: new MockAiProvider([ideasAnswer(...titles)]),
+    })
+    await answerMinimal(user)
+    await user.click(findsIdeasButton())
+    await screen.findByRole('article', { name: titles[0] })
+    return { user, ...rendered }
+  }
+
+  it('legt jede Idee mit Steckbrief im Papierkorb an', async () => {
+    const { repository } = await showIdeas('Alpha', 'Beta')
+
+    const trashed = await repository.list({ status: 'trashed' })
+    expect(trashed.map((entry) => entry.name).sort()).toEqual(['Alpha', 'Beta'])
+    expect(await repository.list({ status: 'saved' })).toEqual([])
+    const alpha = await repository.get(trashed.find((entry) => entry.name === 'Alpha')!.id)
+    expect(alpha).toMatchObject({
+      entryPoint: 'noIdea',
+      profile: {
+        pitch: 'Alpha hilft im Alltag.',
+        audience: 'Studierende',
+        monetization: { model: '', priceRange: '', reason: '' },
+        risks: [],
+      },
+    })
+    expect(
+      screen.getByText('Jede Idee liegt im Papierkorb, bis du sie speicherst oder wählst.'),
+    ).toBeVisible()
+  })
+
+  it('speichert eine Idee in der Bibliothek, ohne sie zu wählen', async () => {
+    const { user, repository, router } = await showIdeas('Alpha')
+
+    const save = await within(card('Alpha')).findByRole('button', {
+      name: 'Alpha in der Bibliothek speichern',
+    })
+    await user.click(save)
+
+    await waitFor(() => expect(save).toHaveTextContent('Gespeichert'))
+    expect(save).toBeDisabled()
+    const [saved] = await repository.list({ status: 'saved' })
+    expect(saved?.name).toBe('Alpha')
+    expect(router.state.location.pathname).toBe(ROUTE)
+  })
+
+  it('„Diese Idee nehmen“ speichert genau den Eintrag der Idee', async () => {
+    const { user, repository, router } = await showIdeas('Alpha', 'Beta')
+    const [before] = (await repository.list({ status: 'trashed' })).filter(
+      (entry) => entry.name === 'Alpha',
+    )
+
+    await user.click(within(card('Alpha')).getByRole('button', { name: 'Diese Idee nehmen' }))
+
+    expect(await screen.findByRole('heading', { level: 1, name: 'Alpha' })).toBeVisible()
+    expect(router.state.location.pathname).toBe(`/projekte/${before!.id}`)
+    const saved = await repository.list({ status: 'saved' })
+    expect(saved.map((entry) => entry.id)).toEqual([before!.id])
+    expect((await repository.list({ status: 'trashed' })).map((entry) => entry.name)).toEqual([
+      'Beta',
+    ])
   })
 })
