@@ -16,6 +16,7 @@ import { normalizeProfile, type IdeationProfile } from '@/core/ideation/profile'
 import type { Idea, IdeationSession } from '@/core/ideation/session'
 import { applyClassification } from './classification'
 import { clampLeverage, cleanTextList, normalizeText } from './cleaning'
+import type { VariantDraft } from './variants'
 
 /** Höchstzahl an Ideen, die gleichzeitig angezeigt werden. */
 export const MAX_IDEAS = 5
@@ -240,4 +241,24 @@ export function applyChosenIdea(
     { useSuggestedName },
   )
   return updated.reduce((current, id) => acceptSuggestion(current, id), classified)
+}
+
+/**
+ * Steckbrief aus einer Idee der Ideenfindung, damit sie wie eine Variante als Eintrag gespeichert
+ * werden kann (ADR 0012). Monetarisierung und Risiken kennt die Idee nicht; sie bleiben leer.
+ */
+export function ideaToDraft(idea: Idea): VariantDraft {
+  return {
+    name: idea.title,
+    profile: {
+      pitch: idea.pitch,
+      problem: idea.problem,
+      audience: idea.audience,
+      features: [...idea.features],
+      platform: idea.platform,
+      monetization: { model: '', priceRange: '', reason: '' },
+      effort: idea.effort,
+      risks: [],
+    },
+  }
 }

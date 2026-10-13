@@ -60,9 +60,9 @@ Kontext: Blueprint-Wizard ist eine lokale Web-App (SPA), die Nutzer zu einem Pro
 
 ## Ideenfindung (Einstieg „keine Idee“)
 
-- Fragebogen-Logik und Sitzungsschema liegen in `src/core/ideation` (`profile.ts`, `session.ts`); der Stand lebt nur im `sessionStorage`, nicht im Projekt (kein Schemawechsel).
+- Fragebogen-Logik und Sitzungsschema liegen in `src/core/ideation` (`profile.ts`, `session.ts`); Fragebogen, gesehene Titel und die gerade gezeigten Ideen leben im `sessionStorage`. Die Ideen selbst liegen als Einträge im Repository.
 - KI-Ideen laufen über `generateIdeas` mit einer `IdeaRequest` (`generate`, `moreLike`, `refine`, `combine`); `applyIdeas` bereinigt und baut das Ergebnis ein (`src/core/engine/ideation.ts`).
-- Die gewählte Idee wird mit `applyChosenIdea` zum Projekt (Abschnitte als `aiAccepted`).
+- Jede neue Idee wird sofort ein Eintrag im Papierkorb (`ideaToDraft` → `createVariantEntries` mit `noIdea`); die Idee trägt die ID des Eintrags. „Speichern“ holt ihn in die Bibliothek. Die gewählte Idee füllt mit `applyChosenIdea` die Abschnitte ihres Eintrags (als `aiAccepted`) und wird gespeichert.
 - Die UI nutzt das Feature ausschließlich über `useIdeation()` (`src/features/ideation/useIdeation.ts`).
 
 ## Bibliothek und Varianten

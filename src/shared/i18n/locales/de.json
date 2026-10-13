@@ -609,7 +609,11 @@
       "retry": "Erneut versuchen",
       "dismiss": "Schließen",
       "errorIntro": "Das hat nicht geklappt.",
-      "nothingNew": "Die KI hat keine neue Idee geliefert. Versuch es noch einmal oder ändere deine Antworten."
+      "nothingNew": "Die KI hat keine neue Idee geliefert. Versuch es noch einmal oder ändere deine Antworten.",
+      "save": "Speichern",
+      "saveLabel": "{{title}} in der Bibliothek speichern",
+      "saved": "Gespeichert",
+      "trashHint": "Jede Idee liegt im Papierkorb, bis du sie speicherst oder wählst."
     }
   },
   "export": {

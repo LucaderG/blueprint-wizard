@@ -609,7 +609,11 @@
       "retry": "Try again",
       "dismiss": "Close",
       "errorIntro": "That didn't work.",
-      "nothingNew": "The AI didn't come up with a new idea. Try again or change your answers."
+      "nothingNew": "The AI didn't come up with a new idea. Try again or change your answers.",
+      "save": "Save",
+      "saveLabel": "Save {{title}} to the library",
+      "saved": "Saved",
+      "trashHint": "Each idea stays in the trash until you save or choose it."
     }
   },
   "export": {

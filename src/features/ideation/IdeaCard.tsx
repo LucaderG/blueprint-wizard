@@ -1,6 +1,7 @@
-import { ArrowRight, LoaderCircle } from 'lucide-react'
+import { ArchiveRestore, ArrowRight, LoaderCircle } from 'lucide-react'
 import { useId, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
+import type { LibraryStatus } from '@/core/blueprint'
 import type { Idea } from '@/core/ideation'
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/ui/button'
@@ -16,8 +17,10 @@ type IdeaCardProps = {
   busy: boolean
   /** KI-Aktionen sind gesperrt (läuft etwas oder fehlt der Key). */
   disabled: boolean
+  /** Status des Eintrags der Idee in Bibliothek oder Papierkorb. */
+  status: LibraryStatus | undefined
   onSelectChange: (selected: boolean) => void
-} & Pick<IdeationController, 'choose' | 'moreLike' | 'refine'>
+} & Pick<IdeationController, 'save' | 'choose' | 'moreLike' | 'refine'>
 
 /** Eine Idee mit Bewertung, Kernfunktionen und Aktionen zum Nehmen, Abwandeln und Kombinieren. */
 export function IdeaCard({
@@ -26,7 +29,9 @@ export function IdeaCard({
   working,
   busy,
   disabled,
+  status,
   onSelectChange,
+  save,
   choose,
   moreLike,
   refine,
@@ -142,10 +147,24 @@ export function IdeaCard({
             {t('ideation.ideas.customSubmit')}
           </Button>
         </form>
-        <Button className="w-full" disabled={busy} onClick={() => void choose(idea)}>
-          <ArrowRight className="size-4" aria-hidden />
-          {t('ideation.ideas.choose')}
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          {status && (
+            <Button
+              variant="outline"
+              className="flex-1"
+              disabled={busy || status === 'saved'}
+              aria-label={t('ideation.ideas.saveLabel', { title: idea.title })}
+              onClick={() => void save(idea)}
+            >
+              <ArchiveRestore className="size-4" aria-hidden />
+              {status === 'saved' ? t('ideation.ideas.saved') : t('ideation.ideas.save')}
+            </Button>
+          )}
+          <Button className="flex-1" disabled={busy} onClick={() => void choose(idea)}>
+            <ArrowRight className="size-4" aria-hidden />
+            {t('ideation.ideas.choose')}
+          </Button>
+        </div>
       </div>
     </article>
   )
