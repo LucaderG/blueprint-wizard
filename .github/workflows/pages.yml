@@ -36,7 +36,7 @@ jobs:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
           # Mit Tags: Trägt der Commit den Release-Tag, zeigt die App „stable“ statt „nightly“.
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: npm
